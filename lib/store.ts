@@ -39,6 +39,17 @@ export type DriverCheck = {
   status: "none" | "checking" | "verified";
 };
 
+export type PayMethod = "wallet" | "upi-app" | "upi-id" | "cash" | "settle-up";
+
+/** How a rider paid for a ride. Cash waits for the driver to confirm; settle-up is billed monthly. */
+export type Payment = {
+  method: PayMethod;
+  amount: number;
+  at: number;
+  status: "paid" | "pending" | "settle-up";
+  upiId?: string;
+};
+
 /** A login or sign-up waiting for its emailed code. */
 export type Pending =
   | { flow: "login"; email: string }
@@ -55,6 +66,10 @@ type State = {
   account: Account | null;
   /** Driving licence and vehicle RC, needed before offering rides. */
   driver: DriverCheck;
+  /** Campus Wallet balance in rupees. */
+  wallet: number;
+  /** Fuel contributions, per ride. */
+  payments: Record<string, Payment>;
   pending: Pending | null;
 };
 
@@ -67,6 +82,8 @@ const empty: State = {
   account: null,
   pending: null,
   driver: { licence: null, rc: null, status: "none" },
+  wallet: 250,
+  payments: {},
 };
 
 // Demo review time before submitted documents count as verified.
@@ -101,6 +118,11 @@ function load() {
     // Data saved before chat existed: give the demo booking its opening message.
     // A review that was still running when the tab closed has finished by now.
     if (state.driver.status === "checking") state = { ...state, driver: { ...state.driver, status: "verified" } };
+    // Same for cash the driver was about to confirm.
+    const pendingCash = Object.entries(state.payments).filter(([, p]) => p.status === "pending");
+    if (pendingCash.length) {
+      state = { ...state, payments: { ...state.payments, ...Object.fromEntries(pendingCash.map(([id, p]) => [id, { ...p, status: "paid" as const }])) } };
+    }
     if (state.bookings.some((b) => b.rideId === "r109") && !state.messages.r109) {
       state = { ...state, messages: { ...state.messages, r109: demo.messages.r109 } };
     }
@@ -260,6 +282,21 @@ export const actions = {
     document.cookie = `${SESSION_COOKIE}=1; path=/; max-age=31536000; samesite=lax`;
   },
   /** Close the session; callers then navigate to /login and refresh. */
+  /** Pay a ride's fuel share. Wallet payments come off the balance; cash waits for the driver. */
+  pay(rideId: string, method: PayMethod, amount: number, upiId?: string) {
+    const status: Payment["status"] = method === "cash" ? "pending" : method === "settle-up" ? "settle-up" : "paid";
+    set((s) => ({
+      ...s,
+      wallet: method === "wallet" ? s.wallet - amount : s.wallet,
+      payments: { ...s.payments, [rideId]: { method, amount, at: Date.now(), status, upiId } },
+    }));
+    // Demo: the driver confirms cash a moment later.
+    if (method === "cash") {
+      window.setTimeout(() => {
+        set((s) => (s.payments[rideId]?.status === "pending" ? { ...s, payments: { ...s.payments, [rideId]: { ...s.payments[rideId], status: "paid" } } } : s));
+      }, 2500);
+    }
+  },
   uploadDriverDoc(kind: "licence" | "rc", doc: DriverDoc) {
     set((s) => ({ ...s, driver: { ...s.driver, [kind]: doc, status: "none" } }));
   },

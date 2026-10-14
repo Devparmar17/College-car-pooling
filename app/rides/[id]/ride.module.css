@@ -454,3 +454,14 @@
     animation: rise-in 420ms var(--ease-out) 300ms backwards;
   }
 }
+
+.payLink {
+  font-weight: 600;
+  color: var(--unigo-primary-ink);
+}
+
+.paid {
+  font-weight: 600;
+  color: var(--unigo-success);
+  animation: fade-in 300ms ease;
+}

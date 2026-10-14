@@ -1,0 +1,344 @@
+/* Figma "Payment" (node 723:6763). */
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  /* No bottom bar here; cancel the space the layout keeps for it. */
+  min-height: 100dvh;
+  margin-bottom: calc(-1 * (var(--nav-h) + env(safe-area-inset-bottom) + 12px));
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  padding: calc(var(--top-gap) - 3px) 12px 24px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+  color: #000;
+}
+
+.back {
+  display: flex;
+  border-radius: 50%;
+  transition: scale 120ms var(--ease-out);
+}
+
+.back:active {
+  scale: 0.9;
+}
+
+.muted {
+  font-size: 14px;
+  color: var(--unigo-text-secondary);
+}
+
+/* Payee card */
+.summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 17px 20px;
+  border-radius: 16px;
+  background: var(--unigo-extra-light-gray);
+  text-align: center;
+  animation: rise-in 420ms var(--ease-out);
+}
+
+.payee {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--unigo-black);
+}
+
+.amount {
+  margin-top: 10px;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 44px;
+  color: #000;
+}
+
+.what {
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--unigo-black);
+}
+
+.route {
+  margin-top: 5px;
+  padding: 5px 14px;
+  border-radius: 99px;
+  background: var(--unigo-white);
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--unigo-black);
+}
+
+/* Methods */
+.methods h2 {
+  margin-bottom: 10px;
+  font-family: var(--font-inter), var(--font);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 22px;
+  letter-spacing: -0.1px;
+  color: var(--unigo-black);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option {
+  border: 1px solid var(--unigo-light-gray);
+  border-radius: 16px;
+  background: var(--unigo-white);
+  transition: border-color 200ms, box-shadow 200ms;
+}
+
+.on {
+  border-color: var(--unigo-primary);
+  box-shadow: 0 0 0 3px var(--unigo-primary-soft);
+}
+
+.disabled {
+  opacity: 0.55;
+}
+
+.optionRow {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  padding: 15px;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+
+.optionRow:disabled {
+  cursor: not-allowed;
+}
+
+.optionRow:active:not(:disabled) .optionIcon {
+  scale: 0.92;
+}
+
+.optionIcon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 16px;
+  background: var(--unigo-extra-light-gray);
+  transition: background 200ms, scale 120ms var(--ease-out);
+}
+
+.on .optionIcon {
+  background: var(--unigo-primary-soft);
+}
+
+.glyph {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+  color: #000;
+}
+
+.optionText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--unigo-text-secondary);
+}
+
+.optionText strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--unigo-black);
+}
+
+.radio {
+  flex: none;
+}
+
+.on .radio {
+  animation: pop-in 300ms var(--ease-spring);
+}
+
+.upiField {
+  padding: 0 15px 15px 80px;
+  animation: rise-in 260ms var(--ease-out);
+}
+
+.upiField input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--unigo-light-gray);
+  border-radius: 999px;
+  font-size: 14px;
+}
+
+.upiField input:focus-visible {
+  outline: none;
+  border-color: var(--unigo-primary);
+}
+
+.error {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--unigo-danger);
+  animation: shake 320ms ease;
+}
+
+.secure {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--unigo-dark-gray);
+}
+
+.secure img {
+  flex: none;
+  margin-top: 4px;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.payButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 51px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--unigo-primary);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  color: var(--unigo-white);
+  transition: scale 120ms var(--ease-out), opacity 150ms;
+}
+
+.payButton:active:not(:disabled) {
+  scale: 0.98;
+}
+
+.payButton:disabled {
+  opacity: 0.8;
+  cursor: progress;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--unigo-white);
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+
+.demo {
+  font-size: 11px;
+  text-align: center;
+  color: var(--unigo-text-secondary);
+}
+
+/* Success */
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: auto 0;
+  padding: 32px 20px;
+  text-align: center;
+}
+
+.successBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 8px;
+  border-radius: 50%;
+  background: var(--unigo-primary);
+  box-shadow: 0 0 0 10px var(--unigo-primary-soft);
+  animation: pop-in 560ms var(--ease-spring);
+}
+
+.success h1 {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+  color: var(--unigo-black);
+  animation: rise-in 420ms var(--ease-out) 150ms backwards;
+}
+
+.success p {
+  font-size: 14px;
+  color: var(--unigo-text-secondary);
+  animation: rise-in 420ms var(--ease-out) 220ms backwards;
+}
+
+.successActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 20px;
+  animation: rise-in 420ms var(--ease-out) 300ms backwards;
+}
+
+/* Wide screens: a centred column. */
+@media (min-width: 600px) {
+  .screen {
+    max-width: 520px;
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .screen {
+    min-height: auto;
+  }
+}

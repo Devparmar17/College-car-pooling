@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { personTitle, prefLabels, UNIVERSITY } from "@/lib/data";
+import { methodLabels } from "@/lib/payment";
 import { isPlaceId, placeById } from "@/lib/places";
 import {
   dayLabels,
@@ -57,6 +58,7 @@ export function RideDetail({ id }: { id: string }) {
 
   const mine = isMine(ride);
   const booking = bookingFor(s, ride.id);
+  const payment = s.payments[ride.id];
   const fromParam = params.get("from");
   const toParam = params.get("to");
   const seg =
@@ -230,7 +232,19 @@ export function RideDetail({ id }: { id: string }) {
                   <strong className="tnum">
                     {booking.seats} seat{booking.seats > 1 ? "s" : ""} · {rupees(booking.fare * booking.seats)}
                   </strong>
-                  <span className="muted">Pay {driver.name.split(" ")[0]} by UPI after the ride</span>
+                  {payment ? (
+                    <span className={styles.paid}>
+                      {payment.status === "pending"
+                        ? "Cash · waiting for the driver to confirm"
+                        : payment.status === "settle-up"
+                          ? "On your monthly settle-up"
+                          : `Paid ✓ · ${methodLabels[payment.method]}`}
+                    </span>
+                  ) : (
+                    <Link href={`/rides/${ride.id}/complete`} className={styles.payLink}>
+                      Trip done? Pay now →
+                    </Link>
+                  )}
                 </div>
                 {/* Riders can't cancel a booked seat; they talk to the driver instead. */}
                 <Link href={`/rides/${ride.id}/chat`} className="btn btn-primary">

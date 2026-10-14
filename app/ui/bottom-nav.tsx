@@ -51,8 +51,8 @@ export function BottomNav() {
     if (m) actions.setMode(m);
   }, [pathname]);
 
-  // No bar on the login and sign-up screens.
-  if (pathname.startsWith("/login") || pathname.startsWith("/signup")) return null;
+  // No bar on the login and sign-up screens, or during checkout (trip complete and payment).
+  if (pathname.startsWith("/login") || pathname.startsWith("/signup") || /^\/rides\/[^/]+\/(complete|pay)$/.test(pathname)) return null;
 
   return <NavLinks pathname={pathname} mode={mode} />;
 }
