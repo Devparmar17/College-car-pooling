@@ -3,6 +3,7 @@ import { Geist_Mono, Inter } from "next/font/google";
 import { Suspense } from "react";
 import { BottomNav, NavLinks } from "./ui/bottom-nav";
 import { Splash } from "./ui/splash";
+import { TripWatcher } from "./ui/trip-watcher";
 import "./globals.css";
 import styles from "./layout.module.css";
 
@@ -39,6 +40,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <main className={styles.main}>{children}</main>
           <Suspense fallback={<NavLinks />}>
             <BottomNav />
+          </Suspense>
+          <Suspense>
+            <TripWatcher />
           </Suspense>
         </div>
       </body>

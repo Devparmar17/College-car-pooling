@@ -29,6 +29,8 @@ import { ContactButtons } from "../../ui/contact-buttons";
 import { RideMap } from "../../ui/ride-map";
 import { RateDriver } from "../../ui/rate-driver";
 import { ConfirmSheet } from "./confirm-sheet";
+import { TripTracker } from "./trip-tracker";
+import { PassengerRequest } from "../../ui/passenger-request";
 import { PageHeader } from "../../ui/page-header";
 import styles from "./ride.module.css";
 
@@ -63,6 +65,10 @@ export function RideDetail({ id }: { id: string }) {
   const mine = isMine(ride);
   const booking = bookingFor(s, ride.id);
   const payment = s.payments[ride.id];
+  // Your ride: seat requests waiting first, then the ones you've answered.
+  const rideRequests = s.requests
+    .filter((r) => r.rideId === ride.id && r.kind === "seat")
+    .sort((a, b) => +(b.status === "pending") - +(a.status === "pending"));
   const fromParam = params.get("from");
   const toParam = params.get("to");
   const seg =
@@ -131,6 +137,8 @@ export function RideDetail({ id }: { id: string }) {
               <span className="tnum">{rupees(fare)} per seat</span>
             </div>
           </section>
+
+          {booking && <TripTracker ride={ride} booking={booking} />}
 
           <section className={`card ${styles.timeline}`}>
             <h2 className="section-title">Stops</h2>
@@ -250,6 +258,15 @@ export function RideDetail({ id }: { id: string }) {
 
           {booking && payment && <RateDriver rideId={ride.id} driver={driver} />}
 
+          {mine && rideRequests.length > 0 && (
+            <section className={styles.requests}>
+              <h2 className="section-title">Passenger requests</h2>
+              {rideRequests.map((r) => (
+                <PassengerRequest key={r.id} request={r} />
+              ))}
+            </section>
+          )}
+
           <div className={styles.bar}>
             {mine ? (
               <>
@@ -273,8 +290,10 @@ export function RideDetail({ id }: { id: string }) {
                     <span className={styles.paid}>
                       {payment.status === "pending"
                         ? "Cash · waiting for the driver to confirm"
-                        : payment.status === "settle-up"
-                          ? "On your monthly settle-up"
+                        : payment.status === "settle-requested"
+                          ? "Settle-up · waiting for the driver to accept"
+                          : payment.status === "settle-up"
+                            ? "Settle-up accepted ✓"
                           : `Paid ✓ · ${methodLabels[payment.method]}`}
                     </span>
                   ) : (

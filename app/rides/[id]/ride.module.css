@@ -507,3 +507,14 @@ button.selected {
   font-weight: 600;
   color: var(--unigo-primary-ink);
 }
+
+/* Your ride: passengers asking for a seat. */
+.requests {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.requests :global(.section-title) {
+  margin: 0;
+}

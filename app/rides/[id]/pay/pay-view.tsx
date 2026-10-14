@@ -76,14 +76,18 @@ export function PayView({ rideId }: { rideId: string }) {
           <h1>
             {payment.status === "pending"
               ? `Hand ${rupees(payment.amount)} to ${first}`
-              : payment.status === "settle-up"
-                ? `Added to monthly settle-up`
-                : `Paid ${rupees(payment.amount)} to ${first}`}
+              : payment.status === "settle-requested"
+                ? `Settle-up request sent to ${first}`
+                : payment.status === "settle-up"
+                  ? `${first} accepted your settle-up`
+                  : `Paid ${rupees(payment.amount)} to ${first}`}
           </h1>
           <p>
             {payment.status === "pending"
               ? `${first} confirms the cash in the app. You’re done once they do.`
-              : `${methodLabels[payment.method]}${payment.upiId ? ` · ${payment.upiId}` : ""}${
+              : payment.status === "settle-requested"
+                ? `${rupees(payment.amount)} goes on your monthly settle-up once ${first} accepts.`
+                : `${methodLabels[payment.method]}${payment.upiId ? ` · ${payment.upiId}` : ""}${
                   payment.method === "wallet" ? ` · Wallet balance ${rupees(s.wallet)}` : ""
                 }`}
           </p>

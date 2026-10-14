@@ -2,7 +2,7 @@ import { placeById } from "./places";
 import { dayLabels, formatClock, hasLeft, personById, rupees, segmentTimes } from "./rides";
 import { findRide, type State } from "./store";
 
-export type NoteKind = "booking" | "reminder" | "message" | "payment" | "rating" | "driver" | "match" | "welcome";
+export type NoteKind = "booking" | "reminder" | "message" | "payment" | "rating" | "driver" | "match" | "welcome" | "request";
 
 export type Note = {
   id: string;
@@ -60,21 +60,46 @@ export function buildNotifications(s: State, nowMin: number | null): Note[] {
       });
     });
 
+    const done = s.trips[ride.id]?.completedAt;
+    if (done) {
+      notes.push({
+        id: `completed-${ride.id}`,
+        kind: "booking",
+        title: `Ride complete · you've reached ${placeById[b.segment.to].name}`,
+        body: s.payments[ride.id] ? `Thanks for riding with ${name}.` : `Pay ${rupees(b.fare * b.seats)} to ${name} and rate the ride.`,
+        href: s.payments[ride.id] ? `/rides/${ride.id}` : `/rides/${ride.id}/complete`,
+        at: done,
+      });
+    }
+
     const p = s.payments[ride.id];
     if (p) {
+      const trip = `${placeById[b.segment.from].name} → ${placeById[b.segment.to].name}`;
+      const settle = p.method === "settle-up";
+      // What you sent…
       notes.push({
-        id: `pay-${ride.id}-${p.status}`,
+        id: `pay-${ride.id}-${p.method}`,
         kind: "payment",
-        title:
-          p.status === "pending"
+        title: settle
+          ? `Settle-up request sent to ${name}`
+          : p.method === "cash"
             ? `Cash ${rupees(p.amount)} · waiting for ${name}`
-            : p.status === "settle-up"
-              ? `${rupees(p.amount)} added to monthly settle-up`
-              : `Paid ${rupees(p.amount)} to ${name}`,
-        body: `Fuel contribution for ${placeById[b.segment.from].name} → ${placeById[b.segment.to].name}`,
+            : `Paid ${rupees(p.amount)} to ${name}`,
+        body: settle ? `${rupees(p.amount)} for ${trip}. Waiting for ${name} to accept.` : `Fuel contribution for ${trip}`,
         href: `/rides/${ride.id}`,
         at: p.at,
       });
+      // …and the driver's answer.
+      if (p.status === "settle-up" || (p.method === "cash" && p.status === "paid")) {
+        notes.push({
+          id: `pay-${ride.id}-answered`,
+          kind: "payment",
+          title: settle ? `${name} accepted your settle-up request` : `${name} confirmed your cash`,
+          body: settle ? `${rupees(p.amount)} is on your monthly settle-up.` : `${rupees(p.amount)} received. Payment complete.`,
+          href: `/rides/${ride.id}`,
+          at: p.answeredAt ?? p.at + 1,
+        });
+      }
       if (!s.ratings[ride.id]) {
         notes.push({
           id: `rate-${ride.id}`,
@@ -86,6 +111,25 @@ export function buildNotifications(s: State, nowMin: number | null): Note[] {
         });
       }
     }
+  }
+
+  // Driver side: passengers asking you for a seat or a settle-up.
+  for (const r of s.requests) {
+    const rider = first(r.riderId);
+    const trip = `${placeById[r.segment.from].name} → ${placeById[r.segment.to].name}`;
+    notes.push({
+      id: `request-${r.id}-${r.status}`,
+      kind: "request",
+      title:
+        r.status === "pending"
+          ? r.kind === "seat"
+            ? `${rider} wants ${r.seats > 1 ? `${r.seats} seats` : "a seat"} on your ride`
+            : `${rider} sent a settle-up request`
+          : `You ${r.status} ${rider}'s ${r.kind === "seat" ? "seat" : "settle-up"} request`,
+      body: r.kind === "seat" ? `${trip} · ${rupees(r.amount)}` : `${rupees(r.amount)} for ${r.trip ?? "an earlier ride"}`,
+      href: "/requests",
+      at: r.answeredAt ?? r.at,
+    });
   }
 
   if (s.driver.status === "verified") {

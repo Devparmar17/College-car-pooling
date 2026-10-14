@@ -8,7 +8,6 @@ import { isPlaceId, nearestKm, placeById } from "@/lib/places";
 import { dayLabels, hasLeft, matchSegment, segmentFare } from "@/lib/rides";
 import { allRides, bookingFor, isMine, seatsLeft, useNowMinutes, useStore } from "@/lib/store";
 import { RequestCard } from "../ui/request-card";
-import { matchesFilter, RideFilters, type RideFilter } from "../ui/ride-filters";
 import { SearchForm } from "../ui/search-form";
 import styles from "./find.module.css";
 
@@ -23,7 +22,6 @@ export function FindView() {
 
   const s = useStore();
   const now = useNowMinutes();
-  const [filter, setFilter] = useState<RideFilter>("all");
   const [cheapest, setCheapest] = useState(false);
 
   const matches = allRides(s)
@@ -34,7 +32,6 @@ export function FindView() {
     .filter((m) => !hasLeft(m.ride, m.seg, now) || bookingFor(s, m.ride.id));
 
   const shown = matches
-    .filter(({ ride }) => matchesFilter(ride, filter))
     .sort((a, b) => (cheapest ? segmentFare(a.ride, a.seg) - segmentFare(b.ride, b.seg) : 0));
 
   // Best match: a ride that starts at the rider's own pickup (or home, when searching from anywhere).
@@ -52,7 +49,6 @@ export function FindView() {
     <div className={`${styles.page} stagger`}>
       <aside className={styles.side}>
         <SearchForm key={params.toString()} from={from ?? ""} to={to ?? ""} day={day ?? 0} />
-        <RideFilters value={filter} onChange={setFilter} rides={matches.map((m) => m.ride)} />
       </aside>
 
       <div className={styles.results}>

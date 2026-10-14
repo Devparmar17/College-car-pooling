@@ -1,0 +1,56 @@
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--unigo-black);
+  color: var(--unigo-white);
+  box-shadow: var(--card-shadow);
+  animation: rise-in 360ms var(--ease-out);
+  transition: scale 120ms var(--ease-out);
+}
+
+.banner:active {
+  scale: 0.98;
+}
+
+.faces {
+  display: flex;
+  flex: none;
+}
+
+.faces > * {
+  border: 2px solid var(--unigo-black);
+  border-radius: 50%;
+}
+
+.faces > * + * {
+  margin-left: -10px;
+}
+
+.text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-dark-gray);
+}
+
+.text strong {
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--unigo-white);
+}
+
+.go {
+  flex: none;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--unigo-primary);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--unigo-black);
+}

@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import { rupees } from "@/lib/rides";
-import { earnings, seatsLeft, useHydrated, useStore } from "@/lib/store";
+import { earnings, pendingRequests, seatsLeft, useHydrated, useStore } from "@/lib/store";
 import { RequestCard } from "../ui/request-card";
+import { RequestsBanner } from "../ui/requests-banner";
 import styles from "./earnings.module.css";
 
 export function EarningsView() {
   const s = useStore();
   const hydrated = useHydrated();
-  const { rides, booked, ifFull } = earnings(s);
+  const { rides, booked, ifFull, settleUp } = earnings(s);
 
   return (
     <div className={`${styles.page} stagger`}>
@@ -20,8 +21,16 @@ export function EarningsView() {
           {hydrated && rides.length > 0
             ? `${rupees(ifFull)} if every seat on your ${rides.length} commute${rides.length === 1 ? "" : "s"} fills`
             : "Riders pay you by UPI after each ride"}
+          {hydrated && settleUp > 0 && ` · incl. ${rupees(settleUp)} on monthly settle-up`}
         </span>
       </section>
+
+      <RequestsBanner />
+      {hydrated && s.requests.length > 0 && !pendingRequests(s).length && (
+        <Link href="/requests" className={styles.allRequests}>
+          Ride requests · {s.requests.length} answered →
+        </Link>
+      )}
 
       {hydrated && rides.length > 0 ? (
         <section className={styles.list}>

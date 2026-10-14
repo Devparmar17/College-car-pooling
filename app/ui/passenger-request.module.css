@@ -1,0 +1,183 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  animation: rise-in 360ms var(--ease-out);
+}
+
+.pending {
+  border: 1px solid var(--unigo-primary);
+  box-shadow: 0 0 0 3px var(--unigo-primary-soft);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.who {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.who strong {
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--unigo-black);
+}
+
+.who span {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.who svg {
+  color: var(--unigo-primary);
+}
+
+.head :global(.chip) {
+  flex: none;
+}
+
+.route {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--unigo-extra-light-gray);
+}
+
+/* Pickup and drop-off dots joined by a line. */
+.dots {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+
+.dots::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 4px;
+  width: 2px;
+  background: var(--unigo-dark-gray);
+}
+
+.dots i {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--unigo-primary);
+}
+
+.dots i + i {
+  background: var(--unigo-black);
+}
+
+.places {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--unigo-black);
+}
+
+.places strong {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.amount {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--unigo-text-secondary);
+}
+
+.amount strong {
+  font-size: 20px;
+  line-height: 26px;
+  color: var(--unigo-black);
+}
+
+.meta {
+  font-size: 12px;
+  color: var(--unigo-text-secondary);
+}
+
+.warn {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--unigo-danger-soft);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--unigo-danger);
+  animation: rise-in 220ms var(--ease-out);
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.result span {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 11px;
+  color: var(--unigo-white);
+  animation: pop-in 360ms var(--ease-spring);
+}
+
+.ok {
+  color: var(--unigo-success);
+}
+
+.ok span {
+  background: var(--unigo-success);
+}
+
+.no {
+  color: var(--unigo-text-secondary);
+}
+
+.no span {
+  background: var(--unigo-dark-gray);
+}

@@ -18,6 +18,8 @@ export function TripComplete({ rideId }: { rideId: string }) {
   const ride = findRide(s, rideId);
   const booking = bookingFor(s, rideId);
   const payment = s.payments[rideId];
+  // Cash or a settle-up request the driver hasn't answered yet.
+  const waiting = payment?.status === "pending" || payment?.status === "settle-requested";
 
   if (!hydrated) return <div className={styles.screen} />;
   if (!ride || !booking) {
@@ -117,16 +119,18 @@ export function TripComplete({ rideId }: { rideId: string }) {
         {payment && <RateDriver rideId={ride.id} driver={split.driver} />}
         {payment ? (
           <div className={styles.status} role="status">
-            <span className={styles.statusTick}>✓</span>
+            <span className={`${styles.statusTick} ${waiting ? styles.statusWait : ""}`}>{waiting ? "…" : "✓"}</span>
             <div>
               <strong>
-                {payment.status === "settle-up"
-                  ? `${rupees(payment.amount)} added to monthly settle-up`
-                  : payment.status === "pending"
-                    ? `Waiting for ${first} to confirm cash`
-                    : `Paid ${rupees(payment.amount)} to ${first}`}
+                {payment.status === "settle-requested"
+                  ? `Settle-up request sent to ${first}`
+                  : payment.status === "settle-up"
+                    ? `${first} accepted · ${rupees(payment.amount)} on your monthly settle-up`
+                    : payment.status === "pending"
+                      ? `Waiting for ${first} to confirm cash`
+                      : `Paid ${rupees(payment.amount)} to ${first}`}
               </strong>
-              <span>{methodLabels[payment.method]}</span>
+              <span>{payment.status === "settle-requested" ? "Waiting for them to accept" : methodLabels[payment.method]}</span>
             </div>
             <Link href="/trips" className="btn btn-dark">
               Done

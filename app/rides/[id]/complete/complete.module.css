@@ -319,3 +319,18 @@
     border-radius: 28px;
   }
 }
+
+/* Waiting for the driver to confirm cash or accept a settle-up request. */
+.statusWait {
+  background: var(--unigo-primary-soft);
+  color: var(--unigo-primary-ink);
+  animation: pulse-wait 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse-wait {
+  50% { box-shadow: 0 0 0 6px var(--unigo-primary-soft); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statusWait { animation: none; }
+}

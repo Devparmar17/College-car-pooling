@@ -7,9 +7,14 @@ import { me, myVehicle, prefLabels, type Day, type Pref, type Vehicle } from "@/
 import { isPlaceId, placeById, places, placesAlong, routeKm, suggestedFare, type PlaceId } from "@/lib/places";
 import { dayLabels, rupees } from "@/lib/rides";
 import { actions, useHydrated, useStore } from "@/lib/store";
+import { RequestsBanner } from "../ui/requests-banner";
 import styles from "./offer.module.css";
 
 const allPrefs = Object.keys(prefLabels) as Pref[];
+
+// A fair fuel share for a campus commute; stops typos like ₹10,000.
+const MIN_FARE = 10;
+const MAX_FARE = 500;
 
 const NO_CAR: Vehicle = { kind: "car", model: "", color: "", plate: "" };
 
@@ -43,7 +48,9 @@ export function OfferForm() {
   const vehicle = vehicleEdit ?? (verified ? myVehicle : NO_CAR);
   const maxSeats = vehicle.kind === "bike" ? 1 : 4;
   const seatCount = Math.min(seats, maxSeats);
-  const valid = verified && from !== to && /^\d\d:\d\d$/.test(time) && fare > 0 && vehicle.plate.trim() !== "";
+  const isBike = vehicle.kind === "bike";
+  const fareOk = Number.isFinite(fare) && fare >= MIN_FARE && fare <= MAX_FARE;
+  const valid = verified && from !== to && /^\d\d:\d\d$/.test(time) && fareOk && vehicle.plate.trim() !== "";
 
   function toggle<T>(list: T[], item: T) {
     return list.includes(item) ? list.filter((x) => x !== item) : [...list, item];
@@ -59,14 +66,15 @@ export function OfferForm() {
       seatsTotal: seatCount,
       fare,
       vehicle: { ...vehicle, plate: vehicle.plate.trim().toUpperCase() },
-      prefs,
-      note: note.trim() || undefined,
+      prefs: isBike ? [] : prefs,
+      note: isBike ? undefined : note.trim() || undefined,
     });
     router.push(`/rides/${id}`);
   }
 
   return (
     <form className={`${styles.form} stagger`} onSubmit={submit}>
+      <RequestsBanner />
       {hydrated && !verified && (
         <div className={styles.verify}>
           <div>
@@ -231,12 +239,19 @@ export function OfferForm() {
             </button>
           )}
         </div>
+        {!fareOk && (
+          <p className={styles.error} role="alert">
+            Set a price between {rupees(MIN_FARE)} and {rupees(MAX_FARE)} per seat.
+          </p>
+        )}
         <p className="muted">
           Suggested {rupees(suggested)} covers a fair share of fuel for {km.toFixed(1)} km. Riders joining at a pickup pay
           for the distance they travel.
         </p>
       </section>
 
+      {/* Car preferences (AC, luggage, music…) and the note don't apply to a two-wheeler. */}
+      {!isBike && (
       <section className={`card ${styles.section}`}>
         <h2 className="section-title">Preferences</h2>
         <div className={styles.prefs}>
@@ -263,6 +278,7 @@ export function OfferForm() {
           />
         </label>
       </section>
+      )}
 
       <div className={styles.submit}>
         <button className="btn btn-primary btn-block" disabled={!valid}>

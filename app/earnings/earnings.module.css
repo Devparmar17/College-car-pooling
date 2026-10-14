@@ -94,3 +94,14 @@
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   }
 }
+
+/* Link to past requests once nothing is waiting. */
+.allRequests {
+  align-self: flex-start;
+  padding: 8px 14px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--unigo-black);
+}

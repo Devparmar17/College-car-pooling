@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, type CSSProperties } from "react";
-import { actions, useStore, type Mode } from "@/lib/store";
+import { actions, pendingRequests, useStore, type Mode } from "@/lib/store";
 import styles from "./bottom-nav.module.css";
 
 type Slot = "left" | "middle" | "right";
@@ -28,22 +28,23 @@ const tabsFor: Record<Mode, Tab[]> = {
 /** The mode a page belongs to, or null for pages both modes share (profile, ride details). */
 function modeOf(pathname: string): Mode | null {
   if (pathname === "/" || pathname.startsWith("/find")) return "find";
-  if (pathname.startsWith("/offer") || pathname.startsWith("/earnings")) return "offer";
+  if (pathname.startsWith("/offer") || pathname.startsWith("/earnings") || pathname.startsWith("/requests")) return "offer";
   return null;
 }
 
 function activeSlot(pathname: string | null, mode: Mode): Slot | null {
   if (!pathname) return null;
   if (pathname.startsWith("/profile")) return "right";
-  if (pathname.startsWith("/earnings")) return "middle";
+  if (pathname.startsWith("/earnings") || pathname.startsWith("/requests")) return "middle";
   if (pathname.startsWith("/trips")) return mode === "find" ? "middle" : "right";
   return "left";
 }
 
 export function BottomNav() {
   const pathname = usePathname();
-  const stored = useStore().mode;
-  const mode = modeOf(pathname) ?? stored;
+  const s = useStore();
+  const mode = modeOf(pathname) ?? s.mode;
+  const requests = pendingRequests(s).length;
 
   // Remember the mode of the last mode-specific page, so shared pages keep the same bar.
   useEffect(() => {
@@ -54,14 +55,23 @@ export function BottomNav() {
   // No bar on the login and sign-up screens, or during checkout (trip complete and payment).
   if (pathname.startsWith("/login") || pathname.startsWith("/signup") || /^\/rides\/[^/]+\/(complete|pay)$/.test(pathname)) return null;
 
-  return <NavLinks pathname={pathname} mode={mode} />;
+  return <NavLinks pathname={pathname} mode={mode} requests={requests} />;
 }
 
 /**
  * Figma "Component 10": a floating bottom bar on phones and tablets, a left sidebar with the
  * UniGo brand on wide screens. Rendered without a pathname while the real one is still resolving.
  */
-export function NavLinks({ pathname = null, mode = "find" }: { pathname?: string | null; mode?: Mode }) {
+export function NavLinks({
+  pathname = null,
+  mode = "find",
+  requests = 0,
+}: {
+  pathname?: string | null;
+  mode?: Mode;
+  /** Passenger requests waiting for the driver; badged on Earnings. */
+  requests?: number;
+}) {
   const active = activeSlot(pathname, mode);
   return (
     <nav className={styles.nav} aria-label="Main">
@@ -81,7 +91,7 @@ export function NavLinks({ pathname = null, mode = "find" }: { pathname?: string
             href={t.href}
             className={`${styles.tab} ${styles[`at_${t.slot}`]} ${on ? styles.on : ""}`}
             aria-current={on ? "page" : undefined}
-            aria-label={t.label}
+            aria-label={mode === "offer" && t.slot === "middle" && requests ? `${t.label}, ${requests} new requests` : t.label}
           >
             <span
               className={styles.icon}
@@ -90,6 +100,11 @@ export function NavLinks({ pathname = null, mode = "find" }: { pathname?: string
               aria-hidden
             />
             <span className={styles.label}>{t.label}</span>
+            {mode === "offer" && t.slot === "middle" && requests > 0 && (
+              <span key={requests} className={styles.badge} aria-hidden>
+                {requests}
+              </span>
+            )}
           </Link>
         );
       })}

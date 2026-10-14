@@ -195,3 +195,31 @@
     font-weight: 600;
   }
 }
+
+/* New passenger requests, on the Earnings tab. */
+.badge {
+  position: absolute;
+  top: -6px;
+  left: calc(50% + 6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border: 2px solid var(--unigo-white);
+  border-radius: 999px;
+  background: var(--unigo-danger);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--unigo-white);
+  animation: pop-in 360ms var(--ease-spring);
+}
+
+@media (min-width: 1024px) {
+  .badge {
+    position: static;
+    margin-left: auto;
+  }
+}

@@ -251,7 +251,8 @@
   }
 
   .verify,
-  .submit {
+  .submit,
+  .form > a {
     grid-column: 1 / -1;
   }
 

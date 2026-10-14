@@ -1,0 +1,123 @@
+.tracker {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+}
+
+.steps li {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+
+.steps li:last-child {
+  padding-bottom: 0;
+}
+
+/* The line joining one step to the next. */
+.steps li:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  top: 26px;
+  bottom: 2px;
+  left: 11px;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--unigo-border);
+}
+
+.steps li.done:not(:last-child)::before {
+  background: var(--unigo-success);
+}
+
+.dot {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--unigo-border);
+  border-radius: 50%;
+  background: var(--unigo-white);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--unigo-white);
+  transition: background 240ms, border-color 240ms;
+}
+
+.done .dot {
+  border-color: var(--unigo-success);
+  background: var(--unigo-success);
+  animation: pop-in 360ms var(--ease-spring);
+}
+
+.now .dot {
+  border-color: var(--unigo-primary);
+  background: var(--unigo-primary);
+  color: var(--unigo-black);
+  box-shadow: 0 0 0 0 var(--unigo-primary-soft);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 6px var(--unigo-primary-soft);
+  }
+}
+
+.text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--unigo-text-secondary);
+}
+
+.text strong {
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--unigo-black);
+}
+
+.next .text {
+  opacity: 0.6;
+}
+
+.bar {
+  display: block;
+  height: 6px;
+  margin-top: 8px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--unigo-extra-light-gray);
+}
+
+.bar span {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--unigo-primary);
+  transition: width 1s linear;
+}
+
+.play {
+  border: 1px dashed var(--unigo-dark-gray);
+  background: var(--unigo-white);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .now .dot {
+    animation: none;
+  }
+}
