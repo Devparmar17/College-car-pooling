@@ -76,6 +76,7 @@ export function ConfirmSheet({ driver, vehicle, day, pickup, dropoff, seats, far
             <dt>Seats</dt>
             <dd>
               {seats} × {rupees(fare)}
+              <span>Your share of the fuel</span>
             </dd>
           </div>
           <div className={styles.total}>

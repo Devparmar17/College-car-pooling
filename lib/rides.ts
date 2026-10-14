@@ -1,4 +1,5 @@
 import { me, people, type Day, type Person, type Ride } from "./data";
+import { fuelCost, fuelShare } from "./fare";
 import { driveMinutes, legKm, placeById, routeKm, type PlaceId } from "./places";
 
 const STOP_MINUTES = 2;
@@ -32,12 +33,12 @@ export function segmentKm(ride: Ride, seg: Segment): number {
   return routeKm(segmentStops(ride, seg));
 }
 
-/** Riders joining partway pay for the share of the route they use, in ₹5 steps. */
-export function segmentFare(ride: Ride, seg: Segment): number {
-  const total = routeKm(ride.stops);
-  const part = segmentKm(ride, seg);
-  if (part >= total - 0.1) return ride.fare;
-  return Math.min(ride.fare, Math.max(20, Math.round((ride.fare * part) / total / 5) * 5));
+/**
+ * What one seat costs you: the fuel for the part of the route you ride, split equally between
+ * everyone in the vehicle (the driver, the riders already booked, and your seats).
+ */
+export function segmentFare(ride: Ride, seg: Segment, seats = 1): number {
+  return fuelShare(fuelCost(segmentKm(ride, seg), ride.vehicle.kind), 1 + ride.seatsTaken + seats);
 }
 
 export function toMinutes(hhmm: string): number {

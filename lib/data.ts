@@ -1,4 +1,5 @@
-import { routeKm, suggestedFare, type PlaceId } from "./places";
+import { fuelCost, fuelShare } from "./fare";
+import { routeKm, type PlaceId } from "./places";
 
 export const UNIVERSITY = "Indus University";
 export const UNIVERSITY_DOMAIN = "@indusuni.ac.in";
@@ -58,7 +59,7 @@ export type Ride = {
   daily?: boolean;
   seatsTotal: number;
   seatsTaken: number;
-  /** Per-seat fare for the whole route, in rupees. */
+  /** One person's fuel share for the whole route once every seat is filled, in rupees. */
   fare: number;
   vehicle: Vehicle;
   prefs: Pref[];
@@ -181,10 +182,9 @@ const vehicles = {
   activa: { kind: "bike", model: "Honda Activa", color: "Blue", plate: "GJ 01 TS 7384" },
 } satisfies Record<string, Vehicle>;
 
-type Seed = Omit<Ride, "fare"> & { fare?: number };
-
-function seed(r: Seed): Ride {
-  return { ...r, fare: r.fare ?? suggestedFare(routeKm(r.stops)) };
+/** Nobody sets a price: each seat is an equal share of the route's fuel when the car is full. */
+function seed(r: Omit<Ride, "fare">): Ride {
+  return { ...r, fare: fuelShare(fuelCost(routeKm(r.stops), r.vehicle.kind), 1 + r.seatsTotal) };
 }
 
 export const seedRides: Ride[] = [
@@ -198,7 +198,6 @@ export const seedRides: Ride[] = [
     daily: true,
     seatsTotal: 3,
     seatsTaken: 1,
-    fare: 40,
     vehicle: vehicles.creta,
     prefs: ["ac", "noSmoking"],
     note: "I wait at the ISKCON bus stop, Satellite side.",
@@ -212,7 +211,6 @@ export const seedRides: Ride[] = [
     time: "08:15",
     seatsTotal: 3,
     seatsTaken: 1,
-    fare: 40,
     vehicle: vehicles.city,
     prefs: ["ac", "music"],
   }),
@@ -226,7 +224,6 @@ export const seedRides: Ride[] = [
     daily: true,
     seatsTotal: 3,
     seatsTaken: 1,
-    fare: 45,
     vehicle: vehicles.swift,
     prefs: ["women", "ac"],
   }),
@@ -239,7 +236,6 @@ export const seedRides: Ride[] = [
     time: "08:40",
     seatsTotal: 1,
     seatsTaken: 0,
-    fare: 25,
     vehicle: vehicles.activa,
     prefs: [],
     note: "Spare helmet provided.",
@@ -254,7 +250,6 @@ export const seedRides: Ride[] = [
     daily: true,
     seatsTotal: 4,
     seatsTaken: 2,
-    fare: 45,
     vehicle: vehicles.innova,
     prefs: ["quiet", "noSmoking"],
   }),
@@ -268,7 +263,6 @@ export const seedRides: Ride[] = [
     daily: true,
     seatsTotal: 3,
     seatsTaken: 0,
-    fare: 40,
     vehicle: vehicles.creta,
     prefs: ["ac", "noSmoking"],
   }),
@@ -282,7 +276,6 @@ export const seedRides: Ride[] = [
     daily: true,
     seatsTotal: 3,
     seatsTaken: 2,
-    fare: 45,
     vehicle: vehicles.swift,
     prefs: ["women", "ac"],
   }),
@@ -295,7 +288,6 @@ export const seedRides: Ride[] = [
     time: "17:15",
     seatsTotal: 3,
     seatsTaken: 1,
-    fare: 40,
     vehicle: vehicles.city,
     prefs: ["ac", "music"],
   }),
@@ -309,7 +301,6 @@ export const seedRides: Ride[] = [
     daily: true,
     seatsTotal: 3,
     seatsTaken: 0,
-    fare: 40,
     vehicle: vehicles.creta,
     prefs: ["ac", "noSmoking"],
   }),
@@ -323,7 +314,6 @@ export const seedRides: Ride[] = [
     daily: true,
     seatsTotal: 4,
     seatsTaken: 1,
-    fare: 55,
     vehicle: vehicles.innova,
     prefs: ["quiet", "noSmoking"],
   }),
@@ -336,7 +326,6 @@ export const seedRides: Ride[] = [
     time: "08:30",
     seatsTotal: 1,
     seatsTaken: 0,
-    fare: 30,
     vehicle: vehicles.activa,
     prefs: [],
   }),

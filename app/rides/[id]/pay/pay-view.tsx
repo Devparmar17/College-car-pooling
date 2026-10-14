@@ -38,7 +38,7 @@ export function PayView({ rideId }: { rideId: string }) {
     );
   }
 
-  const split = tripSplit(ride, booking.segment, booking.seats, booking.fare, me.name);
+  const split = tripSplit(ride, booking.segment, booking.seats, me.name);
   const amount = split.youPay;
   const first = split.driver.name.split(" ")[0];
   const walletOk = s.wallet >= amount;

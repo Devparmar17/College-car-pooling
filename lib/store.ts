@@ -4,7 +4,7 @@ import { useSyncExternalStore } from "react";
 import { me, ME_ID, seedRides, type Person, type Ride } from "./data";
 import { placeById } from "./places";
 import type { TripState } from "./trip";
-import { compareRides, dayLabels, formatClock, personById, segmentFare, segmentKm, segmentTimes, type Segment } from "./rides";
+import { compareRides, dayLabels, formatClock, fullSegment, personById, segmentFare, segmentKm, segmentTimes, type Segment } from "./rides";
 
 export type Booking = {
   rideId: string;
@@ -145,7 +145,15 @@ export function hasSession() {
 /** What a first visit starts with: one booked seat (tomorrow's r109), so My commutes isn't empty. */
 const demo: State = {
   ...empty,
-  bookings: [{ rideId: "r109", seats: 1, segment: { from: "iskcon", to: "indus" }, fare: 40, bookedAt: 0 }],
+  bookings: [
+    {
+      rideId: "r109",
+      seats: 1,
+      segment: { from: "iskcon", to: "indus" },
+      fare: segmentFare(seedRides.find((r) => r.id === "r109")!, { from: "iskcon", to: "indus" }),
+      bookedAt: 0,
+    },
+  ],
   messages: {
     r109: [{ from: "driver", text: "Hi Dharam! I'll be at the ISKCON bus stop, Satellite side, by 8:13. White Creta.", at: 0 }],
   },
@@ -169,6 +177,14 @@ function load() {
       const answered = waiting.map(([id, p]) => [id, { ...p, status: p.status === "pending" ? "paid" : "settle-up", answeredAt: Date.now() }]);
       state = { ...state, payments: { ...state.payments, ...Object.fromEntries(answered) } };
     }
+    // Prices are the fuel share (no driver-set fares any more): bring saved bookings in line.
+    state = {
+      ...state,
+      bookings: state.bookings.map((b) => {
+        const ride = findRide(state, b.rideId);
+        return ride ? { ...b, fare: segmentFare(ride, b.segment, b.seats) } : b;
+      }),
+    };
     // Data saved before chat existed: give the demo booking its opening message.
     if (state.bookings.some((b) => b.rideId === "r109") && !state.messages.r109) {
       state = { ...state, messages: { ...state.messages, r109: demo.messages.r109 } };
@@ -238,7 +254,7 @@ function scheduleDemoRequests(rideId: string) {
       riderId,
       seats,
       segment,
-      amount: segmentFare(ride, segment) * seats,
+      amount: segmentFare(ride, segment, seats) * seats,
       trip: kind === "settle-up" ? "Monday's ride" : undefined,
       at: now + DEMO_REQUEST_DELAYS[i],
       status: "pending",
@@ -354,7 +370,8 @@ export function earnings(s: State) {
   const rides = [...s.offered].sort(compareRides);
   // Settle-up requests you accepted are owed to you at the end of the month.
   const settleUp = s.requests.filter((r) => r.kind === "settle-up" && r.status === "accepted").reduce((sum, r) => sum + r.amount, 0);
-  const booked = rides.reduce((sum, r) => sum + r.seatsTaken * r.fare, 0) + settleUp;
+  // Each booked rider pays an equal fuel share among the people now in the car.
+  const booked = rides.reduce((sum, r) => sum + (r.seatsTaken ? r.seatsTaken * segmentFare(r, fullSegment(r), 0) : 0), 0) + settleUp;
   const ifFull = rides.reduce((sum, r) => sum + r.seatsTotal * r.fare, 0) + settleUp;
   return { rides, booked, ifFull, settleUp };
 }
@@ -402,7 +419,16 @@ export const actions = {
   },
   /** One more seat on a ride you've already booked. */
   addSeat(rideId: string) {
-    set((s) => ({ ...s, bookings: s.bookings.map((b) => (b.rideId === rideId ? { ...b, seats: b.seats + 1 } : b)) }));
+    // One more person in the car: everyone's fuel share drops.
+    set((s) => {
+      const ride = findRide(s, rideId);
+      return {
+        ...s,
+        bookings: s.bookings.map((b) =>
+          b.rideId === rideId ? { ...b, seats: b.seats + 1, fare: ride ? segmentFare(ride, b.segment, b.seats + 1) : b.fare } : b,
+        ),
+      };
+    });
   },
   /** Demo: run this booked trip from pickup to drop-off in a few seconds. */
   playTrip(rideId: string) {

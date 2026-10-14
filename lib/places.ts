@@ -91,7 +91,4 @@ export function driveMinutes(km: number): number {
   return Math.max(5, Math.round((km / AVG_SPEED_KMH) * 60));
 }
 
-/** Per-seat fare a driver is nudged towards: fuel split, rounded to ₹5. */
-export function suggestedFare(km: number): number {
-  return Math.max(20, Math.round((km * 3.5) / 5) * 5);
-}
+

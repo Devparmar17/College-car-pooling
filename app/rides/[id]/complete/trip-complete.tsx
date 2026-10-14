@@ -36,7 +36,7 @@ export function TripComplete({ rideId }: { rideId: string }) {
     );
   }
 
-  const split = tripSplit(ride, booking.segment, booking.seats, booking.fare, me.name);
+  const split = tripSplit(ride, booking.segment, booking.seats, me.name);
   const first = split.driver.name.split(" ")[0];
 
   return (

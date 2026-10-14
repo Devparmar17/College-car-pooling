@@ -79,11 +79,12 @@ export function RideDetail({ id }: { id: string }) {
   const driver = personById(ride.driverId)!;
   const { depart, arrive } = segmentTimes(ride, seg);
   const km = segmentKm(ride, seg);
-  const fare = segmentFare(ride, seg);
   const left = seatsLeft(s, ride);
   const gone = hasLeft(ride, seg, now);
   const maxSeats = Math.min(left, 4);
   const seats = Math.max(1, Math.min(wantedSeats, maxSeats));
+  // Each seat is an equal share of the fuel among everyone in the car, so more seats cost less each.
+  const fare = booking ? booking.fare : segmentFare(ride, seg, seats);
   // Seats can be picked on the map while you can still book this ride.
   const canPick = !mine && !booking && !gone && left > 0;
   const times = timetable(ride);
@@ -251,7 +252,7 @@ export function RideDetail({ id }: { id: string }) {
             </div>
             {booking && !gone && left > 0 && booking.seats < 4 && (
               <button type="button" className={styles.addSeat} onClick={() => actions.addSeat(ride.id)}>
-                + Add another seat · {rupees(booking.fare)}
+                + Add another seat · {rupees(segmentFare(ride, seg, booking.seats + 1) * (booking.seats + 1))} total
               </button>
             )}
           </section>

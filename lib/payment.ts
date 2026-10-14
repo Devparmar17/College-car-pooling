@@ -1,4 +1,5 @@
 import type { Ride } from "./data";
+import { FUEL_PER_KM, fuelCost, fuelShare } from "./fare";
 import { personById, segmentKm, segmentTimes, type Segment } from "./rides";
 
 // Demo names for the other riders in the car; the app doesn't track who they are yet.
@@ -20,23 +21,24 @@ const initials = (name: string) =>
     .toUpperCase();
 
 /**
- * Fuel cost shared equally by everyone in the car, driver included. Your share is the
- * per-seat fare, so the trip's fuel cost is that share times the people on board.
+ * The trip's fuel cost (distance × fuel per km) shared equally by everyone in the vehicle,
+ * driver included. Nobody picks the price.
  */
-export function tripSplit(ride: Ride, seg: Segment, seats: number, fare: number, myName: string) {
+export function tripSplit(ride: Ride, seg: Segment, seats: number, myName: string) {
   const driver = personById(ride.driverId)!;
   const offset = ride.id.split("").reduce((n, c) => n + c.charCodeAt(0), 0);
   const others = Array.from({ length: ride.seatsTaken }, (_, i) => CO_RIDERS[(offset + i) % CO_RIDERS.length]);
 
-  const members: SplitMember[] = [
-    { name: "You", initials: initials(myName), amount: fare * seats, role: "you" },
-    { name: driver.name.split(" ")[0], initials: initials(driver.name), amount: fare, role: "driver" },
-    ...others.map((n) => ({ name: n.split(" ")[0], initials: initials(n), amount: fare, role: "rider" as const })),
-  ];
-
   const people = 1 + seats + others.length;
   const km = segmentKm(ride, seg);
-  const fuelCost = fare * people;
+  const fuel = fuelCost(km, ride.vehicle.kind);
+  const share = fuelShare(fuel, people);
+
+  const members: SplitMember[] = [
+    { name: "You", initials: initials(myName), amount: share * seats, role: "you" },
+    { name: driver.name.split(" ")[0], initials: initials(driver.name), amount: share, role: "driver" },
+    ...others.map((n) => ({ name: n.split(" ")[0], initials: initials(n), amount: share, role: "rider" as const })),
+  ];
   const { arrive } = segmentTimes(ride, seg);
 
   return {
@@ -44,9 +46,10 @@ export function tripSplit(ride: Ride, seg: Segment, seats: number, fare: number,
     members,
     people,
     km,
-    fuelCost,
-    perKm: fuelCost / km,
-    youPay: fare * seats,
+    fuelCost: fuel,
+    perKm: FUEL_PER_KM[ride.vehicle.kind],
+    share,
+    youPay: share * seats,
     arrive,
   };
 }
