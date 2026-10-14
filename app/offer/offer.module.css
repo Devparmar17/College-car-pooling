@@ -234,3 +234,28 @@
 .verify {
   animation: rise-in 420ms var(--ease-out);
 }
+
+/* ---------- Layout ---------- */
+@media (min-width: 1024px) {
+  .form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 16px;
+    padding: 30px 0 0;
+  }
+
+  /* The route (with its pickups) runs down the left; the rest stack on the right. */
+  .form > section:first-of-type {
+    grid-row: span 3;
+  }
+
+  .verify,
+  .submit {
+    grid-column: 1 / -1;
+  }
+
+  .submit {
+    bottom: 16px;
+  }
+}

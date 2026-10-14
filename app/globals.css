@@ -38,7 +38,10 @@
   --radius: 16px;
   --radius-sm: 10px;
   --nav-h: 94px;
-  --frame: 402px;
+  /* Phones fill the screen up to this width; see the breakpoints below. */
+  --frame: 480px;
+  /* Room above content for the status bar / notch. */
+  --top-gap: max(65px, calc(env(safe-area-inset-top) + 24px));
   --font: "UniGo Aptos", Aptos, "Segoe UI", system-ui, sans-serif;
   color-scheme: light;
 }
@@ -56,6 +59,9 @@ body {
 }
 
 body {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   background: var(--unigo-white);
   color: var(--unigo-black);
   font-family: var(--font);
@@ -337,5 +343,42 @@ a:active {
     animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- Responsive ---------- */
+
+/* Tablets: a wider single column. */
+@media (min-width: 600px) {
+  :root {
+    --frame: 720px;
+  }
+}
+
+/* Laptops and desktops: sidebar navigation, no bottom bar. */
+@media (min-width: 1024px) {
+  :root {
+    --nav-h: 0px;
+    --top-gap: 40px;
+  }
+}
+
+/* Touch screens: 16px text in fields stops iOS Safari zooming in on focus. */
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  select,
+  textarea {
+    font-size: max(16px, 1em) !important;
+  }
+}
+
+/* Small phones (320–360px): a little less side room. */
+@media (max-width: 359px) {
+  :root {
+    --top-gap: max(48px, calc(env(safe-area-inset-top) + 16px));
+  }
+
+  .section-title {
+    font-size: 15px;
   }
 }

@@ -102,3 +102,15 @@
 .navigate:active {
   scale: 0.95;
 }
+
+@media (min-width: 600px) {
+  .map {
+    height: 300px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .map {
+    height: 380px;
+  }
+}

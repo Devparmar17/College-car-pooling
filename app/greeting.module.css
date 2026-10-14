@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: center;
   gap: 21px;
-  width: min(370px, calc(100% - 32px));
+  width: calc(100% - 32px);
   margin: 30px auto 0;
   padding: 0 4px;
 }
@@ -19,7 +19,6 @@
   flex-direction: column;
   justify-content: center;
   min-width: 0;
-  max-width: 232px;
 }
 
 .hello {
@@ -49,4 +48,24 @@
   border: 0;
   background: none;
   border-radius: 50%;
+}
+
+/* Small phones: give the greeting the room (the bell is decorative). */
+@media (max-width: 359px) {
+  .header {
+    gap: 12px;
+  }
+
+  .hello {
+    font-size: 19px;
+    line-height: 24px;
+  }
+
+  .college {
+    font-size: 12px;
+  }
+
+  .bell {
+    display: none;
+  }
 }

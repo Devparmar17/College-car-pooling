@@ -255,3 +255,35 @@
 .form button:active:not(:disabled) {
   scale: 0.93;
 }
+
+/* ---------- Layout ---------- */
+@media (min-width: 1024px) {
+  .page {
+    min-height: calc(100dvh - 24px);
+    padding-bottom: 0;
+  }
+
+  .header {
+    margin-top: 16px;
+    border: 1px solid var(--unigo-border);
+    border-radius: 20px 20px 0 0;
+  }
+
+  .thread {
+    border-left: 1px solid var(--unigo-border);
+    border-right: 1px solid var(--unigo-border);
+  }
+
+  /* Pinned to the bottom of the conversation instead of the window. */
+  .composer {
+    position: sticky;
+    left: auto;
+    bottom: 0;
+    width: auto;
+    max-width: none;
+    padding: 12px 16px 16px;
+    border: 1px solid var(--unigo-border);
+    border-radius: 0 0 20px 20px;
+    transform: none;
+  }
+}

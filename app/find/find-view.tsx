@@ -50,58 +50,61 @@ export function FindView() {
 
   return (
     <div className={`${styles.page} stagger`}>
-      <SearchForm key={params.toString()} from={from ?? ""} to={to ?? ""} day={day ?? 0} />
+      <aside className={styles.side}>
+        <SearchForm key={params.toString()} from={from ?? ""} to={to ?? ""} day={day ?? 0} />
+        <RideFilters value={filter} onChange={setFilter} rides={matches.map((m) => m.ride)} />
+      </aside>
 
-      <RideFilters value={filter} onChange={setFilter} rides={matches.map((m) => m.ride)} />
-
-      <div className={styles.head}>
-        <h2 aria-live="polite">
-          {shown.length} ride{shown.length === 1 ? "" : "s"}
-          <span>
-            {" "}
-            · {from ? placeById[from].name : "Anywhere"} → {to ? placeById[to].name : "Anywhere"},{" "}
-            {day === undefined ? "any day" : dayLabels[day].toLowerCase()}
-          </span>
-        </h2>
-        <button type="button" onClick={() => setCheapest(!cheapest)} aria-pressed={cheapest}>
-          {cheapest ? "Cheapest first" : "Earliest first"}
-        </button>
-      </div>
-
-      <div className={`${styles.list} stagger`}>
-        {shown.map(({ ride, seg }) => (
-          <RequestCard
-            key={ride.id}
-            ride={ride}
-            segment={seg}
-            seatsLeft={seatsLeft(s, ride)}
-            best={ride.id === best?.ride.id}
-            status={bookingFor(s, ride.id) ? "booked" : undefined}
-          />
-        ))}
-      </div>
-
-      {shown.length === 0 && (
-        <div className={styles.empty}>
-          <h3>No rides {day !== undefined ? dayLabels[day].toLowerCase() : "yet"} on this route</h3>
-          <p>Driving this way yourself? Offer the commute and riders on the way can request a seat.</p>
-          <Link
-            href={`/offer?${new URLSearchParams({ ...(from && { from }), ...(to && { to }), ...(day !== undefined && { day: String(day) }) })}`}
-            className="btn btn-primary"
-          >
-            Offer this commute
-          </Link>
+      <div className={styles.results}>
+        <div className={styles.head}>
+          <h2 aria-live="polite">
+            {shown.length} ride{shown.length === 1 ? "" : "s"}
+            <span>
+              {" "}
+              · {from ? placeById[from].name : "Anywhere"} → {to ? placeById[to].name : "Anywhere"},{" "}
+              {day === undefined ? "any day" : dayLabels[day].toLowerCase()}
+            </span>
+          </h2>
+          <button type="button" onClick={() => setCheapest(!cheapest)} aria-pressed={cheapest}>
+            {cheapest ? "Cheapest first" : "Earliest first"}
+          </button>
         </div>
-      )}
 
-      {elsewhere.length > 0 && (
-        <section className={styles.list}>
-          <h2 className="section-title">Same route, other days</h2>
-          {elsewhere.map((ride) => (
-            <RequestCard key={ride.id} ride={ride} segment={matchSegment(ride, from, to)!} seatsLeft={seatsLeft(s, ride)} />
+        <div className={`${styles.list} stagger`}>
+          {shown.map(({ ride, seg }) => (
+            <RequestCard
+              key={ride.id}
+              ride={ride}
+              segment={seg}
+              seatsLeft={seatsLeft(s, ride)}
+              best={ride.id === best?.ride.id}
+              status={bookingFor(s, ride.id) ? "booked" : undefined}
+            />
           ))}
-        </section>
-      )}
+        </div>
+
+        {shown.length === 0 && (
+          <div className={styles.empty}>
+            <h3>No rides {day !== undefined ? dayLabels[day].toLowerCase() : "yet"} on this route</h3>
+            <p>Driving this way yourself? Offer the commute and riders on the way can request a seat.</p>
+            <Link
+              href={`/offer?${new URLSearchParams({ ...(from && { from }), ...(to && { to }), ...(day !== undefined && { day: String(day) }) })}`}
+              className="btn btn-primary"
+            >
+              Offer this commute
+            </Link>
+          </div>
+        )}
+
+        {elsewhere.length > 0 && (
+          <section className={styles.list}>
+            <h2 className="section-title">Same route, other days</h2>
+            {elsewhere.map((ride) => (
+              <RequestCard key={ride.id} ride={ride} segment={matchSegment(ride, from, to)!} seatsLeft={seatsLeft(s, ride)} />
+            ))}
+          </section>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, type CSSProperties } from "react";
@@ -56,11 +57,21 @@ export function BottomNav() {
   return <NavLinks pathname={pathname} mode={mode} />;
 }
 
-/** Figma "Component 10". Rendered without a pathname while the real one is still resolving. */
+/**
+ * Figma "Component 10": a floating bottom bar on phones and tablets, a left sidebar with the
+ * UniGo brand on wide screens. Rendered without a pathname while the real one is still resolving.
+ */
 export function NavLinks({ pathname = null, mode = "find" }: { pathname?: string | null; mode?: Mode }) {
   const active = activeSlot(pathname, mode);
   return (
     <nav className={styles.nav} aria-label="Main">
+      <Link href={mode === "offer" ? "/offer" : "/"} className={styles.brand} aria-label="UniGo home">
+        <Image src="/figma/unigo-logo.png" alt="" width={26} height={35} />
+        <span>
+          <strong>UniGo</strong>
+          <small>Carpool with your campus</small>
+        </span>
+      </Link>
       {active && <span className={`${styles.highlight} ${styles[active]}`} aria-hidden />}
       {tabsFor[mode].map((t) => {
         const on = t.slot === active;
@@ -78,7 +89,7 @@ export function NavLinks({ pathname = null, mode = "find" }: { pathname?: string
               style={{ "--icon": `url(${t.icon})`, "--size": `${on ? 32 : 26}px` } as CSSProperties}
               aria-hidden
             />
-            {!on && <span className={styles.label}>{t.label}</span>}
+            <span className={styles.label}>{t.label}</span>
           </Link>
         );
       })}

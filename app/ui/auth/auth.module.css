@@ -331,3 +331,32 @@
   20%, 60% { transform: translateX(-4px); }
   40%, 80% { transform: translateX(4px); }
 }
+
+/* ---------- Layout: a centred column on tablets and desktops ---------- */
+@media (min-width: 600px) {
+  .screen {
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .screen {
+    min-height: auto;
+    margin-top: 24px;
+    margin-bottom: 0;
+    padding: 0 32px 32px;
+    border: 1px solid var(--unigo-border);
+    border-radius: 28px;
+    box-shadow: var(--card-shadow);
+  }
+
+  .header {
+    padding-top: 40px;
+  }
+
+  .footer {
+    margin-top: 24px;
+  }
+}

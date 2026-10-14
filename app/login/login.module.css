@@ -114,3 +114,47 @@
     transform: scale(1.08) translate(-1.5%, 1%);
   }
 }
+
+/* ---------- Layout ---------- */
+
+/* Tablets: keep the form a comfortable width. */
+@media (min-width: 600px) {
+  .content {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+}
+
+/* Wide screens: the map fills the left half, the form sits centred on the right. */
+@media (min-width: 1024px) {
+  .screen {
+    display: grid;
+    grid-template-columns: 1fr minmax(380px, 460px);
+    align-items: center;
+    gap: 48px;
+    min-height: 100dvh;
+    margin-bottom: 0;
+    padding: 24px 0;
+  }
+
+  .map {
+    position: relative;
+    inset: auto;
+    height: calc(100dvh - 48px);
+    border-radius: 28px;
+  }
+
+  .mapImage {
+    top: -10%;
+    width: 140%;
+    height: 140%;
+  }
+
+  .fade {
+    background: linear-gradient(to right, rgb(152 152 152 / 0%) 60%, rgb(254 254 254 / 55%));
+  }
+
+  .content {
+    padding: 0;
+  }
+}

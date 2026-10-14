@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: min(357px, calc(100% - 31px));
+  width: 100%;
   font-weight: 600;
   letter-spacing: -0.1px;
   white-space: nowrap;

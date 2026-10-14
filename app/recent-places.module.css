@@ -1,5 +1,5 @@
 .card {
-  width: min(369px, 100%);
+  width: 100%;
   padding: 6px;
   border-radius: 16px;
   background: var(--unigo-extra-light-gray);

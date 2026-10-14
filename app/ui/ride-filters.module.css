@@ -3,7 +3,6 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   width: 100%;
-  max-width: 370px;
 }
 
 .tile {

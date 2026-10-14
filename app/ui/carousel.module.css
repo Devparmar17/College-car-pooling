@@ -42,3 +42,27 @@
 .row {
   animation: fade-in 400ms ease 150ms backwards;
 }
+
+/* Phones and tablets: run to the screen edge past the page padding. */
+.row {
+  margin-right: -16px;
+}
+
+/* Wide screens: no carousel, every request as a full card in a grid. */
+@media (min-width: 1024px) {
+  .row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 16px;
+    margin-right: 0;
+    padding: 0;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .row > * {
+    --focus: 1 !important;
+    width: auto !important;
+    transform: none !important;
+  }
+}

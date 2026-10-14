@@ -67,3 +67,44 @@
   margin-top: 6px;
   font-size: 13px;
 }
+
+.side,
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Tablets and up: results two to a row. */
+@media (min-width: 600px) {
+  .list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+/* Wide screens: search and filters in a sticky left column, results on the right. */
+@media (min-width: 1024px) {
+  .page {
+    display: grid;
+    grid-template-columns: minmax(320px, 380px) 1fr;
+    align-items: start;
+    gap: 32px;
+    padding: 30px 0 0;
+  }
+
+  .side {
+    position: sticky;
+    top: 24px;
+  }
+
+  .list {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+.list > h2 {
+  grid-column: 1 / -1;
+  margin: 0;
+}

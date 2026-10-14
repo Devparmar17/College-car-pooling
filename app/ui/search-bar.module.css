@@ -62,3 +62,21 @@
 .later:active {
   scale: 0.94;
 }
+
+/* Small phones */
+@media (max-width: 359px) {
+  .bar {
+    padding: 0 14px 0 18px;
+  }
+
+  .query {
+    gap: 8px;
+    min-width: 0;
+    font-size: 15px;
+  }
+
+  .query span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

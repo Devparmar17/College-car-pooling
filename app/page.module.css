@@ -8,12 +8,59 @@
   flex-direction: column;
   gap: 20px;
   margin-top: 28px;
-  padding-left: 14px;
+  padding: 0 16px;
 }
 
 .search {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: min(370px, calc(100% - 18px));
+  width: 100%;
+}
+
+/* ---------- Wide screens: search on the left, requests on the right ---------- */
+@media (min-width: 1024px) {
+  .page {
+    display: grid;
+    grid-template-columns: minmax(340px, 400px) 1fr;
+    grid-template-rows: auto auto auto auto 1fr;
+    grid-template-areas:
+      "toggle requests"
+      "greet requests"
+      "search requests"
+      "filters requests"
+      ". requests";
+    column-gap: 40px;
+  }
+
+  .body {
+    display: contents;
+  }
+
+  .page > :nth-child(1) {
+    grid-area: toggle;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .page > :nth-child(2) {
+    grid-area: greet;
+    width: 100%;
+  }
+
+  .body > :nth-child(1) {
+    grid-area: search;
+    margin-top: 28px;
+  }
+
+  .body > :nth-child(2) {
+    grid-area: filters;
+    margin-top: 20px;
+  }
+
+  .body > :nth-child(3) {
+    grid-area: requests;
+    align-self: start;
+    padding-top: var(--top-gap);
+  }
 }

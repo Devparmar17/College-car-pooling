@@ -159,3 +159,60 @@
   border-color: var(--unigo-black);
   color: var(--unigo-black);
 }
+
+/* ---------- Layout ---------- */
+
+/* Phones and tablets: one column, in reading order: card, ride data, then vehicle and account. */
+.side,
+.main {
+  display: contents;
+}
+
+.main > * {
+  order: 1;
+}
+
+.side > :not(:first-child) {
+  order: 2;
+}
+
+/* The wrappers don't draw boxes here, so their children carry the entrance animation. */
+.side > *,
+.main > * {
+  animation: rise-in 420ms var(--ease-out) backwards;
+}
+
+/* Wide screens: two columns, the left one sticky. */
+@media (min-width: 1024px) {
+  .page {
+    display: grid;
+    grid-template-columns: minmax(300px, 360px) 1fr;
+    align-items: start;
+    gap: 28px;
+    padding: 8px 0 0;
+  }
+
+  .side,
+  .main {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .side {
+    position: sticky;
+    top: 24px;
+  }
+
+  .side > *,
+  .main > * {
+    order: 0;
+  }
+}
+
+/* Small phones: stat tiles two to a row. */
+@media (max-width: 359px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

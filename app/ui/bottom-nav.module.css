@@ -100,3 +100,98 @@
 .on .icon {
   animation: pop-in 420ms var(--ease-spring);
 }
+
+/* Phones and tablets: the active tab shows its icon only, as in the Figma bar. */
+.on .label {
+  display: none;
+}
+
+.brand {
+  display: none;
+}
+
+/* ---------- Wide screens: a left sidebar ---------- */
+@media (min-width: 1024px) {
+  .nav {
+    left: 24px;
+    top: 24px;
+    bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 232px;
+    height: auto;
+    padding: 20px 14px;
+    border-radius: 28px;
+    transform: none;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 6px 22px;
+  }
+
+  .brand img {
+    flex: none;
+  }
+
+  .brand span {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+
+  .brand strong {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--unigo-black);
+  }
+
+  .brand small {
+    font-size: 11px;
+    color: var(--unigo-text-secondary);
+  }
+
+  .highlight {
+    display: none;
+  }
+
+  .tab,
+  .on {
+    position: static;
+    flex-direction: row;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    transform: none;
+    transition: background 200ms, color 200ms;
+  }
+
+  .tab:hover {
+    background: var(--unigo-extra-light-gray);
+  }
+
+  .on,
+  .on:hover {
+    background: var(--unigo-primary-soft);
+  }
+
+  .icon {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .label,
+  .on .label {
+    display: block;
+    margin-top: 0;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .on .label {
+    font-weight: 600;
+  }
+}

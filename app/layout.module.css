@@ -6,7 +6,8 @@
   background: var(--unigo-white);
 }
 
-@media (min-width: 440px) {
+/* Tablets: frame the column so it reads as an app. */
+@media (min-width: 600px) and (max-width: 1023px) {
   .frame {
     box-shadow: 0 0 0 1px var(--unigo-border);
   }
@@ -14,6 +15,24 @@
 
 .main {
   padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 12px);
+}
+
+/* Wide screens: content sits right of the sidebar, up to a comfortable reading width. */
+@media (min-width: 1024px) {
+  .frame {
+    max-width: none;
+  }
+
+  /* Only leave room for the sidebar when it is there (login and sign-up have none). */
+  .frame:has(> nav) {
+    padding-left: 280px;
+  }
+
+  .main {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 32px 48px;
+  }
 }
 
 /* Each new page fades in; opacity only, so fixed bars inside pages stay put. */
