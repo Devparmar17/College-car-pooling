@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element -- Figma icon assets render at their native size. */
 import Link from "next/link";
 import { useState } from "react";
-import { recentPlaces } from "@/lib/data";
+import { me, recentPlaces } from "@/lib/data";
 import { BackIcon } from "./ui/icons";
 import styles from "./recent-places.module.css";
 
@@ -11,10 +11,21 @@ const VISIBLE = 2;
 
 type Recent = (typeof recentPlaces)[number];
 
+const CAMPUS = "indus";
+
+/**
+ * A recent place becomes your pickup (From), heading to campus. Campus itself means the
+ * usual commute: from home to campus.
+ */
+function searchFor(place: Recent["place"]) {
+  const from = place === CAMPUS ? me.home : place;
+  return `/find?from=${from}&to=${CAMPUS}`;
+}
+
 function Row({ r, hidden }: { r: Recent; hidden?: boolean }) {
   return (
     <li>
-      <Link href={`/find?to=${r.place}`} className={styles.row} tabIndex={hidden ? -1 : undefined}>
+      <Link href={searchFor(r.place)} className={styles.row} tabIndex={hidden ? -1 : undefined}>
         <span className={styles.icon}>
           <img src="/figma/history.svg" alt="" width={32} height={32} />
         </span>

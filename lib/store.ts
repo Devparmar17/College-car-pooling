@@ -2,7 +2,8 @@
 
 import { useSyncExternalStore } from "react";
 import { me, ME_ID, seedRides, type Person, type Ride } from "./data";
-import { compareRides, segmentKm, type Segment } from "./rides";
+import { placeById } from "./places";
+import { compareRides, dayLabels, formatClock, personById, segmentKm, segmentTimes, type Segment } from "./rides";
 
 export type Booking = {
   rideId: string;
@@ -50,12 +51,15 @@ export type Payment = {
   upiId?: string;
 };
 
+/** Your rating of a driver after a trip. */
+export type Rating = { stars: number; tags: string[]; comment: string; at: number };
+
 /** A login or sign-up waiting for its emailed code. */
 export type Pending =
   | { flow: "login"; email: string }
   | ({ flow: "signup" } & Account);
 
-type State = {
+export type State = {
   bookings: Booking[];
   offered: Ride[];
   /** Last commute mode the rider used; picks the bottom bar's middle tab. */
@@ -70,6 +74,12 @@ type State = {
   wallet: number;
   /** Fuel contributions, per ride. */
   payments: Record<string, Payment>;
+  /** Your ratings of drivers, per ride. */
+  ratings: Record<string, Rating>;
+  /** Notification ids already seen. */
+  notifRead: string[];
+  /** Show ride alerts as system notifications on this device. */
+  alerts: boolean;
   pending: Pending | null;
 };
 
@@ -84,6 +94,9 @@ const empty: State = {
   driver: { licence: null, rc: null, status: "none" },
   wallet: 250,
   payments: {},
+  notifRead: [],
+  alerts: false,
+  ratings: {},
 };
 
 // Demo review time before submitted documents count as verified.
@@ -140,6 +153,26 @@ function set(next: (s: State) => State) {
     // Storage unavailable: keep the in-memory state for this tab.
   }
   listeners.forEach((l) => l());
+}
+
+/**
+ * A system notification for ride alerts, when the rider switched them on and the browser allows it.
+ * Goes through the service worker where there is one (Android Chrome needs that), else the page.
+ */
+async function systemAlert(title: string, body: string, url: string) {
+  if (!state.alerts || typeof Notification === "undefined" || Notification.permission !== "granted") return;
+  const options = { body, icon: "/figma/unigo-logo.png", badge: "/figma/unigo-logo.png", tag: url, data: { url } };
+  try {
+    const reg = await navigator.serviceWorker?.getRegistration();
+    if (reg) return void (await reg.showNotification(title, options));
+    const n = new Notification(title, options);
+    n.onclick = () => {
+      window.focus();
+      window.location.href = url;
+    };
+  } catch {
+    // Notifications blocked or unsupported: the in-app list still has it.
+  }
 }
 
 function subscribe(listener: () => void) {
@@ -258,6 +291,48 @@ export const actions = {
         { ...booking, bookedAt: Date.now() },
       ],
     }));
+    const ride = findRide(state, booking.rideId);
+    const driver = ride && personById(ride.driverId);
+    if (ride && driver) {
+      const { depart } = segmentTimes(ride, booking.segment);
+      void systemAlert(
+        `${booking.seats > 1 ? `${booking.seats} seats` : "Seat"} booked with ${driver.name.split(" ")[0]}`,
+        `${dayLabels[ride.day]}, ${formatClock(depart)} · ${placeById[booking.segment.from].name}`,
+        `/rides/${ride.id}`,
+      );
+    }
+  },
+  /** One more seat on a ride you've already booked. */
+  addSeat(rideId: string) {
+    set((s) => ({ ...s, bookings: s.bookings.map((b) => (b.rideId === rideId ? { ...b, seats: b.seats + 1 } : b)) }));
+  },
+  rate(rideId: string, rating: Omit<Rating, "at">) {
+    set((s) => ({ ...s, ratings: { ...s.ratings, [rideId]: { ...rating, at: Date.now() } } }));
+  },
+  markNotificationsRead(ids: string[]) {
+    set((s) => ({ ...s, notifRead: [...new Set([...s.notifRead, ...ids])] }));
+  },
+  setAlerts(on: boolean) {
+    set((s) => ({ ...s, alerts: on }));
+  },
+  /** Ask the browser for permission, register the service worker, and switch ride alerts on. */
+  async enableAlerts(): Promise<NotificationPermission | "unsupported"> {
+    if (typeof Notification === "undefined") return "unsupported";
+    const permission = Notification.permission === "default" ? await Notification.requestPermission() : Notification.permission;
+    if (permission === "granted") {
+      try {
+        await navigator.serviceWorker?.register("/sw.js");
+        await navigator.serviceWorker?.ready;
+      } catch {
+        // No service worker (e.g. some desktop browsers in private mode): page notifications still work.
+      }
+      set((s) => ({ ...s, alerts: true }));
+    }
+    return permission;
+  },
+  /** A sample alert so the rider can see what ride alerts look like. */
+  testAlert() {
+    void systemAlert("Ride alerts are on", "You'll hear about bookings, messages and payments here.", "/notifications");
   },
   publish(ride: Omit<Ride, "id" | "driverId" | "seatsTaken">): string {
     const id = `m${Date.now().toString(36)}`;
@@ -290,6 +365,11 @@ export const actions = {
       wallet: method === "wallet" ? s.wallet - amount : s.wallet,
       payments: { ...s.payments, [rideId]: { method, amount, at: Date.now(), status, upiId } },
     }));
+    void systemAlert(
+      status === "pending" ? `Hand ₹${amount} to your driver` : status === "settle-up" ? `₹${amount} added to settle-up` : `Paid ₹${amount}`,
+      "Rate your ride while it's fresh.",
+      `/rides/${rideId}/complete`,
+    );
     // Demo: the driver confirms cash a moment later.
     if (method === "cash") {
       window.setTimeout(() => {
@@ -305,6 +385,7 @@ export const actions = {
     set((s) => ({ ...s, driver: { ...s.driver, status: "checking" } }));
     window.setTimeout(() => {
       set((s) => (s.driver.status === "checking" ? { ...s, driver: { ...s.driver, status: "verified" } } : s));
+      void systemAlert("You're a verified driver", "Your licence and RC are approved. You can offer rides now.", "/offer");
     }, REVIEW_MS);
   },
   logout() {

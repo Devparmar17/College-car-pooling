@@ -50,7 +50,7 @@
   border-radius: 50%;
 }
 
-/* Small phones: give the greeting the room (the bell is decorative). */
+/* Small phones: tighter spacing so the greeting and the bell both fit. */
 @media (max-width: 359px) {
   .header {
     gap: 12px;
@@ -65,7 +65,61 @@
     font-size: 12px;
   }
 
-  .bell {
-    display: none;
+  .bell img {
+    width: 38px;
+    height: 38px;
   }
+}
+
+/* Everyday phones (360–420px): a slightly smaller greeting so the name fits. */
+@media (max-width: 420px) {
+  .hello {
+    font-size: 20px;
+    line-height: 26px;
+    letter-spacing: -0.3px;
+  }
+
+  .header {
+    gap: 14px;
+  }
+}
+
+/* Notifications bell */
+.bell {
+  position: relative;
+  transition: scale 120ms var(--ease-out);
+}
+
+.bell:active {
+  scale: 0.92;
+}
+
+@media (hover: hover) {
+  .bell:hover img {
+    animation: bell-ring 600ms ease;
+  }
+}
+
+@keyframes bell-ring {
+  20%, 60% { transform: rotate(-10deg); }
+  40%, 80% { transform: rotate(10deg); }
+}
+
+.badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border: 2px solid var(--unigo-white);
+  border-radius: 999px;
+  background: var(--unigo-primary);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--unigo-black);
+  animation: pop-in 360ms var(--ease-spring);
 }

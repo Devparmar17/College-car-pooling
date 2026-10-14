@@ -15,5 +15,5 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   // Skip Next internals and the files in public/.
-  matcher: ["/((?!_next/|figma/|img/|icons/|favicon.ico).*)"],
+  matcher: ["/((?!_next/|figma/|img/|icons/|favicon.ico|sw.js).*)"],
 };

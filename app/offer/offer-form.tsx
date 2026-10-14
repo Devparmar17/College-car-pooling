@@ -11,6 +11,8 @@ import styles from "./offer.module.css";
 
 const allPrefs = Object.keys(prefLabels) as Pref[];
 
+const NO_CAR: Vehicle = { kind: "car", model: "", color: "", plate: "" };
+
 export function OfferForm() {
   const params = useSearchParams();
   const router = useRouter();
@@ -23,7 +25,8 @@ export function OfferForm() {
   const [skipped, setSkipped] = useState<PlaceId[]>([]);
   const [day, setDay] = useState<Day>([0, 1, 2].includes(dayParam) ? (dayParam as Day) : 1);
   const [time, setTime] = useState("08:00");
-  const [vehicle, setVehicle] = useState<Vehicle>(myVehicle);
+  // Your own edits; until then the form shows the RC-verified car (or nothing before verification).
+  const [vehicleEdit, setVehicle] = useState<Vehicle | null>(null);
   const [seats, setSeats] = useState(3);
   const [fareInput, setFareInput] = useState<string | null>(null);
   const [prefs, setPrefs] = useState<Pref[]>(["noSmoking"]);
@@ -34,11 +37,12 @@ export function OfferForm() {
   const km = from !== to ? routeKm(stops) : 0;
   const suggested = suggestedFare(km);
   const fare = fareInput === null ? suggested : Number(fareInput);
-  const maxSeats = vehicle.kind === "bike" ? 1 : 4;
-  const seatCount = Math.min(seats, maxSeats);
   // Only verified drivers (licence + RC checked on Profile) can publish.
   const verified = useStore().driver.status === "verified";
   const hydrated = useHydrated();
+  const vehicle = vehicleEdit ?? (verified ? myVehicle : NO_CAR);
+  const maxSeats = vehicle.kind === "bike" ? 1 : 4;
+  const seatCount = Math.min(seats, maxSeats);
   const valid = verified && from !== to && /^\d\d:\d\d$/.test(time) && fare > 0 && vehicle.plate.trim() !== "";
 
   function toggle<T>(list: T[], item: T) {
@@ -149,7 +153,7 @@ export function OfferForm() {
                 name="kind"
                 checked={vehicle.kind === k}
                 onChange={() =>
-                  setVehicle(k === "car" ? myVehicle : { kind: "bike", model: "", color: "", plate: "" })
+                  setVehicle(k === "car" ? (verified ? myVehicle : NO_CAR) : { kind: "bike", model: "", color: "", plate: "" })
                 }
               />
               <span>{k === "car" ? "Car" : "Two-wheeler"}</span>

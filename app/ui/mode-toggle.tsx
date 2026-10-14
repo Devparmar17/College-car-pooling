@@ -22,10 +22,10 @@ export function ModeToggle({ active }: { active: "find" | "offer" }) {
           aria-hidden
         />
         <Link href="/" className={styles.option} aria-current={active === "find" ? "page" : undefined}>
-          Find Commute
+          Find a ride
         </Link>
         <Link href="/offer" className={styles.option} aria-current={active === "offer" ? "page" : undefined}>
-          Offer Commute
+          Offer a ride
         </Link>
       </nav>
       {/* eslint-disable-next-line @next/next/no-img-element */}

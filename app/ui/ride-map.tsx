@@ -11,7 +11,8 @@ const TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 const ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 // Keep the pins clear of the Navigate button in the bottom-right corner.
-const FIT: FitBoundsOptions = { paddingTopLeft: [40, 40], paddingBottomRight: [40, 76] };
+// Side room for the pickup and drop-off labels; bottom room for the Navigate button.
+const FIT: FitBoundsOptions = { paddingTopLeft: [110, 50], paddingBottomRight: [110, 76] };
 
 const point = (id: PlaceId): LatLngTuple => [placeById[id].lat, placeById[id].lng];
 
@@ -78,16 +79,35 @@ export function RideMap({ stops, pickup, dropoff, driving }: Props) {
       // A straight dashed guide right away; swapped for the road route once it arrives.
       const guide = L.polyline(pts, { color: "#9a541c", weight: 3, dashArray: "4 8", opacity: 0.7 }).addTo(map);
 
+      // Pickup and drop-off carry a permanent label; stops in between show their name on tap.
+      // Labels face away from each other so they don't collide.
+      const pickupLeft = placeById[pickup].lng < placeById[dropoff].lng;
       stops.forEach((id) => {
-        const kind = id === pickup ? styles.pickup : id === dropoff ? styles.dropoff : styles.stop;
-        const size = id === pickup || id === dropoff ? 18 : 12;
-        L.marker(point(id), {
+        const isPickup = id === pickup;
+        const isDrop = id === dropoff;
+        const kind = isPickup ? styles.pickup : isDrop ? styles.dropoff : styles.stop;
+        const size = isPickup || isDrop ? 18 : 12;
+        const marker = L.marker(point(id), {
           icon: L.divIcon({ className: kind, iconSize: [size, size] }),
           title: placeById[id].name,
           keyboard: false,
-        })
-          .bindTooltip(placeById[id].name, { direction: "top", offset: [0, -8], className: styles.tooltip })
-          .addTo(map!);
+          zIndexOffset: isPickup || isDrop ? 1000 : 0,
+        });
+        if (isPickup || isDrop) {
+          const toLeft = isPickup ? pickupLeft : !pickupLeft;
+          marker.bindTooltip(
+            `<b>${isPickup ? "Pickup" : "Drop-off"}</b>${placeById[id].name}`,
+            {
+              permanent: true,
+              direction: toLeft ? "left" : "right",
+              offset: [toLeft ? -10 : 10, 0],
+              className: `${styles.tag} ${isPickup ? styles.tagPickup : styles.tagDrop}`,
+            },
+          );
+        } else {
+          marker.bindTooltip(placeById[id].name, { direction: "top", offset: [0, -8], className: styles.tooltip });
+        }
+        marker.addTo(map!);
       });
 
       const road = await roadRoute(stops, abort.signal);
@@ -123,6 +143,14 @@ export function RideMap({ stops, pickup, dropoff, driving }: Props) {
         </svg>
         {driving ? "Start navigation" : "Directions to pickup"}
       </a>
+      <div className={styles.legend} aria-hidden>
+        <span>
+          <i className={styles.legendPickup} /> Pickup
+        </span>
+        <span>
+          <i className={styles.legendDrop} /> Drop-off
+        </span>
+      </div>
       {roadDrawn === false && <span className={styles.note}>Showing straight lines · road route unavailable</span>}
     </div>
   );

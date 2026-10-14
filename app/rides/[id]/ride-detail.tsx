@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element -- Figma icon assets render at their native size. */
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { personTitle, prefLabels, UNIVERSITY } from "@/lib/data";
 import { methodLabels } from "@/lib/payment";
 import { isPlaceId, placeById } from "@/lib/places";
@@ -27,6 +27,8 @@ import { Avatar } from "../../ui/avatar";
 import { CarIcon, CheckIcon, ScooterIcon, SeatIcon, StarIcon } from "../../ui/icons";
 import { ContactButtons } from "../../ui/contact-buttons";
 import { RideMap } from "../../ui/ride-map";
+import { RateDriver } from "../../ui/rate-driver";
+import { ConfirmSheet } from "./confirm-sheet";
 import { PageHeader } from "../../ui/page-header";
 import styles from "./ride.module.css";
 
@@ -39,6 +41,8 @@ export function RideDetail({ id }: { id: string }) {
   const [wantedSeats, setSeats] = useState(1);
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [justBooked, setJustBooked] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const closeConfirm = useCallback(() => setConfirming(false), []);
 
   const ride = findRide(s, id);
   if (!ride) {
@@ -74,6 +78,8 @@ export function RideDetail({ id }: { id: string }) {
   const gone = hasLeft(ride, seg, now);
   const maxSeats = Math.min(left, 4);
   const seats = Math.max(1, Math.min(wantedSeats, maxSeats));
+  // Seats can be picked on the map while you can still book this ride.
+  const canPick = !mine && !booking && !gone && left > 0;
   const times = timetable(ride);
   const fromIdx = ride.stops.indexOf(seg.from);
   const toIdx = ride.stops.lastIndexOf(seg.to);
@@ -81,6 +87,7 @@ export function RideDetail({ id }: { id: string }) {
   const back = booking || mine ? "/trips" : `/find?from=${seg.from}&to=${seg.to}&day=${ride.day}`;
 
   function book() {
+    setConfirming(false);
     actions.book({ rideId: ride!.id, seats, segment: seg, fare });
     setJustBooked(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -199,19 +206,49 @@ export function RideDetail({ id }: { id: string }) {
 
           <section className={`card ${styles.seats}`}>
             <h2 className="section-title">Seats</h2>
-            <div className={styles.seatRow}>
+            {canPick && (
+              <p className={styles.seatHint}>Tap seats to book more than one, for friends travelling with you (up to {maxSeats}).</p>
+            )}
+            <div className={styles.seatRow} role={canPick ? "group" : undefined} aria-label={canPick ? "Choose seats" : undefined}>
               {Array.from({ length: ride.seatsTotal }, (_, i) => {
+                const yours = booking?.seats ?? 0;
+                // Seats after the taken and booked ones are open; the first `seats` of those are the current pick.
+                const open = i - ride.seatsTaken - yours;
                 const state =
-                  i < ride.seatsTaken ? "taken" : i < ride.seatsTaken + (booking?.seats ?? 0) ? "yours" : "free";
+                  i < ride.seatsTaken ? "taken" : open < 0 ? "yours" : canPick && open < seats ? "selected" : "free";
+                const label = { taken: "Taken", yours: "You", selected: "Selected", free: "Available" }[state];
+                if (canPick && state !== "taken" && open < maxSeats) {
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      className={`${styles.seat} ${styles[state]}`}
+                      aria-pressed={state === "selected"}
+                      aria-label={`Seat ${i + 1}, ${label}`}
+                      // Tapping a seat books up to it; tapping the last picked seat gives it back.
+                      onClick={() => setSeats(open + 1 === seats ? Math.max(1, open) : open + 1)}
+                    >
+                      <SeatIcon size={22} />
+                      <span>{label}</span>
+                    </button>
+                  );
+                }
                 return (
-                  <span key={i} className={`${styles.seat} ${styles[state]}`} title={state}>
+                  <span key={i} className={`${styles.seat} ${styles[state]}`}>
                     <SeatIcon size={22} />
-                    <span>{state === "yours" ? "You" : state === "taken" ? "Taken" : "Free"}</span>
+                    <span>{label}</span>
                   </span>
                 );
               })}
             </div>
+            {booking && !gone && left > 0 && booking.seats < 4 && (
+              <button type="button" className={styles.addSeat} onClick={() => actions.addSeat(ride.id)}>
+                + Add another seat · {rupees(booking.fare)}
+              </button>
+            )}
           </section>
+
+          {booking && payment && <RateDriver rideId={ride.id} driver={driver} />}
 
           <div className={styles.bar}>
             {mine ? (
@@ -272,7 +309,7 @@ export function RideDetail({ id }: { id: string }) {
                     +
                   </button>
                 </div>
-                <button className={`btn btn-primary ${styles.bookBtn}`} onClick={book}>
+                <button className={`btn btn-primary ${styles.bookBtn}`} onClick={() => setConfirming(true)}>
                   Book {seats > 1 ? `${seats} seats` : "seat"} · <span className="tnum">{rupees(fare * seats)}</span>
                 </button>
               </>
@@ -284,6 +321,19 @@ export function RideDetail({ id }: { id: string }) {
           </div>
         </div>
       </div>
+      {confirming && (
+        <ConfirmSheet
+          driver={driver}
+          vehicle={`${ride.vehicle.model} · ${ride.vehicle.plate}`}
+          day={dayLabels[ride.day]}
+          pickup={{ name: placeById[seg.from].name, time: formatClock(depart) }}
+          dropoff={{ name: placeById[seg.to].name, time: formatClock(arrive) }}
+          seats={seats}
+          fare={fare}
+          onConfirm={book}
+          onClose={closeConfirm}
+        />
+      )}
     </div>
   );
 }

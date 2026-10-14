@@ -1,0 +1,140 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 16px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 16px;
+  background: var(--unigo-white);
+  text-align: center;
+  animation: rise-in 420ms var(--ease-out);
+}
+
+.card h2 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+  color: var(--unigo-black);
+}
+
+.starRow,
+.starsStatic {
+  display: flex;
+  gap: 6px;
+}
+
+.star {
+  display: flex;
+  padding: 2px;
+  border: 0;
+  background: none;
+  color: var(--unigo-light-gray);
+  transition: color 150ms, scale 160ms var(--ease-spring);
+}
+
+.star:active {
+  scale: 0.85;
+}
+
+.lit {
+  color: var(--unigo-primary);
+  scale: 1.08;
+}
+
+.word {
+  min-height: 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--unigo-primary-ink);
+}
+
+.more {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  animation: rise-in 300ms var(--ease-out);
+}
+
+.ask {
+  font-size: 13px;
+  color: var(--unigo-text-secondary);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tag {
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 999px;
+  background: var(--unigo-white);
+  font-size: 13px;
+  color: var(--unigo-black);
+  transition: background 150ms, border-color 150ms, scale 120ms var(--ease-out);
+}
+
+.tag:active {
+  scale: 0.94;
+}
+
+.tag[aria-pressed="true"] {
+  border-color: var(--unigo-primary);
+  background: var(--unigo-primary-soft);
+  color: var(--unigo-primary-ink);
+  font-weight: 600;
+}
+
+.comment {
+  width: 100%;
+  min-height: 72px;
+  padding: 10px 12px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 12px;
+  resize: vertical;
+  font-size: 14px;
+}
+
+.comment:focus-visible {
+  outline: none;
+  border-color: var(--unigo-primary);
+}
+
+.done {
+  background: var(--unigo-primary-soft);
+  border-color: var(--unigo-primary);
+}
+
+.thanks {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--unigo-black);
+}
+
+.litIcon {
+  color: var(--unigo-primary);
+}
+
+.dimIcon {
+  color: var(--unigo-light-gray);
+}
+
+.done .starsStatic {
+  animation: pop-in 420ms var(--ease-spring);
+}
+
+.savedTags {
+  font-size: 12px;
+  color: var(--unigo-primary-ink);
+}
+
+.savedComment {
+  font-size: 13px;
+  color: var(--unigo-text-secondary);
+}

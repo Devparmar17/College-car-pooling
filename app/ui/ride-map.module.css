@@ -114,3 +114,89 @@
     height: 380px;
   }
 }
+
+/* Permanent pickup / drop-off labels on the pins. */
+.tag {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
+  font-family: var(--font);
+  font-size: 12px;
+  line-height: 15px;
+  white-space: nowrap;
+}
+
+.tag b {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+/* Leaflet draws a small arrow with ::before; colour it to match each label. */
+.tagPickup {
+  background: var(--unigo-primary);
+  color: var(--unigo-black);
+}
+
+.tagPickup::before {
+  border-left-color: var(--unigo-primary) !important;
+  border-right-color: var(--unigo-primary) !important;
+}
+
+.tagDrop {
+  background: var(--unigo-black);
+  color: var(--unigo-white);
+}
+
+.tagDrop::before {
+  border-left-color: var(--unigo-black) !important;
+  border-right-color: var(--unigo-black) !important;
+}
+
+/* Key in the top-left corner. */
+.legend {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+  display: flex;
+  gap: 10px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 92%);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 15%);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--unigo-black);
+}
+
+.legend span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend i {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--unigo-white);
+}
+
+.legendPickup {
+  border: 3px solid var(--unigo-primary);
+}
+
+.legendDrop {
+  border: 3px solid var(--unigo-black);
+}
+
+/* The "road route unavailable" note moves below the key. */
+.note {
+  top: 44px;
+}

@@ -1,0 +1,160 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 16px;
+}
+
+.markAll {
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--unigo-primary-ink);
+}
+
+/* Ride alerts */
+.alerts {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--unigo-primary);
+  border-radius: 16px;
+  background: var(--unigo-primary-soft);
+}
+
+.alerts > div:first-child {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-primary-ink);
+}
+
+.alerts strong {
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--unigo-black);
+}
+
+.alerts :global(.btn) {
+  flex: none;
+  height: 38px;
+  padding: 0 16px;
+  font-size: 13px;
+}
+
+.alertActions {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--unigo-primary-ink);
+}
+
+/* List */
+.list {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  border: 1px solid var(--unigo-border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.list li + li {
+  border-top: 1px solid var(--unigo-border);
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  transition: background 150ms;
+}
+
+.item:hover {
+  background: var(--unigo-extra-light-gray);
+}
+
+.unread {
+  background: color-mix(in srgb, var(--unigo-primary-soft) 55%, var(--unigo-white));
+}
+
+.icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--unigo-extra-light-gray);
+  color: var(--unigo-black);
+}
+
+.booking,
+.payment {
+  background: color-mix(in srgb, var(--unigo-success) 14%, var(--unigo-white));
+  color: var(--unigo-success);
+}
+
+.reminder,
+.rating,
+.message {
+  background: var(--unigo-primary-soft);
+  color: var(--unigo-primary-ink);
+}
+
+.text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--unigo-text-secondary);
+}
+
+.text strong {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--unigo-black);
+}
+
+.text time {
+  font-size: 11px;
+  color: var(--unigo-placeholder);
+}
+
+.dot {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--unigo-primary);
+}
+
+@media (min-width: 1024px) {
+  .page {
+    max-width: 720px;
+    padding: 8px 0 0;
+  }
+}

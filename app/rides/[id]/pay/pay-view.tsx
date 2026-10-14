@@ -8,6 +8,7 @@ import { placeById } from "@/lib/places";
 import { dayLabels, formatClock, rupees } from "@/lib/rides";
 import { actions, bookingFor, findRide, useHydrated, useMe, useStore, type PayMethod } from "@/lib/store";
 import { Avatar } from "../../../ui/avatar";
+import { RateDriver } from "../../../ui/rate-driver";
 import styles from "./pay.module.css";
 
 const UPI_ID = /^[a-z0-9._-]{2,}@[a-z]{2,}$/i;
@@ -86,6 +87,11 @@ export function PayView({ rideId }: { rideId: string }) {
                   payment.method === "wallet" ? ` · Wallet balance ${rupees(s.wallet)}` : ""
                 }`}
           </p>
+          {payment.status !== "pending" && (
+            <div className={styles.rateWrap}>
+              <RateDriver rideId={ride.id} driver={split.driver} />
+            </div>
+          )}
           <div className={styles.successActions}>
             <Link href="/trips" className="btn btn-primary btn-block">
               Done

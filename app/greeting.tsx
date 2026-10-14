@@ -3,7 +3,8 @@
 /* eslint-disable @next/next/no-img-element -- Figma icon assets render at their native size. */
 import Link from "next/link";
 import { UNIVERSITY } from "@/lib/data";
-import { useMe, useNowMinutes } from "@/lib/store";
+import { buildNotifications } from "@/lib/notifications";
+import { useHydrated, useMe, useNowMinutes, useStore } from "@/lib/store";
 import { Avatar } from "./ui/avatar";
 import styles from "./greeting.module.css";
 
@@ -16,6 +17,9 @@ function greeting(mins: number | null) {
 export function Greeting() {
   const now = useNowMinutes();
   const me = useMe();
+  const s = useStore();
+  const hydrated = useHydrated();
+  const unread = hydrated ? buildNotifications(s, now).filter((n) => !s.notifRead.includes(n.id)).length : 0;
   return (
     <header className={styles.header}>
       <Link href="/profile" aria-label="Your profile" className={styles.avatar}>
@@ -30,9 +34,10 @@ export function Greeting() {
           {UNIVERSITY} · {me.verified ? `Verified ${me.role.toLowerCase()}` : "Verification pending"}
         </p>
       </div>
-      <span className={styles.bell} aria-hidden>
+      <Link href="/notifications" className={styles.bell} aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"}>
         <img src="/figma/bell.svg" alt="" width={44} height={44} />
-      </span>
+        {unread > 0 && <span className={styles.badge}>{unread > 9 ? "9+" : unread}</span>}
+      </Link>
     </header>
   );
 }

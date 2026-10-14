@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { ModeToggle } from "../ui/mode-toggle";
 import { FindView } from "./find-view";
 
-export const metadata: Metadata = { title: "Find Commute" };
+export const metadata: Metadata = { title: "Find a ride" };
 
 export default function FindPage() {
   return (

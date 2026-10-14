@@ -6,6 +6,7 @@ import { methodLabels, tripSplit } from "@/lib/payment";
 import { placeById } from "@/lib/places";
 import { formatClock, rupees } from "@/lib/rides";
 import { actions, bookingFor, findRide, useHydrated, useMe, useStore } from "@/lib/store";
+import { RateDriver } from "../../../ui/rate-driver";
 import styles from "./complete.module.css";
 
 const SWATCH = ["var(--unigo-dark-gray)", "var(--unigo-extra-light-gray)"];
@@ -113,6 +114,7 @@ export function TripComplete({ rideId }: { rideId: string }) {
       </section>
 
       <div className={styles.actions}>
+        {payment && <RateDriver rideId={ride.id} driver={split.driver} />}
         {payment ? (
           <div className={styles.status} role="status">
             <span className={styles.statusTick}>✓</span>

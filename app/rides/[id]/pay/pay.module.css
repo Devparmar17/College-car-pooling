@@ -342,3 +342,10 @@
     min-height: auto;
   }
 }
+
+/* Rating card on the success screen. */
+.rateWrap {
+  width: 100%;
+  margin-top: 12px;
+  text-align: left;
+}

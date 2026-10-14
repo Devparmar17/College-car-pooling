@@ -11,7 +11,7 @@ const MAX_BYTES = 5 * 1024 * 1024;
 
 const docs = [
   { kind: "licence", title: "Driving licence", hint: "Front side · photo or PDF, up to 5 MB", icon: "/figma/icon-id-card.svg" },
-  { kind: "rc", title: "Vehicle RC", hint: `Registration for ${myVehicle.plate}`, icon: "/figma/icon-car.svg" },
+  { kind: "rc", title: "Vehicle RC", hint: "Registration certificate · photo or PDF, up to 5 MB", icon: "/figma/icon-car.svg" },
 ] as const;
 
 /** Your car plus driver verification: upload the licence and RC, submit, get verified. */
@@ -25,13 +25,23 @@ export function VehicleCard() {
     <section id="driver" className={styles.anchor}>
       <h2 className="section-title">Your vehicle</h2>
       <div className={styles.card}>
+        {/* The car and its number plate come from the RC, so they only show once it is verified. */}
         <div className={styles.vehicle}>
           <CarIcon size={24} />
-          <div>
-            <strong>{myVehicle.model}</strong>
-            <span>{myVehicle.color}</span>
-          </div>
-          <span className={styles.plate}>{myVehicle.plate}</span>
+          {status === "verified" ? (
+            <>
+              <div>
+                <strong>{myVehicle.model}</strong>
+                <span>{myVehicle.color}</span>
+              </div>
+              <span className={styles.plate}>{myVehicle.plate}</span>
+            </>
+          ) : (
+            <div>
+              <strong>No vehicle added yet</strong>
+              <span>Your car and number plate show here once your RC is verified.</span>
+            </div>
+          )}
         </div>
 
         <div className={styles.statusRow}>

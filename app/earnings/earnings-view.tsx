@@ -36,7 +36,7 @@ export function EarningsView() {
             <h3>No commutes offered yet</h3>
             <p>Offer your daily drive to campus and riders on the way can request a seat.</p>
             <Link href="/offer" className="btn btn-primary">
-              Offer Commute
+              Offer a ride
             </Link>
           </div>
         )
