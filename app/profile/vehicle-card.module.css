@@ -1,0 +1,215 @@
+.anchor {
+  scroll-margin-top: 100px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 16px;
+}
+
+.vehicle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vehicle > div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  font-size: 13px;
+  color: var(--unigo-text-secondary);
+}
+
+.vehicle strong {
+  font-size: 15px;
+  color: var(--unigo-black);
+}
+
+.plate {
+  padding: 4px 8px;
+  border: 1.5px solid var(--unigo-black);
+  border-radius: 6px;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.statusRow {
+  display: flex;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--unigo-extra-light-gray);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-text-secondary);
+}
+
+.verified {
+  background: color-mix(in srgb, var(--unigo-success) 12%, var(--unigo-white));
+  font-weight: 600;
+  color: var(--unigo-success);
+}
+
+.checking {
+  background: var(--unigo-primary-soft);
+  color: var(--unigo-primary-ink);
+}
+
+.spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--unigo-primary);
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
+
+.docs {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  border-top: 1px solid var(--unigo-border);
+}
+
+.doc {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.doc + .doc {
+  border-top: 1px solid var(--unigo-border);
+}
+
+.docIcon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--unigo-primary-soft);
+}
+
+.docText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--unigo-dark-gray);
+}
+
+.docText strong {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--unigo-black);
+}
+
+.docText span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.done {
+  color: var(--unigo-primary-ink);
+}
+
+.error {
+  color: var(--unigo-danger);
+}
+
+.upload {
+  flex: none;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--unigo-black);
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--unigo-white);
+}
+
+.upload:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.tick {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--unigo-success);
+  color: var(--unigo-white);
+}
+
+.submit {
+  height: 46px;
+  font-size: 14px;
+}
+
+.note {
+  margin-top: -6px;
+  font-size: 11px;
+  line-height: 14px;
+  text-align: center;
+  color: var(--unigo-text-secondary);
+}
+
+/* Micro-interactions: the badge and ticks pop when verification lands. */
+.verified {
+  animation: pop-in 460ms var(--ease-spring);
+}
+
+.tick {
+  animation: pop-in 420ms var(--ease-spring) 120ms backwards;
+}
+
+.doc + .doc .tick {
+  animation-delay: 240ms;
+}
+
+.done {
+  animation: fade-in 300ms ease;
+}
+
+.upload {
+  transition: opacity 150ms, scale 120ms var(--ease-out);
+}
+
+.upload:active:not(:disabled) {
+  scale: 0.94;
+}

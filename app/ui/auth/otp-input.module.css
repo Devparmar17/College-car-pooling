@@ -1,0 +1,37 @@
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+.digit {
+  flex: 1;
+  min-width: 0;
+  height: 56px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 12px;
+  background: var(--unigo-extra-light-gray);
+  font-family: var(--font-inter), var(--font);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 22px;
+  letter-spacing: -0.2px;
+  text-align: center;
+  color: var(--unigo-black);
+  caret-color: var(--unigo-primary);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.filled {
+  background: var(--unigo-white);
+}
+
+.digit:focus-visible {
+  outline: none;
+  border-color: var(--unigo-primary);
+  background: var(--unigo-white);
+}
+
+/* Each digit pops in as it's typed. */
+.filled {
+  animation: pop-in 260ms var(--ease-spring);
+}

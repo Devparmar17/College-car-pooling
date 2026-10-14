@@ -1,0 +1,236 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 30px 16px 0;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+}
+
+.section > :global(.section-title) {
+  margin: 0;
+}
+
+.error {
+  font-size: 13px;
+  color: var(--unigo-danger);
+}
+
+.pickups {
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pickups legend {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--unigo-text-secondary);
+}
+
+.pickups > p {
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.check input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--unigo-primary-ink);
+  flex: none;
+}
+
+.check > span {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+}
+
+.check strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.plate {
+  font-family: var(--font-geist-mono), monospace;
+  text-transform: uppercase;
+}
+
+.seatsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.seatsRow strong {
+  font-size: 15px;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 999px;
+  background: var(--unigo-extra-light-gray);
+}
+
+.stepper button {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  background: none;
+  font-size: 20px;
+  color: var(--unigo-primary-ink);
+}
+
+.stepper button:disabled {
+  color: var(--unigo-placeholder);
+  cursor: not-allowed;
+}
+
+.stepper span {
+  min-width: 20px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.fareRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rupee {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--unigo-text-secondary);
+}
+
+.fare {
+  width: 110px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.reset {
+  border: 0;
+  background: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--unigo-primary-ink);
+}
+
+.section > p {
+  font-size: 13px;
+}
+
+.prefs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pref {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--unigo-border);
+  background: var(--unigo-extra-light-gray);
+  font-size: 14px;
+  color: var(--unigo-text-secondary);
+}
+
+.pref[aria-pressed="true"] {
+  background: var(--unigo-black);
+  border-color: var(--unigo-black);
+  color: var(--unigo-white);
+}
+
+.submit {
+  position: sticky;
+  bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 8px);
+  padding-top: 4px;
+}
+
+.submit .btn {
+  box-shadow: var(--card-shadow);
+}
+
+/* Shown until the driver's licence and RC are verified. */
+.verify {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--unigo-primary);
+  border-radius: 16px;
+  background: var(--unigo-primary-soft);
+}
+
+.verify > div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-primary-ink);
+}
+
+.verify strong {
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--unigo-black);
+}
+
+.verify :global(.btn) {
+  flex: none;
+  height: 40px;
+  padding: 0 16px;
+  font-size: 13px;
+}
+
+/* Micro-interactions */
+.count {
+  animation: bump 220ms var(--ease-out);
+}
+
+.stepper button,
+.pref {
+  transition: scale 100ms var(--ease-out), background 150ms, border-color 150ms, color 150ms;
+}
+
+.stepper button:active:not(:disabled),
+.pref:active {
+  scale: 0.9;
+}
+
+.pref[aria-pressed="true"] {
+  animation: pop-in 320ms var(--ease-spring);
+}
+
+.verify {
+  animation: rise-in 420ms var(--ease-out);
+}

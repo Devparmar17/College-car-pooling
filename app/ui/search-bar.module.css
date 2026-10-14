@@ -1,0 +1,64 @@
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 54px;
+  padding: 0 30px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 999px;
+}
+
+.query {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 12px;
+  height: 100%;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--unigo-placeholder);
+  white-space: nowrap;
+}
+
+.later {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--unigo-extra-light-gray);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-black);
+}
+
+/* Micro-interactions */
+.bar {
+  transition: border-color 200ms, box-shadow 200ms, scale 120ms var(--ease-out);
+}
+
+.bar:hover {
+  border-color: var(--unigo-primary);
+}
+
+.bar:has(.query:active) {
+  scale: 0.99;
+  box-shadow: 0 0 0 4px var(--unigo-primary-soft);
+}
+
+.query img {
+  transition: transform 300ms var(--ease-spring);
+}
+
+.query:hover img {
+  transform: rotate(-12deg) scale(1.08);
+}
+
+.later {
+  transition: background 150ms, scale 120ms var(--ease-out);
+}
+
+.later:active {
+  scale: 0.94;
+}

@@ -1,0 +1,270 @@
+"use client";
+
+/* eslint-disable @next/next/no-img-element -- Figma icon assets render at their native size. */
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { personTitle, prefLabels, UNIVERSITY } from "@/lib/data";
+import { isPlaceId, placeById } from "@/lib/places";
+import {
+  dayLabels,
+  formatClock,
+  fullSegment,
+  matchSegment,
+  personById,
+  routeName,
+  rupees,
+  segmentFare,
+  segmentKm,
+  segmentStops,
+  segmentTimes,
+  timetable,
+  hasLeft,
+} from "@/lib/rides";
+import { actions, bookingFor, findRide, isMine, seatsLeft, useHydrated, useNowMinutes, useStore } from "@/lib/store";
+import { Avatar } from "../../ui/avatar";
+import { CarIcon, CheckIcon, ScooterIcon, SeatIcon, StarIcon } from "../../ui/icons";
+import { ContactButtons } from "../../ui/contact-buttons";
+import { RideMap } from "../../ui/ride-map";
+import { PageHeader } from "../../ui/page-header";
+import styles from "./ride.module.css";
+
+export function RideDetail({ id }: { id: string }) {
+  const s = useStore();
+  const hydrated = useHydrated();
+  const now = useNowMinutes();
+  const params = useSearchParams();
+  const router = useRouter();
+  const [wantedSeats, setSeats] = useState(1);
+  const [confirmCancel, setConfirmCancel] = useState(false);
+  const [justBooked, setJustBooked] = useState(false);
+
+  const ride = findRide(s, id);
+  if (!ride) {
+    if (!hydrated) return <PageHeader title="Ride" back="/find" />;
+    return (
+      <>
+        <PageHeader title="Ride not found" back="/find" />
+        <div className={`card ${styles.missing}`}>
+          <p>This ride was withdrawn or the link is wrong.</p>
+          <Link href="/find" className="btn btn-primary">
+            Find another ride
+          </Link>
+        </div>
+      </>
+    );
+  }
+
+  const mine = isMine(ride);
+  const booking = bookingFor(s, ride.id);
+  const fromParam = params.get("from");
+  const toParam = params.get("to");
+  const seg =
+    booking?.segment ??
+    matchSegment(ride, isPlaceId(fromParam) ? fromParam : undefined, isPlaceId(toParam) ? toParam : undefined) ??
+    fullSegment(ride);
+  const stops = segmentStops(ride, seg);
+  const driver = personById(ride.driverId)!;
+  const { depart, arrive } = segmentTimes(ride, seg);
+  const km = segmentKm(ride, seg);
+  const fare = segmentFare(ride, seg);
+  const left = seatsLeft(s, ride);
+  const gone = hasLeft(ride, seg, now);
+  const maxSeats = Math.min(left, 4);
+  const seats = Math.max(1, Math.min(wantedSeats, maxSeats));
+  const times = timetable(ride);
+  const fromIdx = ride.stops.indexOf(seg.from);
+  const toIdx = ride.stops.lastIndexOf(seg.to);
+
+  const back = booking || mine ? "/trips" : `/find?from=${seg.from}&to=${seg.to}&day=${ride.day}`;
+
+  function book() {
+    actions.book({ rideId: ride!.id, seats, segment: seg, fare });
+    setJustBooked(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // Only drivers can call a ride off; a booked seat can't be cancelled from the rider side.
+  function withdraw() {
+    if (!confirmCancel) return setConfirmCancel(true);
+    actions.withdraw(ride!.id);
+    router.push("/trips");
+  }
+
+  return (
+    <div className={styles.page}>
+      <PageHeader title={routeName(stops)} back={back} />
+
+      {justBooked && booking && (
+        <div className={styles.banner} role="status">
+          <CheckIcon size={20} />
+          <span>
+            You&apos;re in. Be at <strong>{placeById[seg.from].name}</strong> by{" "}
+            <strong>{formatClock(depart - 2)}</strong>.
+          </span>
+        </div>
+      )}
+
+      <section className={styles.mapSection}>
+        <RideMap stops={ride.stops} pickup={seg.from} dropoff={seg.to} driving={mine} />
+      </section>
+
+      <section className={`card ${styles.summary}`}>
+        <div className={styles.day}>{dayLabels[ride.day]}</div>
+        <div className={`${styles.clock} tnum`}>
+          {formatClock(depart)} <span className="muted">→</span> {formatClock(arrive)}
+        </div>
+        <div className={styles.facts}>
+          <span className="tnum">{km.toFixed(1)} km</span>
+          <span className="tnum">{arrive - depart} min</span>
+          <span className="tnum">{rupees(fare)} per seat</span>
+        </div>
+      </section>
+
+      <section className={`card ${styles.timeline}`}>
+        <h2 className="section-title">Stops</h2>
+        <ol>
+          {times.map(({ place, at }, i) => {
+            const inSeg = i >= fromIdx && i <= toIdx;
+            const tag = i === fromIdx ? "Pickup" : i === toIdx ? "Drop-off" : null;
+            return (
+              <li key={place} className={inSeg ? styles.active : styles.dim}>
+                <span className={`${styles.at} tnum`}>{formatClock(at)}</span>
+                <span className={`${styles.node} ${tag ? styles.nodeEnd : ""}`} aria-hidden />
+                <span className={styles.stop}>
+                  <strong>{placeById[place].name}</strong>
+                  <span className="muted">{placeById[place].area}</span>
+                </span>
+                {tag && !mine && <span className="chip chip-brand">{tag}</span>}
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+
+      <section className={`card ${styles.driver}`}>
+        <Avatar person={driver} size={56} />
+        <div className={styles.driverInfo}>
+          <strong>{mine ? "You're driving" : driver.name}</strong>
+          <span className={styles.rating}>
+            <StarIcon size={13} /> {driver.rating.toFixed(1)} · {driver.ridesShared} rides shared
+          </span>
+          <span className="muted">{personTitle(driver)}</span>
+          {driver.verified && (
+            <span className={styles.verified}>
+              <img src="/figma/verified-small.svg" alt="" width={13.8884} height={13.8875} /> Verified by {UNIVERSITY}
+            </span>
+          )}
+        </div>
+        {!mine && (
+          <Link href={`/people/${driver.id}`} className={styles.profileLink}>
+            Profile
+          </Link>
+        )}
+        {booking && (
+          <div className={styles.contact}>
+            <ContactButtons driver={driver} rideId={ride.id} labelled />
+          </div>
+        )}
+      </section>
+
+      <section className={`card ${styles.vehicle}`}>
+        <div className={styles.vehicleRow}>
+          {ride.vehicle.kind === "bike" ? <ScooterIcon size={24} /> : <CarIcon size={24} />}
+          <div>
+            <strong>{ride.vehicle.model}</strong>
+            <div className="muted">{ride.vehicle.color}</div>
+          </div>
+          <span className={styles.plate}>{ride.vehicle.plate}</span>
+        </div>
+        {ride.prefs.length > 0 && (
+          <div className={styles.prefs}>
+            {ride.prefs.map((p) => (
+              <span key={p} className={`chip ${p === "women" ? "chip-women" : ""}`}>
+                {prefLabels[p]}
+              </span>
+            ))}
+          </div>
+        )}
+        {ride.prefs.includes("women") && !mine && (
+          <p className={styles.notice}>Only women riders can book this ride. The driver checks at pickup.</p>
+        )}
+        {ride.note && <blockquote className={styles.note}>“{ride.note}”</blockquote>}
+      </section>
+
+      <section className={`card ${styles.seats}`}>
+        <h2 className="section-title">Seats</h2>
+        <div className={styles.seatRow}>
+          {Array.from({ length: ride.seatsTotal }, (_, i) => {
+            const state =
+              i < ride.seatsTaken ? "taken" : i < ride.seatsTaken + (booking?.seats ?? 0) ? "yours" : "free";
+            return (
+              <span key={i} className={`${styles.seat} ${styles[state]}`} title={state}>
+                <SeatIcon size={22} />
+                <span>{state === "yours" ? "You" : state === "taken" ? "Taken" : "Free"}</span>
+              </span>
+            );
+          })}
+        </div>
+      </section>
+
+      <div className={styles.bar}>
+        {mine ? (
+          <>
+            <div className={styles.barInfo}>
+              <strong className="tnum">
+                {ride.seatsTaken}/{ride.seatsTotal} booked
+              </strong>
+              <span className="muted">Your ride</span>
+            </div>
+            <button className="btn btn-danger" onClick={withdraw}>
+              {confirmCancel ? "Tap again to withdraw" : "Withdraw ride"}
+            </button>
+          </>
+        ) : booking ? (
+          <>
+            <div className={styles.barInfo}>
+              <strong className="tnum">
+                {booking.seats} seat{booking.seats > 1 ? "s" : ""} · {rupees(booking.fare * booking.seats)}
+              </strong>
+              <span className="muted">Pay {driver.name.split(" ")[0]} by UPI after the ride</span>
+            </div>
+            {/* Riders can't cancel a booked seat; they talk to the driver instead. */}
+            <Link href={`/rides/${ride.id}/chat`} className="btn btn-primary">
+              Chat with {driver.name.split(" ")[0]}
+            </Link>
+          </>
+        ) : gone ? (
+          <button className="btn btn-block" disabled>
+            This ride left at {formatClock(depart)}
+          </button>
+        ) : left > 0 ? (
+          <>
+            <div className={styles.stepper} role="group" aria-label="Seats to book">
+              <button onClick={() => setSeats(Math.max(1, seats - 1))} disabled={seats <= 1} aria-label="One seat fewer">
+                −
+              </button>
+              <span key={seats} className="tnum" aria-live="polite">
+                {seats}
+              </span>
+              <button
+                onClick={() => setSeats(Math.min(maxSeats, seats + 1))}
+                disabled={seats >= maxSeats}
+                aria-label="One seat more"
+              >
+                +
+              </button>
+            </div>
+            <button className={`btn btn-primary ${styles.bookBtn}`} onClick={book}>
+              Book {seats > 1 ? `${seats} seats` : "seat"} · <span className="tnum">{rupees(fare * seats)}</span>
+            </button>
+          </>
+        ) : (
+          <button className="btn btn-block" disabled>
+            This ride is full
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}

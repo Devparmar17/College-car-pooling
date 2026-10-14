@@ -1,0 +1,99 @@
+.history {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.month {
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  color: var(--unigo-text-secondary);
+}
+
+.historyList {
+  list-style: none;
+  border: 1px solid var(--unigo-border);
+  border-radius: 16px;
+}
+
+.historyRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+}
+
+.historyRow + .historyRow {
+  border-top: 1px solid var(--unigo-border);
+}
+
+.day {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 46px;
+  border-radius: 10px;
+  background: var(--unigo-extra-light-gray);
+  font-size: 10px;
+  line-height: 12px;
+  color: var(--unigo-text-secondary);
+}
+
+.day strong {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 20px;
+  color: var(--unigo-black);
+}
+
+.trip {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-text-secondary);
+}
+
+.trip strong {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--unigo-black);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trip > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.amount {
+  flex: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--unigo-black);
+}
+
+.earned {
+  color: var(--unigo-success);
+}
+
+.more {
+  height: 40px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 999px;
+  background: var(--unigo-white);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--unigo-primary-ink);
+}

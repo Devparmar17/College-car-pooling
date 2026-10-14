@@ -1,0 +1,22 @@
+.frame {
+  position: relative;
+  max-width: var(--frame);
+  min-height: 100dvh;
+  margin: 0 auto;
+  background: var(--unigo-white);
+}
+
+@media (min-width: 440px) {
+  .frame {
+    box-shadow: 0 0 0 1px var(--unigo-border);
+  }
+}
+
+.main {
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 12px);
+}
+
+/* Each new page fades in; opacity only, so fixed bars inside pages stay put. */
+.main > * {
+  animation: fade-in 260ms ease backwards;
+}

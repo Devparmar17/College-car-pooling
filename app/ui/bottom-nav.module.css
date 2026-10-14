@@ -1,0 +1,102 @@
+.nav {
+  position: fixed;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: min(367px, calc(100% - 24px));
+  height: 70px;
+  border-radius: 100px;
+  border: 1px solid var(--unigo-border);
+  background: var(--unigo-white);
+  box-shadow: var(--card-shadow);
+  z-index: 20;
+}
+
+.highlight {
+  position: absolute;
+  top: 9px;
+  width: 115px;
+  height: 50px;
+  background: var(--unigo-primary-soft);
+  transform: translateX(-50%);
+}
+
+.left {
+  left: calc(10px + 57.5px);
+  border-radius: 100px 8px 8px 100px;
+}
+
+.middle {
+  left: 50%;
+  border-radius: 8px;
+}
+
+.right {
+  left: calc(100% - 67.5px);
+  border-radius: 8px 100px 100px 8px;
+}
+
+.tab {
+  position: absolute;
+  top: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%);
+  color: var(--unigo-black);
+}
+
+.at_left {
+  left: 68px;
+}
+
+.at_middle {
+  left: 50%;
+}
+
+.at_right {
+  left: calc(100% - 68px);
+}
+
+.on {
+  top: 18px;
+  color: var(--unigo-primary-ink);
+}
+
+/* The Figma icon is the mask, so the same asset renders white or in the active orange. */
+.icon {
+  display: block;
+  width: var(--size);
+  height: var(--size);
+  background: currentColor;
+  mask: var(--icon) center / contain no-repeat;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+}
+
+.label {
+  margin-top: -3px;
+  font-size: 12px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+/* Micro-interactions: the highlight glides to the new tab, the active icon pops. */
+.highlight {
+  transition: left 380ms var(--ease-spring), border-radius 300ms var(--ease-out);
+}
+
+.tab {
+  transition: color 200ms;
+}
+
+.tab:active .icon {
+  scale: 0.88;
+}
+
+.icon {
+  transition: scale 120ms var(--ease-out);
+}
+
+.on .icon {
+  animation: pop-in 420ms var(--ease-spring);
+}

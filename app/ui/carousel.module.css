@@ -1,0 +1,44 @@
+.row {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  overflow-x: auto;
+  /* Room after the last card so it can also come to the front. */
+  padding: 6px calc(100% - 280px) 6px 0;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.row::-webkit-scrollbar {
+  display: none;
+}
+
+.row:focus-visible {
+  outline: none;
+}
+
+.row > * {
+  --focus: 0;
+  scroll-snap-align: start;
+  transform: scale(calc(0.9 + 0.1 * var(--focus)));
+  transform-origin: top center;
+  will-change: transform;
+}
+
+/* Before the script measures anything, the first card is the one in front. */
+.row > :first-child {
+  --focus: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row > * {
+    transform: none;
+  }
+}
+
+/* Arrive with the rest of the Home feed. */
+.row {
+  animation: fade-in 400ms ease 150ms backwards;
+}

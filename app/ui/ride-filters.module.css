@@ -1,0 +1,96 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
+  max-width: 370px;
+}
+
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  height: 74px;
+  padding: 8px 4px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 16px;
+  background: var(--unigo-white);
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+.tile:hover {
+  border-color: var(--unigo-primary);
+}
+
+.tile:active {
+  transform: scale(0.97);
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--unigo-extra-light-gray);
+  color: var(--unigo-black);
+  transition: background 0.15s, color 0.15s;
+}
+
+.label {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-black);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.count {
+  position: absolute;
+  top: 7px;
+  right: 9px;
+  font-size: 11px;
+  line-height: 14px;
+  color: var(--unigo-text-secondary);
+}
+
+/* No rides behind this filter right now: still tappable, but quieter. */
+.empty .icon,
+.empty .label {
+  opacity: 0.45;
+}
+
+.tile[aria-checked="true"] {
+  border-color: var(--unigo-primary);
+  background: var(--unigo-primary-soft);
+}
+
+.tile[aria-checked="true"] .icon {
+  background: var(--unigo-primary);
+  color: var(--unigo-white);
+}
+
+.tile[aria-checked="true"] .label {
+  font-weight: 600;
+  color: var(--unigo-primary-ink);
+}
+
+.tile[aria-checked="true"] .count {
+  color: var(--unigo-primary-ink);
+}
+
+/* Micro-interactions: the picked tile's icon bounces and its count bumps. */
+.tile[aria-checked="true"] .icon {
+  animation: pop-in 420ms var(--ease-spring);
+}
+
+.tile[aria-checked="true"] .count {
+  animation: bump 300ms var(--ease-out);
+}

@@ -1,0 +1,257 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - var(--nav-h) - 12px);
+  padding-bottom: 130px;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 64px;
+  margin-top: 30px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--unigo-border);
+  background: var(--unigo-white);
+}
+
+.back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-left: -8px;
+  border-radius: 50%;
+}
+
+.who {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-text-secondary);
+}
+
+.who strong {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+  color: var(--unigo-black);
+}
+
+.who span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.call {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 50%;
+  color: var(--unigo-black);
+}
+
+.thread {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+
+.notice {
+  align-self: center;
+  margin-bottom: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--unigo-extra-light-gray);
+  font-size: 11px;
+  color: var(--unigo-text-secondary);
+}
+
+.empty {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--unigo-text-secondary);
+}
+
+.bubble {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 80%;
+  padding: 10px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.bubble time {
+  align-self: flex-end;
+  font-size: 10px;
+  line-height: 12px;
+  opacity: 0.7;
+}
+
+.theirs {
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+  background: var(--unigo-extra-light-gray);
+  color: var(--unigo-black);
+}
+
+.mine {
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+  background: var(--unigo-primary);
+  color: var(--unigo-white);
+}
+
+/* Sits above the floating bottom bar, with a white backdrop down to the screen edge. */
+.composer {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: var(--frame);
+  padding: 10px 16px calc(var(--nav-h) + env(safe-area-inset-bottom) + 6px);
+  border-top: 1px solid var(--unigo-border);
+  background: var(--unigo-white);
+  transform: translateX(-50%);
+}
+
+.quick {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.quick button {
+  flex: none;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--unigo-primary);
+  border-radius: 999px;
+  background: var(--unigo-primary-soft);
+  font-size: 12px;
+  color: var(--unigo-primary-ink);
+  white-space: nowrap;
+}
+
+.form {
+  display: flex;
+  gap: 8px;
+}
+
+.form input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 999px;
+  background: var(--unigo-extra-light-gray);
+  font-size: 14px;
+}
+
+.form input:focus-visible {
+  outline: 2px solid var(--unigo-primary);
+  outline-offset: 0;
+}
+
+.form button {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--unigo-black);
+  color: var(--unigo-white);
+}
+
+.form button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.locked {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 94px 16px 0;
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--unigo-extra-light-gray);
+}
+
+.locked h1 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.locked p {
+  font-size: 13px;
+  color: var(--unigo-text-secondary);
+}
+
+.locked .btn {
+  height: 40px;
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+/* New messages slide in from their side. */
+.mine {
+  animation: bubble-in-right 280ms var(--ease-out);
+}
+
+.theirs {
+  animation: bubble-in-left 280ms var(--ease-out);
+}
+
+@keyframes bubble-in-right {
+  from {
+    opacity: 0;
+    transform: translate(16px, 6px) scale(0.96);
+  }
+}
+
+@keyframes bubble-in-left {
+  from {
+    opacity: 0;
+    transform: translate(-16px, 6px) scale(0.96);
+  }
+}
+
+.quick button,
+.form button {
+  transition: scale 120ms var(--ease-out), opacity 150ms;
+}
+
+.quick button:active,
+.form button:active:not(:disabled) {
+  scale: 0.93;
+}

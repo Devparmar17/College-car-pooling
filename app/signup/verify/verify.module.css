@@ -1,0 +1,128 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 22px;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Upload Tile */
+.upload {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 1.5px dashed var(--unigo-primary);
+  border-radius: 16px;
+  background: var(--unigo-white);
+}
+
+.uploaded {
+  border-style: solid;
+  background: var(--unigo-primary-soft);
+}
+
+.uploadIcon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--unigo-primary-soft);
+}
+
+.uploaded .uploadIcon {
+  background: var(--unigo-white);
+}
+
+.uploadText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--unigo-dark-gray);
+}
+
+.uploadText strong {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--unigo-black);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.uploaded .uploadText span {
+  color: var(--unigo-primary-ink);
+}
+
+.uploadButton {
+  flex: none;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--unigo-black);
+  font-size: 14px;
+  line-height: 20px;
+  color: #faf8f6;
+}
+
+.privacy {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--unigo-dark-gray);
+}
+
+.privacy img {
+  flex: none;
+  margin-top: 2px;
+}
+
+/* "Will you also offer rides?" */
+.driver {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  min-height: 70px;
+  padding: 12px 13px;
+  border-radius: 16px;
+  background: var(--unigo-extra-light-gray);
+}
+
+.driver img {
+  flex: none;
+}
+
+.driver > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--unigo-text-secondary);
+}
+
+.driver strong {
+  font-weight: 500;
+  color: var(--unigo-black);
+}
+
+.note {
+  font-size: 12px;
+  line-height: 20px;
+  text-align: center;
+  color: var(--unigo-dark-gray);
+}

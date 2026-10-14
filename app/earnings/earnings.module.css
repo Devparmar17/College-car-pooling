@@ -1,0 +1,72 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 16px;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--unigo-black);
+  color: var(--unigo-white);
+  box-shadow: var(--card-shadow);
+}
+
+.label {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-primary);
+}
+
+.amount {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 40px;
+  letter-spacing: -0.4px;
+}
+
+.sub {
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--unigo-dark-gray);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.list :global(.section-title) {
+  margin: 0;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 20px;
+  border-radius: 10px;
+  background: var(--unigo-extra-light-gray);
+}
+
+.empty h3 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.empty p {
+  font-size: 13px;
+  color: var(--unigo-text-secondary);
+}
+
+.empty .btn {
+  height: 40px;
+  margin-top: 6px;
+  font-size: 13px;
+}

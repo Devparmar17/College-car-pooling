@@ -1,0 +1,52 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 21px;
+  width: min(370px, calc(100% - 32px));
+  margin: 30px auto 0;
+  padding: 0 4px;
+}
+
+.avatar {
+  display: flex;
+  flex: none;
+}
+
+.text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  max-width: 232px;
+}
+
+.hello {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 28px;
+  letter-spacing: -0.2px;
+  color: var(--unigo-black);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.college {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--unigo-text-secondary);
+  white-space: nowrap;
+}
+
+.bell {
+  display: flex;
+  flex: none;
+  border: 0;
+  background: none;
+  border-radius: 50%;
+}

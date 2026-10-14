@@ -1,0 +1,161 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 16px;
+}
+
+.page section > :global(.section-title) {
+  margin-bottom: 10px;
+}
+
+/* Rides completed */
+.total {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: var(--unigo-black);
+  color: var(--unigo-white);
+  box-shadow: var(--card-shadow);
+}
+
+.totalLabel {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-primary);
+}
+
+.total strong {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 40px;
+  letter-spacing: -0.4px;
+}
+
+.totalSub {
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--unigo-dark-gray);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 16px;
+  font-size: 11px;
+  line-height: 14px;
+  color: var(--unigo-text-secondary);
+}
+
+.stat strong {
+  overflow: hidden;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 22px;
+  color: var(--unigo-black);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.accent {
+  border-color: var(--unigo-primary);
+  background: var(--unigo-primary-soft);
+  color: var(--unigo-primary-ink);
+}
+
+.accent strong {
+  color: var(--unigo-primary-ink);
+}
+
+/* Highlights */
+.highlights {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  border-radius: 16px;
+  background: var(--unigo-extra-light-gray);
+}
+
+.highlights li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+}
+
+.highlights li + li {
+  border-top: 1px solid var(--unigo-border);
+}
+
+.highlights li > span:last-child {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-text-secondary);
+}
+
+.highlights strong {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--unigo-black);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hlIcon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--unigo-white);
+}
+
+/* Vehicle and demo data */
+
+.reset {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 16px;
+  font-size: 13px;
+}
+
+.reset > div {
+  flex: 1;
+}
+
+.reset strong {
+  font-size: 15px;
+}
+
+/* Room for the sticky header when jumping to #history. */
+.anchor {
+  scroll-margin-top: 100px;
+}
+
+.logout {
+  border-color: var(--unigo-black);
+  color: var(--unigo-black);
+}

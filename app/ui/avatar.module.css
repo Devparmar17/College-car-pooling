@@ -1,0 +1,16 @@
+.avatar {
+  flex: none;
+  border-radius: 999px;
+  object-fit: cover;
+  background: var(--unigo-extra-light-gray);
+}
+
+.initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--unigo-primary-soft);
+  color: var(--unigo-primary-ink);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}

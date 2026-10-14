@@ -1,0 +1,19 @@
+.page {
+  display: flex;
+  flex-direction: column;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 28px;
+  padding-left: 14px;
+}
+
+.search {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(370px, calc(100% - 18px));
+}

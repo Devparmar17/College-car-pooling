@@ -1,0 +1,333 @@
+/* Shared by the login and sign-up screens (Figma page "yash dev"). */
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  margin-bottom: calc(-1 * (var(--nav-h) + env(safe-area-inset-bottom) + 12px));
+  padding: 0 16px 24px;
+}
+
+.inter {
+  font-family: var(--font-inter), var(--font);
+}
+
+/* Header: back circle, title, step and progress (Frame 33389). */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 74px 1px 11px;
+  background: var(--unigo-white);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+}
+
+.back {
+  display: flex;
+  flex: none;
+  border-radius: 50%;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+  color: var(--unigo-black);
+}
+
+.subtitle {
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--unigo-text-secondary);
+}
+
+.progress {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.progress span {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--unigo-dark-gray);
+}
+
+.progress .done {
+  background: var(--unigo-primary);
+}
+
+/* Fields */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+  color: var(--unigo-black);
+}
+
+.input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0 10px 0 14px;
+  border: 1px solid var(--unigo-light-gray);
+  border-radius: 999px;
+  background: var(--unigo-white);
+  transition: border-color 0.15s;
+}
+
+.input:focus-within {
+  border-color: var(--unigo-primary);
+}
+
+.input img {
+  flex: none;
+}
+
+.input input,
+.input select {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--unigo-black);
+  appearance: none;
+}
+
+.input input:focus-visible,
+.input select:focus-visible {
+  outline: none;
+}
+
+.input input::placeholder {
+  color: var(--unigo-dark-gray);
+}
+
+.input select {
+  cursor: pointer;
+}
+
+.invalid {
+  border-color: var(--unigo-danger);
+}
+
+.domain {
+  flex: none;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: var(--unigo-extra-light-gray);
+  font-family: var(--font-inter), var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--unigo-dark-gray);
+}
+
+.helper {
+  margin-top: -6px;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--unigo-text-secondary);
+}
+
+.error {
+  margin-top: -6px;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--unigo-danger);
+}
+
+/* Buttons */
+.primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 52px;
+  padding: 10px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--unigo-primary);
+  font-size: 16px;
+  line-height: 24px;
+  color: #faf8f6;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.primary:active {
+  transform: scale(0.98);
+}
+
+.primary:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 52px;
+  padding: 10px;
+  border: 1px solid var(--unigo-light-gray);
+  border-radius: 999px;
+  background: var(--unigo-white);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  color: var(--unigo-black);
+}
+
+.or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-inter), var(--font);
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--unigo-text-secondary);
+}
+
+.or::before,
+.or::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--unigo-border);
+}
+
+.link {
+  color: var(--unigo-primary-ink);
+}
+
+.footnote {
+  font-size: 12px;
+  line-height: 20px;
+  text-align: center;
+  color: var(--unigo-text-secondary);
+}
+
+.demoNote {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--unigo-primary-soft);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-primary-ink);
+}
+
+/* Steps on the verify screens */
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stepTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  color: var(--unigo-black);
+}
+
+.stepNumber {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--unigo-black);
+  font-family: var(--font-inter), var(--font);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: #faf8f6;
+}
+
+.stepText {
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--unigo-text-secondary);
+}
+
+.stepText strong {
+  color: var(--unigo-black);
+}
+
+.resend {
+  border: 0;
+  background: none;
+  padding: 0;
+  font-family: var(--font-inter), var(--font);
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--unigo-dark-gray);
+  text-align: left;
+}
+
+.resend strong {
+  font-weight: 600;
+  color: var(--unigo-primary-ink);
+}
+
+/* Bottom action pinned to the screen's foot */
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 24px;
+}
+
+/* Micro-interactions */
+.secondary {
+  transition: border-color 150ms, scale 120ms var(--ease-out);
+}
+
+.secondary:hover {
+  border-color: var(--unigo-primary);
+}
+
+.secondary:active {
+  scale: 0.98;
+}
+
+.back {
+  transition: scale 120ms var(--ease-out);
+}
+
+.back:active {
+  scale: 0.9;
+}
+
+.error {
+  animation: shake 320ms ease;
+}
+
+@keyframes shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}

@@ -1,0 +1,308 @@
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 9px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 16px;
+  background: var(--unigo-white);
+  overflow: hidden;
+}
+
+.best {
+  border-color: var(--unigo-primary);
+}
+
+.compact {
+  flex: none;
+  width: 280px;
+}
+
+.full {
+  opacity: 0.6;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.innerBest {
+  gap: 10px;
+}
+
+.tag {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  padding: 0 5px;
+  border-radius: 6px;
+  background: var(--unigo-primary-soft);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-primary-ink);
+}
+
+.driver {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.driverText {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  padding: 0 5px 0 10px;
+}
+
+.who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.nameRow img {
+  flex: none;
+}
+
+.role {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-text-secondary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.price {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-end;
+  width: 48px;
+}
+
+.fare {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 22px;
+  letter-spacing: -0.2px;
+}
+
+.perSeat {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-text-secondary);
+  white-space: nowrap;
+}
+
+.route {
+  position: relative;
+  height: 56px;
+}
+
+.line {
+  position: absolute;
+  left: 2.85px;
+  top: 12px;
+}
+
+.stop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 7px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.drop {
+  top: 40px;
+  padding-left: 6.5px;
+}
+
+.place {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.place img {
+  flex: none;
+}
+
+.time {
+  flex: none;
+  color: var(--unigo-text-secondary);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.when {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 5px;
+  background: var(--unigo-primary-soft);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-primary-ink);
+  white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.when img {
+  flex: none;
+}
+
+.whenText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.seats {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-black);
+  white-space: nowrap;
+}
+
+.seatIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+}
+
+.action {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 78px;
+  height: 34px;
+  margin-left: auto;
+  border-radius: 999px;
+  background: var(--unigo-black);
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--unigo-white);
+}
+
+.actionBest {
+  background: var(--unigo-primary);
+  font-size: 12px;
+}
+
+/* The button's hit area covers the whole card. */
+.action::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.tagWrap {
+  display: flex;
+}
+
+/*
+ * Spotlight (Home carousel): --focus runs from 0 (a card away) to 1 (in front).
+ * In front the card takes the Figma "best match" look; away it relaxes into the plain card.
+ */
+.spotlight {
+  border-color: color-mix(in srgb, var(--unigo-primary) calc(var(--focus, 1) * 100%), var(--unigo-border));
+}
+
+.spotlight .innerBest {
+  gap: calc(6px + 4px * var(--focus, 1));
+}
+
+.spotlight .tagWrap {
+  max-height: calc(var(--focus, 1) * 24px);
+  margin-bottom: calc((var(--focus, 1) - 1) * 6px);
+  overflow: hidden;
+  opacity: var(--focus, 1);
+}
+
+.spotlight .action {
+  background: color-mix(in srgb, var(--unigo-primary) calc(var(--focus, 1) * 100%), var(--unigo-black));
+}
+
+.tagDot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+/* Invisible link covering a booked card; the contact buttons sit above it. */
+.cover {
+  position: absolute;
+  inset: 0;
+}
+
+/* Micro-interactions. `scale`/`translate` compose with the carousel's own transform. */
+.card {
+  transition: border-color 200ms, box-shadow 200ms, scale 140ms var(--ease-out);
+}
+
+@media (hover: hover) {
+  .card:hover {
+    box-shadow: var(--card-shadow);
+  }
+}
+
+.card:has(.action:active, .cover:active) {
+  scale: 0.985;
+}
+
+.action {
+  transition: background 200ms, scale 120ms var(--ease-out);
+}
+
+.action:active {
+  scale: 0.94;
+}

@@ -1,0 +1,116 @@
+.screen {
+  position: relative;
+  min-height: 100dvh;
+  margin-bottom: calc(-1 * (var(--nav-h) + env(safe-area-inset-bottom) + 12px));
+  padding-bottom: 20px;
+}
+
+/* Map header (402 × 389) fading into the page. */
+.map {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 389px;
+  overflow: hidden;
+}
+
+.mapImage {
+  position: absolute;
+  left: 0;
+  top: -23.11%;
+  width: 174.25%;
+  height: 177.34%;
+  max-width: none;
+  object-fit: cover;
+}
+
+.fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgb(152 152 152 / 0%), #fefefe);
+}
+
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 404px 16px 0;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.brand {
+  display: flex;
+  align-items: flex-start;
+  gap: 1px;
+}
+
+.brand img {
+  flex: none;
+  object-fit: cover;
+}
+
+.brandName {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  color: var(--unigo-black);
+}
+
+.brandTag {
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--unigo-dark-gray);
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  max-width: 100%;
+  padding: 5px 10px;
+  border: 1px solid var(--unigo-light-gray);
+  border-radius: 16px;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--unigo-black);
+}
+
+.badge img {
+  flex: none;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.foot {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: -10px;
+  font-size: 12px;
+  line-height: 20px;
+  text-align: center;
+  color: var(--unigo-text-secondary);
+}
+
+/* A slow drift on the map header. */
+.mapImage {
+  animation: drift 16s ease-in-out infinite alternate;
+  transform-origin: 40% 40%;
+}
+
+@keyframes drift {
+  to {
+    transform: scale(1.08) translate(-1.5%, 1%);
+  }
+}

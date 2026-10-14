@@ -1,0 +1,157 @@
+/* Total run: about 1.8 s, then the layer is gone (hidden and click-through). */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 50% 42%, var(--unigo-primary-soft) 0, transparent 55%),
+    var(--unigo-white);
+  animation: leave 420ms cubic-bezier(0.4, 0, 0.2, 1) 1400ms forwards;
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logoWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+}
+
+.logo {
+  position: relative;
+  object-fit: contain;
+  animation: pop 650ms cubic-bezier(0.34, 1.56, 0.64, 1) 80ms both;
+}
+
+.ripple {
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--unigo-primary);
+  border-radius: 50%;
+  opacity: 0;
+  animation: ripple 900ms cubic-bezier(0.2, 0.8, 0.2, 1) 380ms both;
+}
+
+.ripple2 {
+  animation-delay: 560ms;
+}
+
+.name {
+  display: flex;
+  margin-top: 14px;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 36px;
+  letter-spacing: -0.5px;
+  color: var(--unigo-black);
+}
+
+.name span {
+  display: inline-block;
+  animation: rise 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.tag {
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--unigo-text-secondary);
+  animation: fade 400ms ease 820ms both;
+}
+
+.bar {
+  position: relative;
+  width: 96px;
+  height: 3px;
+  margin-top: 22px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--unigo-extra-light-gray);
+  animation: fade 300ms ease 700ms both;
+}
+
+.bar span {
+  position: absolute;
+  inset: 0;
+  border-radius: 2px;
+  background: var(--unigo-primary);
+  transform-origin: left;
+  animation: load 700ms cubic-bezier(0.4, 0, 0.2, 1) 760ms both;
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4) rotate(-8deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes ripple {
+  from {
+    opacity: 0.7;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes load {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes leave {
+  to {
+    opacity: 0;
+    transform: scale(1.04);
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+/* Reduced motion: no splash at all. */
+@media (prefers-reduced-motion: reduce) {
+  .splash {
+    display: none;
+  }
+}

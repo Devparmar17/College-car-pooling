@@ -1,0 +1,35 @@
+.requests {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(357px, calc(100% - 31px));
+  font-weight: 600;
+  letter-spacing: -0.1px;
+  white-space: nowrap;
+}
+
+.head h2 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+  color: var(--unigo-black);
+}
+
+.head a {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-primary-ink);
+}
+
+
+.empty {
+  padding-right: 14px;
+  font-size: 13px;
+  color: var(--unigo-text-secondary);
+}

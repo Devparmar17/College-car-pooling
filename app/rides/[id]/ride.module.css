@@ -1,0 +1,406 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 84px;
+}
+
+.page > section,
+.banner,
+.missing {
+  margin: 0 16px;
+}
+
+.missing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px;
+}
+
+.banner {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--unigo-primary-soft);
+  color: var(--unigo-primary-ink);
+  font-size: 14px;
+}
+
+.banner span {
+  color: var(--unigo-black);
+}
+
+.summary {
+  padding: 16px;
+}
+
+.day {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--unigo-primary-ink);
+}
+
+.clock {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.facts {
+  display: flex;
+  gap: 16px;
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--unigo-text-secondary);
+}
+
+.facts span + span::before {
+  content: "·";
+  margin-right: 16px;
+  color: var(--unigo-placeholder);
+}
+
+.timeline {
+  padding: 16px 16px 8px;
+}
+
+.timeline ol {
+  list-style: none;
+}
+
+.timeline li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 68px 20px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.timeline li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: calc(68px + 8px + 9px);
+  top: 30px;
+  bottom: -10px;
+  border-left: 2px solid var(--unigo-border);
+}
+
+.timeline li.active:not(:last-child)::after {
+  border-color: var(--unigo-primary);
+}
+
+.dim {
+  opacity: 0.5;
+}
+
+.at {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--unigo-text-secondary);
+}
+
+.node {
+  justify-self: center;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--unigo-placeholder);
+  background: var(--unigo-white);
+  z-index: 1;
+}
+
+.active .node {
+  border-color: var(--unigo-primary);
+}
+
+.nodeEnd {
+  width: 14px;
+  height: 14px;
+  background: var(--unigo-primary);
+  border-color: var(--unigo-primary);
+}
+
+.stop {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  min-width: 0;
+}
+
+.stop strong {
+  font-size: 15px;
+}
+
+.driver {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+}
+
+.driverInfo {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+}
+
+.driverInfo strong {
+  font-size: 16px;
+}
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--unigo-text-secondary);
+}
+
+.rating svg {
+  color: var(--unigo-primary);
+}
+
+.verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  color: var(--unigo-success);
+  font-weight: 500;
+}
+
+.profileLink {
+  align-self: flex-start;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--unigo-primary-ink);
+}
+
+.vehicle {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.vehicleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.vehicleRow strong {
+  font-size: 15px;
+}
+
+.vehicleRow > div {
+  flex: 1;
+}
+
+.plate {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1.5px solid var(--unigo-black);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.prefs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.notice {
+  font-size: 13px;
+  color: var(--unigo-primary-ink);
+}
+
+.note {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--unigo-extra-light-gray);
+  font-size: 14px;
+  color: var(--unigo-text-secondary);
+}
+
+.seats {
+  padding: 16px;
+}
+
+.seatRow {
+  display: flex;
+  gap: 10px;
+}
+
+.seat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 58px;
+  padding: 10px 0 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.taken {
+  background: var(--unigo-extra-light-gray);
+  color: var(--unigo-placeholder);
+}
+
+.yours {
+  background: var(--unigo-primary);
+  color: var(--unigo-white);
+}
+
+.free {
+  border: 1.5px dashed var(--unigo-border);
+  color: var(--unigo-primary-ink);
+}
+
+.bar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  width: 100%;
+  max-width: var(--frame);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px calc(var(--nav-h) + env(safe-area-inset-bottom) + 8px);
+  background: var(--unigo-white);
+  border-top: 1px solid var(--unigo-border);
+  z-index: 15;
+}
+
+.barInfo {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+}
+
+.barInfo strong {
+  font-size: 16px;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 999px;
+  background: var(--unigo-extra-light-gray);
+}
+
+.stepper button {
+  width: 40px;
+  height: 46px;
+  border: 0;
+  background: none;
+  font-size: 20px;
+  color: var(--unigo-primary-ink);
+}
+
+.stepper button:disabled {
+  color: var(--unigo-placeholder);
+  cursor: not-allowed;
+}
+
+.stepper span {
+  min-width: 18px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.bookBtn {
+  flex: 1;
+}
+
+.contact {
+  display: flex;
+  flex-basis: 100%;
+  padding-top: 14px;
+  border-top: 1px solid var(--unigo-border);
+}
+
+.mapSection {
+  margin: 0 16px;
+}
+
+/* Motion: sections rise in turn (the fixed bar is left alone), the booking banner drops in
+   with its tick drawing itself, your seat pops and the seat count bumps. */
+.page > section {
+  animation: rise-in 420ms var(--ease-out) backwards;
+}
+
+.page > section:nth-of-type(2) { animation-delay: 60ms; }
+.page > section:nth-of-type(3) { animation-delay: 120ms; }
+.page > section:nth-of-type(4) { animation-delay: 180ms; }
+.page > section:nth-of-type(5) { animation-delay: 240ms; }
+.page > section:nth-of-type(n + 6) { animation-delay: 300ms; }
+
+.banner {
+  animation: banner-in 420ms var(--ease-spring);
+}
+
+@keyframes banner-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.97);
+  }
+}
+
+.banner svg path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: draw 420ms var(--ease-out) 200ms forwards;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.yours {
+  animation: pop-in 420ms var(--ease-spring);
+}
+
+.stepper span {
+  animation: bump 220ms var(--ease-out);
+}
+
+.stepper button {
+  transition: scale 100ms var(--ease-out);
+}
+
+.stepper button:active:not(:disabled) {
+  scale: 0.85;
+}
+
+.bar {
+  animation: bar-up 360ms var(--ease-out) 150ms backwards;
+}
+
+@keyframes bar-up {
+  from {
+    transform: translate(-50%, 100%);
+  }
+}
