@@ -48,6 +48,8 @@ export function OfferForm() {
   const people = 1 + seatCount;
   const fare = fuelShare(fuel, people);
   const valid = !!vehicle && from !== to && /^\d\d:\d\d$/.test(time);
+  // Unverified drivers see the form but can't touch it (on the server render too).
+  const locked = !hydrated || !verified;
 
   function toggle<T>(list: T[], item: T) {
     return list.includes(item) ? list.filter((x) => x !== item) : [...list, item];
@@ -83,6 +85,8 @@ export function OfferForm() {
           </Link>
         </div>
       )}
+      {/* Everything stays locked until the licence and RC are verified. */}
+      <fieldset className={styles.lockable} disabled={locked}>
       <section className={`card ${styles.section}`}>
         <h2 className="section-title">Route</h2>
         <label className="field">
@@ -260,6 +264,7 @@ export function OfferForm() {
         </label>
       </section>
       )}
+      </fieldset>
 
       <div className={styles.submit}>
         <button className="btn btn-primary btn-block" disabled={!valid}>

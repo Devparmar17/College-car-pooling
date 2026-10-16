@@ -350,3 +350,17 @@
     bottom: 16px;
   }
 }
+
+/* Locked until the driving licence and RC are verified. The fieldset adds no box of its own,
+   so the grid layout above still sees the sections. */
+.lockable {
+  display: contents;
+}
+
+.lockable:disabled > section {
+  opacity: 0.45;
+  filter: grayscale(0.6);
+  pointer-events: none;
+  user-select: none;
+  transition: opacity 300ms, filter 300ms;
+}

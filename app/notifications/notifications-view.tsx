@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSyncExternalStore, useState, type ComponentType } from "react";
 import { buildNotifications, noteTime, type NoteKind } from "@/lib/notifications";
 import { actions, useHydrated, useNowMinutes, useStore } from "@/lib/store";
-import { CarIcon, ChatIcon, CheckIcon, ClockIcon, RupeeIcon, SeatIcon, ShieldIcon, StarIcon } from "../ui/icons";
+import { CarIcon, ChatIcon, CheckIcon, ClockIcon, CloseIcon, RupeeIcon, SeatIcon, ShieldIcon, StarIcon } from "../ui/icons";
 import { PageHeader } from "../ui/page-header";
 import styles from "./notifications.module.css";
 
@@ -18,6 +18,7 @@ const ICONS: Record<NoteKind, ComponentType<{ size?: number }>> = {
   match: CarIcon,
   welcome: CarIcon,
   request: SeatIcon,
+  cancel: CloseIcon,
 };
 
 type Permission = NotificationPermission | "unsupported";

@@ -17,6 +17,11 @@ export function FindView() {
   const toParam = params.get("to");
   const from = isPlaceId(fromParam) ? fromParam : undefined;
   const to = isPlaceId(toParam) ? toParam : undefined;
+  // A place typed near a pickup point ("Bodakdev", 1.1 km from Vastrapur Lake), to show it back.
+  const fromName = from ? params.get("fromName") ?? undefined : undefined;
+  const toName = to ? params.get("toName") ?? undefined : undefined;
+  const fromKm = Number(params.get("fromKm")) || undefined;
+  const toKm = Number(params.get("toKm")) || undefined;
   const dayParam = Number(params.get("day"));
   const day = params.has("day") && [0, 1, 2].includes(dayParam) ? (dayParam as Day) : undefined;
 
@@ -48,7 +53,12 @@ export function FindView() {
   return (
     <div className={`${styles.page} stagger`}>
       <aside className={styles.side}>
-        <SearchForm key={params.toString()} from={from ?? ""} to={to ?? ""} day={day ?? 0} />
+        <SearchForm
+          key={params.toString()}
+          from={from && { pickup: from, name: fromName, km: fromKm }}
+          to={to && { pickup: to, name: toName, km: toKm }}
+          day={day ?? 0}
+        />
       </aside>
 
       <div className={styles.results}>
@@ -57,7 +67,8 @@ export function FindView() {
             {shown.length} ride{shown.length === 1 ? "" : "s"}
             <span>
               {" "}
-              · {from ? placeById[from].name : "Anywhere"} → {to ? placeById[to].name : "Anywhere"},{" "}
+              · {from ? (fromName ? `${fromName} (via ${placeById[from].name})` : placeById[from].name) : "Anywhere"} →{" "}
+              {to ? (toName ? `${toName} (via ${placeById[to].name})` : placeById[to].name) : "Anywhere"},{" "}
               {day === undefined ? "any day" : dayLabels[day].toLowerCase()}
             </span>
           </h2>

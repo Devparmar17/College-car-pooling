@@ -1,51 +1,75 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element -- Figma icon assets render at their native size. */
-import { useState } from "react";
+
+import { useState, type FormEvent } from "react";
 import type { Day } from "@/lib/data";
-import { places, type PlaceId } from "@/lib/places";
+import { pickupMatches, type Match } from "@/lib/geo";
+import type { PlaceId } from "@/lib/places";
 import { dayLabels } from "@/lib/rides";
 import { SwapIcon } from "./icons";
+import { PlaceInput, placeValue, type PlaceValue } from "./place-input";
 import styles from "./search-form.module.css";
 
+/** A place from the URL: the pickup point, or the place typed near it ("Bodakdev", 1.1 km). */
+export type PlaceParam = { pickup: PlaceId; name?: string; km?: number };
+
 type Props = {
-  from?: PlaceId | "";
-  to?: PlaceId | "";
+  from?: PlaceParam;
+  to?: PlaceParam;
   day?: Day;
 };
 
-export function SearchForm({ from = "", to = "", day = 0 }: Props) {
-  const [a, setA] = useState<string>(from);
-  const [b, setB] = useState<string>(to);
+function initial(p?: PlaceParam): PlaceValue {
+  if (!p) return placeValue(null);
+  const point = pickupMatches.find((m) => m.pickup === p.pickup)!;
+  const picked: Match = p.name ? { ...point, name: p.name, area: "", km: p.km ?? 0, isPickup: false } : point;
+  return placeValue(picked);
+}
+
+export function SearchForm({ from, to, day = 0 }: Props) {
+  const [a, setA] = useState(() => initial(from));
+  const [b, setB] = useState(() => initial(to));
+  const [errors, setErrors] = useState<{ from?: string; to?: string }>({});
+
+  // Text typed but not picked from the list can't be searched yet.
+  function submit(e: FormEvent) {
+    const next = {
+      from: a.text.trim() && !a.picked ? "Pick a place from the list" : undefined,
+      to: b.text.trim() && !b.picked ? "Pick a place from the list" : undefined,
+    };
+    const same = a.picked && b.picked && a.picked.pickup === b.picked.pickup;
+    if (same) next.to = "This is near the same pickup point as From. Choose somewhere further.";
+    setErrors(next);
+    if (next.from || next.to) e.preventDefault();
+  }
 
   return (
-    <form action="/find" className={styles.form}>
+    <form action="/find" className={styles.form} onSubmit={submit}>
       <div className={styles.places}>
         <img src="/figma/route-line.svg" alt="" width={20.9677} height={32} className={styles.line} />
-        <label className={styles.place}>
-          <img src="/figma/pickup-dot.svg" alt="" width={13} height={13} />
-          <span className={styles.label}>From</span>
-          <select name="from" value={a} onChange={(e) => setA(e.target.value)}>
-            <option value="">Anywhere</option>
-            {places.map((p) => (
-              <option key={p.id} value={p.id} disabled={p.id === b}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={styles.place}>
-          <img src="/figma/drop-dot.svg" alt="" width={11.982} height={11.982} />
-          <span className={styles.label}>To</span>
-          <select name="to" value={b} onChange={(e) => setB(e.target.value)}>
-            <option value="">Anywhere</option>
-            {places.map((p) => (
-              <option key={p.id} value={p.id} disabled={p.id === a}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <PlaceInput
+          name="from"
+          label="From"
+          icon="/figma/pickup-dot.svg"
+          value={a}
+          error={errors.from}
+          onChange={(v) => {
+            setA(v);
+            setErrors((x) => ({ ...x, from: undefined }));
+          }}
+        />
+        <PlaceInput
+          name="to"
+          label="To"
+          icon="/figma/drop-dot.svg"
+          value={b}
+          error={errors.to}
+          onChange={(v) => {
+            setB(v);
+            setErrors((x) => ({ ...x, to: undefined }));
+          }}
+        />
         <button
           type="button"
           className={styles.swap}
@@ -53,6 +77,7 @@ export function SearchForm({ from = "", to = "", day = 0 }: Props) {
           onClick={() => {
             setA(b);
             setB(a);
+            setErrors({});
           }}
         >
           <SwapIcon size={18} />

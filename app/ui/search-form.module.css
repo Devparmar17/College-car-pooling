@@ -16,51 +16,12 @@
   position: absolute;
   left: 13px;
   top: 34px;
+  pointer-events: none;
 }
 
-.place {
-  display: grid;
-  grid-template-columns: 13px 1fr;
-  grid-template-rows: auto auto;
-  column-gap: 14px;
-  align-items: center;
-  padding: 12px 64px 12px 17px;
-}
-
-.place img {
-  grid-row: 1 / 3;
-  justify-self: center;
-}
-
-.place + .place {
+/* The From and To boxes are PlaceInput fields; keep a divider between them. */
+.places > div + div {
   border-top: 1px solid var(--unigo-border);
-}
-
-.label {
-  font-size: 12px;
-  line-height: 16px;
-  color: var(--unigo-text-secondary);
-}
-
-.place select {
-  appearance: none;
-  width: 100%;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  font-size: 18px;
-  line-height: 22px;
-  color: var(--unigo-black);
-  cursor: pointer;
-}
-
-.place select:focus-visible {
-  outline: none;
-}
-
-.place:focus-within {
-  box-shadow: inset 0 0 0 2px var(--unigo-primary);
-  border-radius: 10px;
 }
 
 .swap {
@@ -77,4 +38,5 @@
   background: var(--unigo-white);
   color: var(--unigo-black);
   transform: translateY(-50%);
+  z-index: 1;
 }

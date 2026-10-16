@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 import { Suspense } from "react";
 import { BottomNav, NavLinks } from "./ui/bottom-nav";
+import { CancelNotice } from "./ui/cancel-notice";
 import { Splash } from "./ui/splash";
 import { TripWatcher } from "./ui/trip-watcher";
 import "./globals.css";
@@ -43,6 +44,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </Suspense>
           <Suspense>
             <TripWatcher />
+          </Suspense>
+          <Suspense>
+            <CancelNotice />
           </Suspense>
         </div>
       </body>

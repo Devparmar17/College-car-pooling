@@ -65,9 +65,14 @@ export function TripTracker({ ride, booking }: { ride: Ride; booking: Booking })
       ) : (
         stage === "booked" &&
         !payment && (
-          <button type="button" className={`btn btn-block ${styles.play}`} onClick={() => actions.playTrip(ride.id)}>
-            ▶ Play this trip (demo)
-          </button>
+          <div className={styles.demo}>
+            <button type="button" className={`btn btn-block ${styles.play}`} onClick={() => actions.playTrip(ride.id)}>
+              ▶ Play this trip (demo)
+            </button>
+            <button type="button" className={styles.cancelDemo} onClick={() => actions.driverCancels(ride.id, "Vehicle problem")}>
+              Demo: {first} cancels this ride
+            </button>
+          </div>
         )
       )}
     </section>

@@ -1,0 +1,219 @@
+.field {
+  position: relative;
+  display: grid;
+  grid-template-columns: 13px 1fr auto;
+  column-gap: 14px;
+  align-items: center;
+  padding: 12px 64px 12px 17px;
+}
+
+.field:focus-within {
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 2px var(--unigo-primary);
+}
+
+.invalid {
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 2px var(--unigo-danger);
+}
+
+.icon {
+  grid-row: 1 / 3;
+  justify-self: center;
+}
+
+.label {
+  grid-column: 2 / 4;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-text-secondary);
+}
+
+.input {
+  grid-column: 2;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 18px;
+  line-height: 22px;
+  color: var(--unigo-black);
+  text-overflow: ellipsis;
+}
+
+.input::placeholder {
+  font-size: 15px;
+  color: var(--unigo-placeholder);
+}
+
+.input:focus-visible {
+  outline: none;
+}
+
+.clear {
+  grid-column: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--unigo-light-gray);
+  font-size: 11px;
+  color: var(--unigo-black);
+}
+
+.nearest,
+.error {
+  grid-column: 2 / 4;
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-primary-ink);
+  animation: rise-in 240ms var(--ease-out);
+}
+
+.nearest strong {
+  font-weight: 700;
+}
+
+.error {
+  color: var(--unigo-danger);
+}
+
+/* Suggestions */
+.list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  max-height: min(360px, 60dvh);
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 14px;
+  background: var(--unigo-white);
+  box-shadow: var(--card-shadow);
+  list-style: none;
+  animation: rise-in 180ms var(--ease-out);
+}
+
+.heading {
+  padding: 8px 10px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--unigo-text-secondary);
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.option[aria-selected="true"] {
+  background: var(--unigo-extra-light-gray);
+}
+
+.locate {
+  border-bottom: 1px solid var(--unigo-border);
+  border-radius: 10px 10px 0 0;
+}
+
+.pin {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--unigo-extra-light-gray);
+  font-size: 12px;
+  color: var(--unigo-dark-gray);
+}
+
+.locate .pin {
+  background: var(--unigo-primary-soft);
+  font-size: 16px;
+  color: var(--unigo-primary-ink);
+}
+
+.pinPickup {
+  background: var(--unigo-primary-soft);
+  color: var(--unigo-primary);
+}
+
+.text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--unigo-text-secondary);
+}
+
+.text strong {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--unigo-black);
+}
+
+.text > * {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tag {
+  flex: none;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--unigo-primary-soft);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--unigo-primary-ink);
+}
+
+/* "Nearest pickup · Vastrapur Lake · 1.2 km away" */
+.near {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-end;
+  max-width: 45%;
+  font-size: 11px;
+  line-height: 14px;
+  text-align: right;
+  color: var(--unigo-text-secondary);
+}
+
+.near strong {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--unigo-primary-ink);
+}
+
+.far,
+.far strong {
+  color: var(--unigo-danger);
+}
+
+.status {
+  padding: 10px;
+  font-size: 12px;
+  color: var(--unigo-text-secondary);
+}

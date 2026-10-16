@@ -30,6 +30,7 @@ import { RideMap } from "../../ui/ride-map";
 import { RateDriver } from "../../ui/rate-driver";
 import { ConfirmSheet } from "./confirm-sheet";
 import { TripTracker } from "./trip-tracker";
+import { WithdrawSheet } from "./withdraw-sheet";
 import { PassengerRequest } from "../../ui/passenger-request";
 import { PageHeader } from "../../ui/page-header";
 import styles from "./ride.module.css";
@@ -41,10 +42,11 @@ export function RideDetail({ id }: { id: string }) {
   const params = useSearchParams();
   const router = useRouter();
   const [wantedSeats, setSeats] = useState(1);
-  const [confirmCancel, setConfirmCancel] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
   const [justBooked, setJustBooked] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const closeConfirm = useCallback(() => setConfirming(false), []);
+  const closeCancel = useCallback(() => setCancelling(false), []);
 
   const ride = findRide(s, id);
   if (!ride) {
@@ -101,10 +103,10 @@ export function RideDetail({ id }: { id: string }) {
   }
 
   // Only drivers can call a ride off; a booked seat can't be cancelled from the rider side.
-  function withdraw() {
-    if (!confirmCancel) return setConfirmCancel(true);
-    actions.withdraw(ride!.id);
-    router.push("/trips");
+  // The driver confirms in a sheet; riders on the ride are told straight away.
+  function withdraw(reason: string) {
+    actions.withdraw(ride!.id, reason);
+    router.push("/earnings");
   }
 
   return (
@@ -277,8 +279,8 @@ export function RideDetail({ id }: { id: string }) {
                   </strong>
                   <span className="muted">Your ride</span>
                 </div>
-                <button className="btn btn-danger" onClick={withdraw}>
-                  {confirmCancel ? "Tap again to withdraw" : "Withdraw ride"}
+                <button className="btn btn-danger" onClick={() => setCancelling(true)}>
+                  Cancel ride
                 </button>
               </>
             ) : booking ? (
@@ -352,6 +354,15 @@ export function RideDetail({ id }: { id: string }) {
           fare={fare}
           onConfirm={book}
           onClose={closeConfirm}
+        />
+      )}
+      {cancelling && (
+        <WithdrawSheet
+          route={`${placeById[ride.stops[0]].name} → ${placeById[ride.stops[ride.stops.length - 1]].name}`}
+          when={`${dayLabels[ride.day]}, ${formatClock(times[0].at)}`}
+          riders={[...new Set(rideRequests.filter((r) => r.status !== "declined").map((r) => r.riderId))].map((id) => personById(id)!)}
+          onConfirm={withdraw}
+          onClose={closeCancel}
         />
       )}
     </div>

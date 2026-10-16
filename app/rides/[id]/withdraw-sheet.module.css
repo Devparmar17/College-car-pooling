@@ -1,0 +1,90 @@
+.route {
+  display: flex;
+  flex-direction: column;
+  margin-top: -8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--unigo-black);
+}
+
+.route span {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--unigo-text-secondary);
+}
+
+.told {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--unigo-danger-soft);
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--unigo-danger);
+}
+
+.told strong {
+  color: var(--unigo-black);
+}
+
+.faces {
+  display: flex;
+  flex: none;
+}
+
+.faces > * {
+  border: 2px solid var(--unigo-white);
+  border-radius: 50%;
+}
+
+.faces > * + * {
+  margin-left: -10px;
+}
+
+.none {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--unigo-extra-light-gray);
+  font-size: 13px;
+  color: var(--unigo-text-secondary);
+}
+
+.reasons {
+  border: 0;
+}
+
+.reasons legend {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--unigo-black);
+}
+
+.reasons > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.reason {
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 999px;
+  background: var(--unigo-white);
+  font-size: 13px;
+  color: var(--unigo-black);
+  transition: background 150ms, border-color 150ms, color 150ms, scale 100ms var(--ease-out);
+}
+
+.reason:active {
+  scale: 0.94;
+}
+
+.reason[aria-pressed="true"] {
+  border-color: var(--unigo-black);
+  background: var(--unigo-black);
+  color: var(--unigo-white);
+}

@@ -79,6 +79,12 @@ export const CheckIcon = (p: Props) => (
   </Icon>
 );
 
+export const CloseIcon = (p: Props) => (
+  <Icon {...p}>
+    <path d="M6 6l12 12M18 6 6 18" />
+  </Icon>
+);
+
 export const ShieldIcon = (p: Props) => (
   <Icon {...p}>
     <path d="M12 3 4.5 6v5.5c0 4.5 3.2 8.3 7.5 9.5 4.3-1.2 7.5-5 7.5-9.5V6z" />

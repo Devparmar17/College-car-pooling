@@ -75,6 +75,28 @@ export type RideRequest = {
   answeredAt?: number;
 };
 
+/**
+ * A ride called off by its driver. Rider side: a driver cancelled the seat you booked.
+ * Driver side: you withdrew a ride you were driving and your riders were told.
+ */
+export type Cancellation = {
+  id: string;
+  side: "rider" | "driver";
+  rideId: string;
+  driverId: string;
+  segment: Segment;
+  /** "Tomorrow, 8:15 AM" */
+  when: string;
+  reason: string;
+  /** Driver side: the riders who were told. */
+  told: string[];
+  /** Rider side: Campus Wallet money returned. */
+  refund?: number;
+  at: number;
+  /** The pop-up (rider) or toast (driver) has been seen. */
+  seen: boolean;
+};
+
 /** Your rating of a driver after a trip. */
 export type Rating = { stars: number; tags: string[]; comment: string; at: number };
 
@@ -106,6 +128,8 @@ export type State = {
   requests: RideRequest[];
   /** Demo requests that haven't arrived yet (their `at` is in the future). */
   incoming: RideRequest[];
+  /** Rides called off, newest last. */
+  cancellations: Cancellation[];
   /** Notification ids already seen. */
   notifRead: string[];
   /** Show ride alerts as system notifications on this device. */
@@ -130,6 +154,7 @@ const empty: State = {
   trips: {},
   requests: [],
   incoming: [],
+  cancellations: [],
 };
 
 // Demo review time before submitted documents count as verified.
@@ -487,13 +512,83 @@ export const actions = {
     scheduleDemoRequests(id);
     return id;
   },
-  withdraw(rideId: string) {
+  /** Driver: call off a ride you offered. Everyone booked or waiting on it is told. */
+  withdraw(rideId: string, reason: string) {
+    const ride = state.offered.find((r) => r.id === rideId);
+    if (!ride) return;
+    // Riders with a seat (or a seat request) on this ride; settle-ups are for earlier trips.
+    const told = [
+      ...new Set(state.requests.filter((r) => r.rideId === rideId && r.kind === "seat" && r.status !== "declined").map((r) => r.riderId)),
+    ];
+    const { depart } = segmentTimes(ride, fullSegment(ride));
+    const note: Cancellation = {
+      id: `c${Date.now().toString(36)}`,
+      side: "driver",
+      rideId,
+      driverId: ride.driverId,
+      segment: fullSegment(ride),
+      when: `${dayLabels[ride.day]}, ${formatClock(depart)}`,
+      reason,
+      told: told.map((id) => personById(id)!.name),
+      at: Date.now(),
+      seen: false,
+    };
     set((s) => ({
       ...s,
       offered: s.offered.filter((r) => r.id !== rideId),
-      requests: s.requests.filter((r) => r.rideId !== rideId),
-      incoming: s.incoming.filter((r) => r.rideId !== rideId),
+      requests: s.requests.filter((r) => r.rideId !== rideId || r.kind === "settle-up"),
+      incoming: s.incoming.filter((r) => r.rideId !== rideId || r.kind === "settle-up"),
+      cancellations: [...s.cancellations, note],
     }));
+  },
+  /**
+   * Demo of the rider side: the driver calls off the ride you booked. The seat is released,
+   * any wallet payment comes back, and you're told straight away.
+   */
+  driverCancels(rideId: string, reason: string) {
+    const ride = findRide(state, rideId);
+    const booking = bookingFor(state, rideId);
+    if (!ride || !booking) return;
+    const paid = state.payments[rideId];
+    const refund = paid?.method === "wallet" ? paid.amount : undefined;
+    const { depart } = segmentTimes(ride, booking.segment);
+    const note: Cancellation = {
+      id: `c${Date.now().toString(36)}`,
+      side: "rider",
+      rideId,
+      driverId: ride.driverId,
+      segment: booking.segment,
+      when: `${dayLabels[ride.day]}, ${formatClock(depart)}`,
+      reason,
+      told: [],
+      refund,
+      at: Date.now(),
+      seen: false,
+    };
+    set((s) => {
+      const payments = { ...s.payments };
+      const trips = { ...s.trips };
+      delete payments[rideId];
+      delete trips[rideId];
+      return {
+        ...s,
+        bookings: s.bookings.filter((b) => b.rideId !== rideId),
+        payments,
+        trips,
+        wallet: s.wallet + (refund ?? 0),
+        cancellations: [...s.cancellations, note],
+      };
+    });
+    const name = personById(ride.driverId)?.name.split(" ")[0] ?? "Your driver";
+    void systemAlert(
+      `${name} cancelled your ride`,
+      `${placeById[booking.segment.from].name} → ${placeById[booking.segment.to].name}, ${note.when}. ${reason}. Find another ride in UniGo.`,
+      "/find",
+    );
+  },
+  /** The cancellation pop-up or toast has been seen. */
+  dismissCancellation(id: string) {
+    set((s) => ({ ...s, cancellations: s.cancellations.map((c) => (c.id === id ? { ...c, seen: true } : c)) }));
   },
   /** Driver: say yes to a passenger. A seat request takes the seats on your ride. */
   acceptRequest(requestId: string) {

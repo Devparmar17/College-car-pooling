@@ -2,7 +2,7 @@ import { placeById } from "./places";
 import { dayLabels, formatClock, hasLeft, personById, rupees, segmentTimes } from "./rides";
 import { findRide, type State } from "./store";
 
-export type NoteKind = "booking" | "reminder" | "message" | "payment" | "rating" | "driver" | "match" | "welcome" | "request";
+export type NoteKind = "booking" | "reminder" | "message" | "payment" | "rating" | "driver" | "match" | "welcome" | "request" | "cancel";
 
 export type Note = {
   id: string;
@@ -111,6 +111,30 @@ export function buildNotifications(s: State, nowMin: number | null): Note[] {
         });
       }
     }
+  }
+
+  // Rides called off: by your driver (you booked), or by you (you were driving).
+  for (const c of s.cancellations) {
+    const route = `${placeById[c.segment.from].name} → ${placeById[c.segment.to].name}`;
+    notes.push(
+      c.side === "rider"
+        ? {
+            id: `cancel-${c.id}`,
+            kind: "cancel",
+            title: `${first(c.driverId)} cancelled your ride`,
+            body: `${route}, ${c.when}. Reason: ${c.reason}.${c.refund ? ` ${rupees(c.refund)} refunded to Campus Wallet.` : ""}`,
+            href: `/find?from=${c.segment.from}&to=${c.segment.to}`,
+            at: c.at,
+          }
+        : {
+            id: `cancel-${c.id}`,
+            kind: "cancel",
+            title: "You cancelled your ride",
+            body: `${route}, ${c.when}.${c.told.length ? ` ${c.told.map((n) => n.split(" ")[0]).join(", ")} told.` : ""}`,
+            href: "/earnings",
+            at: c.at,
+          },
+    );
   }
 
   // Driver side: passengers asking you for a seat or a settle-up.
