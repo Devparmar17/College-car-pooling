@@ -178,3 +178,8 @@
   color: var(--unigo-success);
   animation: rise-in 240ms var(--ease-out);
 }
+
+/* Tap targets */
+.cancelDemo {
+  min-height: 40px;
+}

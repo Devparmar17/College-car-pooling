@@ -46,7 +46,7 @@
 }
 
 .option[aria-current="page"] {
-  color: var(--unigo-white);
+  color: var(--unigo-black);
 }
 
 
@@ -82,4 +82,21 @@
   from {
     transform: translateX(calc(100% + 3px));
   }
+}
+
+/* Find / Offer: 40px tall options, easy to hit with a thumb. */
+.toggle {
+  height: 52px;
+  padding: 6px;
+}
+
+.thumb {
+  top: 6px;
+  left: 6px;
+  width: calc(50% - 7.5px);
+  height: 40px;
+}
+
+.option {
+  font-size: 13px;
 }

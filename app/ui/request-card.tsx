@@ -42,7 +42,8 @@ export function RequestCard({ ride, segment, seatsLeft, best, status, compact, s
   const seg = segment ?? fullSegment(ride);
   const driver = personById(ride.driverId)!;
   const { depart, arrive } = segmentTimes(ride, seg);
-  const fare = segmentFare(ride, seg);
+  // Your booked seats are priced with you in the car; otherwise, what one more seat costs.
+  const fare = segmentFare(ride, seg, bookedSeats || 1);
   const full = seatsLeft <= 0;
 
   const action = status === "booked" ? "Booked" : status === "mine" ? "Manage" : best ? "Continue" : "Request";

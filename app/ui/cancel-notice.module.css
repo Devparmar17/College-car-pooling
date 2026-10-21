@@ -207,3 +207,9 @@
   background: none;
   color: var(--unigo-dark-gray);
 }
+
+/* Tap targets */
+.toast button {
+  width: 40px;
+  height: 40px;
+}

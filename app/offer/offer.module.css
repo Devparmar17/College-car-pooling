@@ -509,7 +509,7 @@
 .slot[aria-pressed="true"] {
   border-color: var(--unigo-primary);
   background: var(--unigo-primary);
-  color: var(--unigo-white);
+  color: var(--unigo-black);
   font-weight: 700;
 }
 
@@ -539,4 +539,24 @@
 /* The whole time box opens the clock. */
 .timeInput {
   cursor: pointer;
+}
+
+/* Tap targets */
+.swapText {
+  min-height: 36px;
+  padding: 0 12px;
+}
+
+.pref {
+  min-height: 40px;
+}
+
+.rcNote a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+}
+
+.swapText {
+  min-height: 40px;
 }

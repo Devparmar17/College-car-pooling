@@ -240,3 +240,19 @@
   top: 0;
   height: 20px;
 }
+
+/* Clear (x): a 36px tap area around the small circle. */
+.clear {
+  position: relative;
+}
+
+.clear::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+}
+
+/* The whole field is the tap target. */
+.field {
+  cursor: text;
+}

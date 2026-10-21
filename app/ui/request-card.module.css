@@ -234,6 +234,7 @@
 .actionBest {
   background: var(--unigo-primary);
   font-size: 12px;
+  color: var(--unigo-black);
 }
 
 /* Above the card-wide link, so pressing the button only presses the button. */
@@ -265,8 +266,10 @@
   opacity: var(--focus, 1);
 }
 
+/* A black button with white text becomes an orange one with dark text as the card comes to the front. */
 .spotlight .action {
   background: color-mix(in srgb, var(--unigo-primary) calc(var(--focus, 1) * 100%), var(--unigo-black));
+  color: color-mix(in srgb, var(--unigo-black) calc(var(--focus, 1) * 100%), var(--unigo-white));
 }
 
 .tagDot {
@@ -304,4 +307,10 @@
 
 .action:active {
   scale: 0.94;
+}
+
+/* Card buttons: 40px tall. */
+.action {
+  width: 84px;
+  height: 40px;
 }

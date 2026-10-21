@@ -109,7 +109,13 @@ export function PlaceInput({ name, label, icon, value, onChange, error }: Props)
   const showNearest = picked && !picked.isPickup;
 
   return (
-    <div className={`${styles.field} ${styles[name]} ${error ? styles.invalid : ""}`}>
+    // Tapping anywhere on the field (not just the text line) puts the cursor in it.
+    <div
+      className={`${styles.field} ${styles[name]} ${error ? styles.invalid : ""}`}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) inputRef.current?.focus();
+      }}
+    >
       <img src={icon} alt="" width={13} height={13} className={styles.icon} />
       <label htmlFor={id} className={styles.label}>
         {label}

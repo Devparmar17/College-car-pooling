@@ -146,7 +146,9 @@ export function RideDetail({ id }: { id: string }) {
             <div className={styles.facts}>
               <span className="tnum">{km.toFixed(1)} km</span>
               <span className="tnum">{arrive - depart} min</span>
-              <span className="tnum">{rupees(fare)} per seat</span>
+              <span className="tnum">
+                {mine ? `${ride.seatsTaken}/${ride.seatsTotal} seats booked` : `${rupees(fare)} per seat`}
+              </span>
             </div>
           </section>
 

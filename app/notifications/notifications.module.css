@@ -158,3 +158,15 @@
     padding: 8px 0 0;
   }
 }
+
+/* Tap targets */
+.markAll {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+}
+
+.alerts :global(.btn),
+.card :global(.btn) {
+  min-height: 40px;
+}

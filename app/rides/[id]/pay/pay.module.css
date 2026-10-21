@@ -243,7 +243,7 @@
   font-size: 16px;
   font-weight: 700;
   line-height: 24px;
-  color: var(--unigo-white);
+  color: var(--unigo-black);
   transition: scale 120ms var(--ease-out), opacity 150ms;
 }
 
@@ -348,4 +348,18 @@
   width: 100%;
   margin-top: 12px;
   text-align: left;
+}
+
+/* Spinner on the orange Pay button: dark, like the label. */
+.spinner {
+  border-color: var(--unigo-black);
+  border-right-color: transparent;
+}
+
+/* Tap targets */
+.back {
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
 }

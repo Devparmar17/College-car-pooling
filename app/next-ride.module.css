@@ -178,3 +178,8 @@
   font-weight: 700;
   color: var(--unigo-white);
 }
+
+/* A comfortable tap target for the driver row. */
+.driver {
+  min-height: 44px;
+}

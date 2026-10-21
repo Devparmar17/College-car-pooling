@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState, type FormEvent } from "react";
 import { UNIVERSITY } from "@/lib/data";
+import { fileSize } from "@/lib/rides";
 import { actions, useHydrated, useStore } from "@/lib/store";
 import { AuthHeader } from "../../ui/auth/auth-header";
 import auth from "../../ui/auth/auth.module.css";
@@ -90,7 +91,7 @@ export function SignupVerify() {
               </span>
               <span className={styles.uploadText}>
                 <strong>{file ? file.name : "Upload university ID card"}</strong>
-                <span>{file ? `${(file.size / 1024 / 1024).toFixed(1)} MB · ready to send` : "Front side · photo or PDF, up to 5 MB"}</span>
+                <span>{file ? `${fileSize(file.size)} · ready to send` : "Front side · photo or PDF, up to 5 MB"}</span>
               </span>
               <button type="button" className={styles.uploadButton} onClick={() => fileRef.current?.click()}>
                 {file ? "Change" : "Upload"}

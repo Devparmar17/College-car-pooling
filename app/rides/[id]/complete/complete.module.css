@@ -86,9 +86,10 @@
 }
 
 .eyebrow {
+  /* Words in the dark orange (readable on white); light orange is for fills and icons. */
   font-size: 14px;
   line-height: 20px;
-  color: var(--unigo-primary);
+  color: var(--unigo-primary-ink);
 }
 
 .big {
@@ -333,4 +334,11 @@
 
 @media (prefers-reduced-motion: reduce) {
   .statusWait { animation: none; }
+}
+
+/* Tap targets */
+.help {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
 }

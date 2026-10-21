@@ -108,3 +108,10 @@
   grid-column: 1 / -1;
   margin: 0;
 }
+
+/* Tap targets */
+.head button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+}

@@ -97,6 +97,11 @@ export function routeName(stops: PlaceId[]): string {
   return `${placeById[stops[0]].name} → ${placeById[stops[stops.length - 1]].name}`;
 }
 
+/** "2 KB", "1.4 MB" */
+export function fileSize(bytes: number): string {
+  return bytes < 1024 * 1024 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
 export function rupees(n: number): string {
   return `₹${n.toLocaleString("en-IN")}`;
 }

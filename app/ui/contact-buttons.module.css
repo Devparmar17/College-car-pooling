@@ -34,7 +34,7 @@
 .chat {
   border-color: var(--unigo-primary);
   background: var(--unigo-primary);
-  color: var(--unigo-white);
+  color: var(--unigo-black);
 }
 
 .chat:hover {
@@ -62,4 +62,10 @@
   .button:not(.chat):hover svg {
     animation: ring 500ms ease;
   }
+}
+
+/* Call and Chat: 40px tap targets. */
+.button {
+  min-width: 40px;
+  height: 40px;
 }

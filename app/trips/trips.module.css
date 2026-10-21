@@ -77,3 +77,10 @@
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   }
 }
+
+/* Tap targets */
+.head a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+}

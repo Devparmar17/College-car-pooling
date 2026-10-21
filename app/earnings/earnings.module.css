@@ -112,3 +112,10 @@
   font-weight: 600;
   color: var(--unigo-primary);
 }
+
+/* Tap targets */
+.allRequests {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+}

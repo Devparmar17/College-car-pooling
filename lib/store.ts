@@ -563,8 +563,10 @@ export function earnings(s: State) {
   const rides = [...s.offered].sort(compareRides);
   // Settle-up requests you accepted are owed to you at the end of the month.
   const settleUp = s.requests.filter((r) => r.kind === "settle-up" && r.status === "accepted").reduce((sum, r) => sum + r.amount, 0);
-  // Each booked rider pays an equal fuel share among the people now in the car.
-  const booked = rides.reduce((sum, r) => sum + (r.seatsTaken ? r.seatsTaken * segmentFare(r, fullSegment(r), 0) : 0), 0) + settleUp;
+  // What accepted riders actually owe you, each for the stretch of the route they ride.
+  const offeredIds = new Set(rides.map((r) => r.id));
+  const seatRequests = s.requests.filter((r) => r.kind === "seat" && r.status === "accepted" && offeredIds.has(r.rideId));
+  const booked = seatRequests.reduce((sum, r) => sum + r.amount, 0) + settleUp;
   const ifFull = rides.reduce((sum, r) => sum + r.seatsTotal * r.fare, 0) + settleUp;
   // Fuel shares riders have actually paid you after finished trips.
   const earned = rides.reduce((sum, r) => {

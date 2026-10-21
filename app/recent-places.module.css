@@ -161,3 +161,7 @@
   line-height: 16px;
   color: var(--unigo-text-secondary);
 }
+
+.toggle {
+  height: 40px;
+}

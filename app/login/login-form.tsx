@@ -105,7 +105,7 @@ export function LoginForm() {
 
         <div className={styles.foot}>
           <p>
-            New to Unigo?{" "}
+            New to UniGo?{" "}
             <Link href="/signup" className={auth.link}>
               Create account
             </Link>

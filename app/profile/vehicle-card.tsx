@@ -4,6 +4,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { myVehicle } from "@/lib/data";
+import { fileSize } from "@/lib/rides";
 import { actions, useHydrated, useStore, type DriverDoc } from "@/lib/store";
 import { CarIcon, CheckIcon } from "../ui/icons";
 import styles from "./vehicle-card.module.css";
@@ -138,7 +139,7 @@ function DocRow({
       <span className={styles.docText}>
         <strong>{title}</strong>
         <span className={error ? styles.error : doc ? styles.done : undefined}>
-          {error || (doc ? `${doc.name} · ${(doc.size / 1024 / 1024).toFixed(1)} MB` : hint)}
+          {error || (doc ? `${doc.name} · ${fileSize(doc.size)}` : hint)}
         </span>
       </span>
       {verified ? (

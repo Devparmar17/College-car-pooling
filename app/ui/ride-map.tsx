@@ -12,7 +12,7 @@ const ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">Op
 
 // Keep the pins clear of the Navigate button in the bottom-right corner.
 // Side room for the pickup and drop-off labels; bottom room for the Navigate button.
-const FIT: FitBoundsOptions = { paddingTopLeft: [110, 50], paddingBottomRight: [110, 76] };
+const FIT: FitBoundsOptions = { paddingTopLeft: [140, 50], paddingBottomRight: [140, 76] };
 
 const point = (id: PlaceId): LatLngTuple => [placeById[id].lat, placeById[id].lng];
 

@@ -123,3 +123,16 @@
   color: var(--unigo-black);
   animation: pop-in 360ms var(--ease-spring);
 }
+
+/* Small phones: the greeting wraps rather than cutting off your name. */
+@media (max-width: 359px) {
+  .hello {
+    white-space: normal;
+  }
+}
+
+.college {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

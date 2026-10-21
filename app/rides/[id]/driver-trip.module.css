@@ -346,3 +346,10 @@
     animation: none;
   }
 }
+
+/* Tap targets */
+.rateBtn,
+.noShow {
+  height: 40px;
+  padding: 0 14px;
+}

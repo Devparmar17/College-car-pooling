@@ -126,3 +126,8 @@
   text-align: center;
   color: var(--unigo-dark-gray);
 }
+
+/* Upload / Change: 40px tall. */
+.uploadButton {
+  min-height: 40px;
+}

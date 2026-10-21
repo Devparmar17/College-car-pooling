@@ -114,3 +114,17 @@
   outline: 2px solid var(--unigo-primary-ink);
   outline-offset: 2px;
 }
+
+/* Terms: readable text and a larger box to tick. */
+.agree {
+  min-height: 44px;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--unigo-text-secondary);
+}
+
+.agree input,
+.box {
+  width: 20px;
+  height: 20px;
+}

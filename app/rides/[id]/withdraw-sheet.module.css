@@ -88,3 +88,8 @@
   background: var(--unigo-black);
   color: var(--unigo-white);
 }
+
+/* Tap targets */
+.reason {
+  height: 40px;
+}

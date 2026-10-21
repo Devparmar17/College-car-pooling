@@ -213,3 +213,8 @@
 .upload:active:not(:disabled) {
   scale: 0.94;
 }
+
+/* Tap targets */
+.upload {
+  min-height: 40px;
+}

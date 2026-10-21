@@ -148,3 +148,9 @@
 .compact h2 {
   font-size: 14px;
 }
+
+/* Stars: 44px tap targets. */
+.star {
+  min-width: 44px;
+  min-height: 44px;
+}

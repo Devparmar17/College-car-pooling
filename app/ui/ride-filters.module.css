@@ -79,7 +79,7 @@
 
 .tile[aria-checked="true"] .icon {
   background: var(--unigo-primary);
-  color: var(--unigo-white);
+  color: var(--unigo-black);
 }
 
 .tile[aria-checked="true"] .label {

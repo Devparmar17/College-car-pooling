@@ -44,3 +44,11 @@
   font-size: 13px;
   color: var(--unigo-text-secondary);
 }
+
+/* "See all": a bigger tap area around the small link. */
+.head a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 0 0 12px;
+}

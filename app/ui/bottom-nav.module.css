@@ -230,3 +230,12 @@
     display: none;
   }
 }
+
+/* Phones: each tab's tap area reaches well past its icon (the look doesn't change). */
+@media (max-width: 1023px) {
+  .tab::before {
+    content: "";
+    position: absolute;
+    inset: -14px -22px -10px;
+  }
+}

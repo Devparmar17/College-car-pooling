@@ -166,7 +166,7 @@
   background: var(--unigo-primary);
   font-size: 16px;
   line-height: 24px;
-  color: #faf8f6;
+  color: var(--unigo-black);
   transition: opacity 0.15s, transform 0.1s;
 }
 
@@ -359,4 +359,20 @@
   .footer {
     margin-top: 24px;
   }
+}
+
+/* A comfortable tap target for Back. */
+.back {
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* "Didn't get it? Resend": readable, and tall enough to tap. */
+.resend {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--unigo-text-secondary);
 }
