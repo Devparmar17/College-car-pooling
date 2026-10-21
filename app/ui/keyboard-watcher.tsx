@@ -2,8 +2,14 @@
 
 import { useEffect } from "react";
 
-// Fields that bring up the on-screen keyboard (not checkboxes, radios, buttons or selects).
-const TYPING = 'input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="hidden"]), textarea, [contenteditable="true"]';
+// Fields that bring up the on-screen keyboard. Time, date and similar boxes open a picker
+// instead, so they don't count (the nav stays put).
+const TYPING = [
+  "input:not([type])",
+  ...["text", "search", "email", "tel", "url", "password", "number"].map((t) => `input[type="${t}"]`),
+  "textarea",
+  '[contenteditable="true"]',
+].join(", ");
 
 /**
  * Phones: while you type, mark <html data-keyboard> so the floating nav steps aside (CSS), and
