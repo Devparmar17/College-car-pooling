@@ -535,3 +535,8 @@
     grid-column: span 3;
   }
 }
+
+/* The whole time box opens the clock. */
+.timeInput {
+  cursor: pointer;
+}

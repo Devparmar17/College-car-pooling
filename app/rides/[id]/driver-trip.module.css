@@ -221,3 +221,89 @@
   padding: 0 14px;
   font-size: 13px;
 }
+
+
+/* All done: one summary line instead of the steps. */
+.summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--unigo-primary-soft);
+  animation: rise-in 320ms var(--ease-out);
+}
+
+.summaryIcon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--unigo-success);
+  font-weight: 700;
+  color: var(--unigo-white);
+}
+
+.summaryText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--unigo-text-secondary);
+}
+
+.summaryText strong {
+  font-size: 16px;
+  color: var(--unigo-black);
+}
+
+.summaryAmount {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 11px;
+  color: var(--unigo-primary-ink);
+}
+
+.summaryAmount strong {
+  font-size: 22px;
+  line-height: 28px;
+  color: var(--unigo-black);
+}
+
+.rated {
+  display: flex;
+  flex: none;
+}
+
+.star {
+  color: var(--unigo-light-gray);
+}
+
+.starOn {
+  color: var(--unigo-primary);
+}
+
+.rateBtn {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--unigo-primary);
+  border-radius: 999px;
+  background: var(--unigo-white);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--unigo-primary-ink);
+}
+
+.rateBtn svg {
+  color: var(--unigo-primary);
+}

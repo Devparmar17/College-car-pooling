@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { me, myVehicle, prefLabels, type Day, type Pref, type Vehicle } from "@/lib/data";
 import { FUEL_PER_KM, fuelCost, fuelShare } from "@/lib/fare";
 import { isPlaceId, placeById, places, placesAlong, routeKm, type PlaceId } from "@/lib/places";
@@ -13,6 +13,15 @@ import { RequestsBanner } from "../ui/requests-banner";
 import styles from "./offer.module.css";
 
 const allPrefs = Object.keys(prefLabels) as Pref[];
+
+/** Open the browser's clock for a time box; older browsers just focus it. */
+function openTimePicker(el: HTMLInputElement) {
+  try {
+    el.showPicker();
+  } catch {
+    el.focus();
+  }
+}
 
 const CAMPUS: PlaceId = "indus";
 const MORNING = ["07:30", "08:00", "08:30", "09:00", "09:30", "10:00"];
@@ -34,6 +43,8 @@ export function OfferForm() {
   const [day, setDay] = useState<Day>([0, 1, 2].includes(dayParam) ? (dayParam as Day) : 1);
   const [time, setTime] = useState("08:00");
   const [customTime, setCustomTime] = useState(false);
+  const timeInput = useRef<HTMLInputElement | null>(null);
+  const pickerOnMount = useRef(false);
   const now = useNowMinutes();
   const [seats, setSeats] = useState(3);
   const [prefs, setPrefs] = useState<Pref[]>(["noSmoking"]);
@@ -215,16 +226,35 @@ export function OfferForm() {
                 </button>
               );
             })}
-            <button type="button" className={styles.slot} aria-pressed={customTime} onClick={() => setCustomTime(true)}>
+            <button
+              type="button"
+              className={styles.slot}
+              aria-pressed={customTime}
+              onClick={() => {
+                // Straight to the clock: open it now if the box is there, or as soon as it appears.
+                if (timeInput.current) return openTimePicker(timeInput.current);
+                pickerOnMount.current = true;
+                setCustomTime(true);
+              }}
+            >
               Other time
             </button>
           </div>
           {customTime && (
             <input
-              className="input"
+              ref={(el) => {
+                timeInput.current = el;
+                if (el && pickerOnMount.current) {
+                  pickerOnMount.current = false;
+                  openTimePicker(el);
+                }
+              }}
+              className={`input ${styles.timeInput}`}
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
+              // Tapping anywhere on the box opens the clock, not just the icon.
+              onClick={(e) => openTimePicker(e.currentTarget)}
               aria-label="Leaving at, other time"
               required
             />

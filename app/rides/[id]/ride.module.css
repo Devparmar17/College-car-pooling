@@ -6,6 +6,7 @@
 }
 
 .cols section,
+.cols details,
 .banner,
 .missing {
   margin: 0 16px;
@@ -517,4 +518,38 @@ button.selected {
 
 .requests :global(.section-title) {
   margin: 0;
+}
+
+/* Finished ride: the stops fold away under "Route & stops". */
+.fold summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--unigo-black);
+  cursor: pointer;
+  list-style: none;
+}
+
+.fold summary::-webkit-details-marker {
+  display: none;
+}
+
+.fold summary::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--unigo-text-secondary);
+  border-bottom: 2px solid var(--unigo-text-secondary);
+  transform: rotate(45deg);
+  transition: transform 200ms var(--ease-out);
+}
+
+.fold[open] summary::after {
+  transform: rotate(225deg);
+}
+
+.fold[open] summary {
+  margin-bottom: 12px;
 }

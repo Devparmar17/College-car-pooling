@@ -3,8 +3,10 @@
 import type { Ride } from "@/lib/data";
 import { placeById } from "@/lib/places";
 import { formatClock, personById, rupees, segmentTimes } from "@/lib/rides";
-import { actions, ridersOn, useStore, type RideRequest, type RiderPayment } from "@/lib/store";
+import { useState } from "react";
+import { actions, ridersOn, useStore, type Rating, type RideRequest, type RiderPayment } from "@/lib/store";
 import { Avatar } from "../../ui/avatar";
+import { StarIcon } from "../../ui/icons";
 import { RatePerson } from "../../ui/rate-driver";
 import styles from "./driver-trip.module.css";
 
@@ -34,24 +36,47 @@ export function DriverTrip({ ride }: { ride: Ride }) {
   const earned = picked.filter((q) => drive?.paid[q.id]?.status === "paid").reduce((sum, q) => sum + q.amount, 0);
   const due = picked.reduce((sum, q) => sum + q.amount, 0);
   const next = riders.find((q) => !drive?.boarded[q.id]);
+  const noShows = riders.filter((q) => drive?.boarded[q.id] === "noshow").length;
 
   return (
     <section className={`card ${styles.trip}`} aria-live="polite">
-      <div className={styles.head}>
-        <h2 className="section-title">Your trip</h2>
-        <span className={styles.count}>
-          {riders.length} rider{riders.length === 1 ? "" : "s"}
-        </span>
-      </div>
+      {step === 4 ? (
+        // All done: one summary instead of the steps and a separate "everyone paid" note.
+        <div className={styles.summary} role="status">
+          <span className={styles.summaryIcon} aria-hidden>
+            ✓
+          </span>
+          <span className={styles.summaryText}>
+            <strong>Ride complete</strong>
+            <span>
+              {picked.length} rider{picked.length === 1 ? "" : "s"} · everyone paid
+              {noShows ? ` · ${noShows} didn't show` : ""}
+            </span>
+          </span>
+          <span className={styles.summaryAmount}>
+            <span>You earned</span>
+            <strong className="tnum">{rupees(earned)}</strong>
+          </span>
+        </div>
+      ) : (
+        <div className={styles.head}>
+          <h2 className="section-title">Your trip</h2>
+          <span className={styles.count}>
+            {riders.length} rider{riders.length === 1 ? "" : "s"}
+          </span>
+        </div>
+      )}
 
-      <ol className={styles.steps} aria-label="Trip progress">
-        {STEPS.map((label, i) => (
-          <li key={label} className={i < step ? styles.done : i === step ? styles.now : ""}>
-            <span aria-hidden>{i < step ? "✓" : i + 1}</span>
-            {label}
-          </li>
-        ))}
-      </ol>
+      {step < 4 && (
+        <ol className={styles.steps} aria-label="Trip progress">
+          {STEPS.map((label, i) => (
+            <li key={label} className={i < step ? styles.done : i === step ? styles.now : ""}>
+              <span aria-hidden>{i < step ? "✓" : i + 1}</span>
+              {label}
+            </li>
+          ))}
+        </ol>
+      )}
 
       {riders.length === 0 ? (
         <p className={styles.empty}>No riders yet. Riders you accept on Ride requests show up here.</p>
@@ -61,11 +86,6 @@ export function DriverTrip({ ride }: { ride: Ride }) {
             <p className={styles.next}>
               Next: pick up <strong>{personById(next.riderId)!.name.split(" ")[0]}</strong> at{" "}
               <strong>{placeById[next.segment.from].name}</strong>
-            </p>
-          )}
-          {step === 4 && (
-            <p className={styles.allPaid} role="status">
-              <span aria-hidden>✓</span> Everyone has paid · you earned <strong>{rupees(earned)}</strong>
             </p>
           )}
 
@@ -104,6 +124,10 @@ function RiderRow({ ride, req }: { ride: Ride; req: RideRequest }) {
   const boarded = drive?.boarded[req.id];
   const pay = drive?.paid[req.id];
   const { depart } = segmentTimes(ride, req.segment);
+  const [rating, setRating] = useState(false);
+  // Older saves kept only a star count.
+  const saved = drive?.rated[req.id] as Rating | number | undefined;
+  const rated = typeof saved === "number" ? { stars: saved } : saved;
 
   return (
     <li className={`${styles.rider} ${boarded === "noshow" ? styles.noshow : ""}`}>
@@ -137,33 +161,43 @@ function RiderRow({ ride, req }: { ride: Ride; req: RideRequest }) {
 
       {/* After drop-off: their fuel share. */}
       {drive?.completedAt && boarded === "noshow" && <p className={styles.muted}>Didn&apos;t show · no charge</p>}
+      {/* After drop-off, one line: their payment, then your rating of them. */}
       {drive?.completedAt && pay && (
         <div className={styles.payRow}>
           {pay.status === "paid" ? (
             <p className={styles.ok}>
-              ✓ Paid {rupees(req.amount)} · {pay.method === "upi" ? "UPI" : pay.method === "cash" ? "Cash" : "Monthly settle-up"}
+              ✓ Paid · {pay.method === "upi" ? "UPI" : pay.method === "cash" ? "Cash" : "Settle-up"}
             </p>
           ) : (
-            <>
-              <p className={styles.waiting}>{payText[pay.method]}…</p>
-              {pay.method !== "upi" && (
-                <button type="button" className="btn btn-primary" onClick={() => actions.settleRider(ride.id, req.id)}>
-                  {pay.method === "cash" ? `Got ${rupees(req.amount)} cash` : "Accept"}
-                </button>
-              )}
-            </>
+            <p className={styles.waiting}>{payText[pay.method]}…</p>
+          )}
+          {pay.status !== "paid" && pay.method !== "upi" ? (
+            <button type="button" className="btn btn-primary" onClick={() => actions.settleRider(ride.id, req.id)}>
+              {pay.method === "cash" ? `Got ${rupees(req.amount)} cash` : "Accept"}
+            </button>
+          ) : rated ? (
+            <span className={styles.rated} aria-label={`You rated ${first} ${rated.stars} out of 5`}>
+              {[1, 2, 3, 4, 5].map((n) => (
+                <StarIcon key={n} size={14} className={n <= rated.stars ? styles.starOn : styles.star} />
+              ))}
+            </span>
+          ) : (
+            <button type="button" className={styles.rateBtn} aria-expanded={rating} onClick={() => setRating(!rating)}>
+              <StarIcon size={14} /> Rate {first}
+            </button>
           )}
         </div>
       )}
-      {/* After drop-off: rate each rider, the same way riders rate you. */}
-      {drive?.completedAt && boarded === "picked" && (
+      {/* The full rating card opens only when asked for, and closes once it's sent. */}
+      {drive?.completedAt && boarded === "picked" && rating && !rated && (
         <RatePerson
           id={req.id}
           person={rider}
           about="rider"
-          // Older saves kept only a star count.
-          saved={typeof drive.rated[req.id] === "number" ? undefined : drive.rated[req.id]}
-          onSubmit={(rating) => actions.rateRider(ride.id, req.id, rating)}
+          onSubmit={(r) => {
+            actions.rateRider(ride.id, req.id, r);
+            setRating(false);
+          }}
           compact
         />
       )}
