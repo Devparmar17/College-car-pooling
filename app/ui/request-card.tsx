@@ -124,9 +124,13 @@ export function RequestCard({ ride, segment, seatsLeft, best, status, compact, s
               <ContactButtons driver={driver} rideId={ride.id} />
             </>
           ) : (
-            <Link href={rideHref(ride, segment)} className={`${styles.action} ${best && !spotlight ? styles.actionBest : ""}`}>
-              {action}
-            </Link>
+            <>
+              {/* The whole card opens the ride; the button stays the visible, focusable way in. */}
+              <Link href={rideHref(ride, segment)} className={styles.cover} aria-hidden tabIndex={-1} />
+              <Link href={rideHref(ride, segment)} className={`${styles.action} ${best && !spotlight ? styles.actionBest : ""}`}>
+                {action}
+              </Link>
+            </>
           )}
         </div>
       </div>
