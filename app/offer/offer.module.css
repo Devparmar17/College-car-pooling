@@ -364,3 +364,174 @@
   user-select: none;
   transition: opacity 300ms, filter 300ms;
 }
+
+/* Just verified: a welcome on the way into the form. */
+.welcome {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--unigo-success);
+  border-radius: 16px;
+  background: var(--unigo-white);
+  animation: rise-in 420ms var(--ease-out);
+}
+
+.welcome > div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--unigo-text-secondary);
+}
+
+.welcome strong {
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--unigo-black);
+}
+
+.welcomeIcon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--unigo-success);
+  font-weight: 700;
+  color: var(--unigo-white);
+  animation: pop-in 520ms var(--ease-spring) 150ms backwards;
+}
+
+@media (min-width: 1024px) {
+  .welcome {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Route: one-tap Home → Campus / Campus → Home */
+.quickRoutes {
+  display: flex;
+  gap: 8px;
+}
+
+.quickRoutes button {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 999px;
+  background: var(--unigo-white);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--unigo-black);
+  white-space: nowrap;
+  transition: background 150ms, border-color 150ms, scale 120ms var(--ease-out);
+}
+
+.quickRoutes button:active {
+  scale: 0.97;
+}
+
+.quickRoutes button[aria-pressed="true"] {
+  border-color: var(--unigo-primary);
+  background: var(--unigo-primary-soft);
+  color: var(--unigo-primary-ink);
+}
+
+/* "Going to" with a Swap link on the same line. */
+.toRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: -6px;
+  font-size: 13px;
+  color: var(--unigo-text-secondary);
+}
+
+.swapText {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--unigo-extra-light-gray);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--unigo-primary-ink);
+}
+
+/* When: tap a usual time instead of typing one. */
+.times {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 0;
+}
+
+.times legend {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--unigo-text-secondary);
+}
+
+.slots {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.slot {
+  height: 40px;
+  padding: 0 4px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 12px;
+  background: var(--unigo-white);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--unigo-black);
+  white-space: nowrap;
+  transition: background 150ms, border-color 150ms, scale 120ms var(--ease-out);
+}
+
+.slot:active:not(:disabled) {
+  scale: 0.95;
+}
+
+.slot[aria-pressed="true"] {
+  border-color: var(--unigo-primary);
+  background: var(--unigo-primary);
+  color: var(--unigo-white);
+  font-weight: 700;
+}
+
+/* Already gone today. */
+.slot:disabled {
+  border-style: dashed;
+  color: var(--unigo-placeholder);
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+/* "Other time" spans what's left of the last row. */
+.slots > .slot:last-child {
+  grid-column: span 2;
+}
+
+@media (max-width: 359px) {
+  .slots {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .slots > .slot:last-child {
+    grid-column: span 3;
+  }
+}

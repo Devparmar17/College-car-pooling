@@ -9,7 +9,7 @@ export type SplitMember = {
   name: string;
   initials: string;
   amount: number;
-  role: "you" | "driver" | "rider";
+  role: "you" | "rider";
 };
 
 const initials = (name: string) =>
@@ -21,22 +21,22 @@ const initials = (name: string) =>
     .toUpperCase();
 
 /**
- * The trip's fuel cost (distance × fuel per km) shared equally by everyone in the vehicle,
- * driver included. Nobody picks the price.
+ * The trip's fuel cost (distance × fuel per km) shared equally by the riders; the driver
+ * doesn't pay. Nobody picks the price.
  */
 export function tripSplit(ride: Ride, seg: Segment, seats: number, myName: string) {
   const driver = personById(ride.driverId)!;
   const offset = ride.id.split("").reduce((n, c) => n + c.charCodeAt(0), 0);
   const others = Array.from({ length: ride.seatsTaken }, (_, i) => CO_RIDERS[(offset + i) % CO_RIDERS.length]);
 
-  const people = 1 + seats + others.length;
+  // Riders only: your seats plus the others booked.
+  const people = seats + others.length;
   const km = segmentKm(ride, seg);
   const fuel = fuelCost(km, ride.vehicle.kind);
   const share = fuelShare(fuel, people);
 
   const members: SplitMember[] = [
     { name: "You", initials: initials(myName), amount: share * seats, role: "you" },
-    { name: driver.name.split(" ")[0], initials: initials(driver.name), amount: share, role: "driver" },
     ...others.map((n) => ({ name: n.split(" ")[0], initials: initials(n), amount: share, role: "rider" as const })),
   ];
   const { arrive } = segmentTimes(ride, seg);

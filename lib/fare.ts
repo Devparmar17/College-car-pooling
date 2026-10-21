@@ -1,7 +1,7 @@
 import type { Vehicle } from "./data";
 
 /**
- * Nobody sets a price. A ride costs its fuel, and everyone in the vehicle (driver included)
+ * Nobody sets a price. A ride costs its fuel, and the riders (not the driver)
  * pays an equal share of it.
  */
 
@@ -13,7 +13,10 @@ export function fuelCost(km: number, kind: Vehicle["kind"]): number {
   return Math.round(km * FUEL_PER_KM[kind]);
 }
 
-/** One person's equal share of `fuel` among `people` (driver included), rounded up to ₹1. */
-export function fuelShare(fuel: number, people: number): number {
-  return Math.max(1, Math.ceil(fuel / Math.max(1, people)));
+/** Prices are round numbers (₹35, ₹40, ₹50…): shares go up to the next ₹5, so the fuel is always covered. */
+const ROUND_TO = 5;
+
+/** One rider's equal share of `fuel` among `riders` (the driver doesn't pay), rounded up to ₹5. */
+export function fuelShare(fuel: number, riders: number): number {
+  return Math.max(ROUND_TO, Math.ceil(fuel / Math.max(1, riders) / ROUND_TO) * ROUND_TO);
 }

@@ -30,6 +30,7 @@ import { RideMap } from "../../ui/ride-map";
 import { RateDriver } from "../../ui/rate-driver";
 import { ConfirmSheet } from "./confirm-sheet";
 import { TripTracker } from "./trip-tracker";
+import { DriverTrip } from "./driver-trip";
 import { WithdrawSheet } from "./withdraw-sheet";
 import { PassengerRequest } from "../../ui/passenger-request";
 import { PageHeader } from "../../ui/page-header";
@@ -67,6 +68,7 @@ export function RideDetail({ id }: { id: string }) {
   const mine = isMine(ride);
   const booking = bookingFor(s, ride.id);
   const payment = s.payments[ride.id];
+  const drive = s.drives[ride.id];
   // Your ride: seat requests waiting first, then the ones you've answered.
   const rideRequests = s.requests
     .filter((r) => r.rideId === ride.id && r.kind === "seat")
@@ -142,6 +144,7 @@ export function RideDetail({ id }: { id: string }) {
           </section>
 
           {booking && <TripTracker ride={ride} booking={booking} />}
+          {mine && <DriverTrip ride={ride} />}
 
           <section className={`card ${styles.timeline}`}>
             <h2 className="section-title">Stops</h2>
@@ -259,7 +262,7 @@ export function RideDetail({ id }: { id: string }) {
             )}
           </section>
 
-          {booking && payment && <RateDriver rideId={ride.id} driver={driver} />}
+          {booking && (payment || s.trips[ride.id]?.completedAt) && <RateDriver rideId={ride.id} driver={driver} />}
 
           {mine && rideRequests.length > 0 && (
             <section className={styles.requests}>
@@ -279,9 +282,14 @@ export function RideDetail({ id }: { id: string }) {
                   </strong>
                   <span className="muted">Your ride</span>
                 </div>
-                <button className="btn btn-danger" onClick={() => setCancelling(true)}>
-                  Cancel ride
-                </button>
+                {/* Once you've set off, the ride can't be called off. */}
+                {drive?.startedAt ? (
+                  <span className={styles.paid}>{drive.completedAt ? "Ride complete ✓" : "Trip in progress"}</span>
+                ) : (
+                  <button className="btn btn-danger" onClick={() => setCancelling(true)}>
+                    Cancel ride
+                  </button>
+                )}
               </>
             ) : booking ? (
               <>

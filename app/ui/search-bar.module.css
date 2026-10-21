@@ -20,19 +20,6 @@
   white-space: nowrap;
 }
 
-.later {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: var(--unigo-extra-light-gray);
-  font-size: 12px;
-  line-height: 16px;
-  color: var(--unigo-black);
-}
-
 /* Micro-interactions */
 .bar {
   transition: border-color 200ms, box-shadow 200ms, scale 120ms var(--ease-out);
@@ -53,14 +40,6 @@
 
 .query:hover img {
   transform: rotate(-12deg) scale(1.08);
-}
-
-.later {
-  transition: background 150ms, scale 120ms var(--ease-out);
-}
-
-.later:active {
-  scale: 0.94;
 }
 
 /* Small phones */

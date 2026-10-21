@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element -- Figma icon assets render at their native size. */
 import Link from "next/link";
 import { useState } from "react";
-import { me, recentPlaces } from "@/lib/data";
+import { me, recentPlaces, type Day } from "@/lib/data";
 import { BackIcon } from "./ui/icons";
 import styles from "./recent-places.module.css";
 
@@ -17,15 +17,15 @@ const CAMPUS = "indus";
  * A recent place becomes your pickup (From), heading to campus. Campus itself means the
  * usual commute: from home to campus.
  */
-function searchFor(place: Recent["place"]) {
+function searchFor(place: Recent["place"], day: Day) {
   const from = place === CAMPUS ? me.home : place;
-  return `/find?from=${from}&to=${CAMPUS}`;
+  return `/find?from=${from}&to=${CAMPUS}&day=${day}`;
 }
 
-function Row({ r, hidden }: { r: Recent; hidden?: boolean }) {
+function Row({ r, day, hidden }: { r: Recent; day: Day; hidden?: boolean }) {
   return (
     <li>
-      <Link href={searchFor(r.place)} className={styles.row} tabIndex={hidden ? -1 : undefined}>
+      <Link href={searchFor(r.place, day)} className={styles.row} tabIndex={hidden ? -1 : undefined}>
         <span className={styles.icon}>
           <img src="/figma/history.svg" alt="" width={32} height={32} />
         </span>
@@ -40,15 +40,18 @@ function Row({ r, hidden }: { r: Recent; hidden?: boolean }) {
 }
 
 /** Figma "Component 4": recent destinations; the rest slide open on demand. */
-export function RecentPlaces() {
+export function RecentPlaces({ day }: { day: Day }) {
   const [open, setOpen] = useState(false);
   const more = recentPlaces.slice(VISIBLE);
 
   return (
-    <section className={styles.card} aria-label="Recent places">
+    <section className={styles.card} aria-labelledby="recent-heading">
+      <h2 id="recent-heading" className={styles.heading}>
+        Recent · tap to find a ride
+      </h2>
       <ul className={styles.list}>
         {recentPlaces.slice(0, VISIBLE).map((r) => (
-          <Row key={r.place} r={r} />
+          <Row key={r.place} r={r} day={day} />
         ))}
       </ul>
 
@@ -57,7 +60,7 @@ export function RecentPlaces() {
           <div className={`${styles.more} ${open ? styles.moreOpen : ""}`} inert={!open}>
             <ul className={styles.list}>
               {more.map((r) => (
-                <Row key={r.place} r={r} hidden={!open} />
+                <Row key={r.place} r={r} day={day} hidden={!open} />
               ))}
             </ul>
           </div>

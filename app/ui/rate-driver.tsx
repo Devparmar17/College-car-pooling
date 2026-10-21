@@ -2,26 +2,60 @@
 
 import { useState } from "react";
 import type { Person } from "@/lib/data";
-import { actions, useStore } from "@/lib/store";
+import { actions, useStore, type Rating } from "@/lib/store";
 import { StarIcon } from "./icons";
 import styles from "./rate-driver.module.css";
 
-const WORDS = ["", "Poor", "Could be better", "Okay", "Good", "Great ride!"];
-const GOOD = ["On time", "Safe driving", "Clean car", "Friendly", "Smooth route"];
-const BAD = ["Late", "Rash driving", "Unclean car", "Rude", "Changed the route"];
+const WORDS = ["", "Poor", "Could be better", "Okay", "Good", "Great!"];
 
-/** Rate the driver after a trip: stars, quick tags, an optional comment. */
+/** Quick tags: what riders say about drivers, and what drivers say about riders. */
+const TAGS = {
+  driver: {
+    good: ["On time", "Safe driving", "Clean car", "Friendly", "Smooth route"],
+    bad: ["Late", "Rash driving", "Unclean car", "Rude", "Changed the route"],
+  },
+  rider: {
+    good: ["On time", "Polite", "Paid quickly", "Easy pickup", "Good company"],
+    bad: ["Kept me waiting", "Late payment", "Rude", "Wrong pickup spot", "Messy"],
+  },
+};
+
+/** Rider side: rate the driver after a trip. */
 export function RateDriver({ rideId, driver }: { rideId: string; driver: Person }) {
   const saved = useStore().ratings[rideId];
+  return (
+    <RatePerson
+      id={rideId}
+      person={driver}
+      about="driver"
+      saved={saved}
+      onSubmit={(rating) => actions.rate(rideId, rating)}
+    />
+  );
+}
+
+type Props = {
+  id: string;
+  person: Person;
+  /** Who's being rated: the driver (by a rider) or a rider (by the driver). */
+  about: "driver" | "rider";
+  saved?: Rating;
+  onSubmit: (rating: Omit<Rating, "at">) => void;
+  compact?: boolean;
+};
+
+/** Rate someone after a trip: stars, quick tags, an optional comment. Used on both sides. */
+export function RatePerson({ id, person, about, saved, onSubmit, compact }: Props) {
   const [stars, setStars] = useState(0);
   const [hover, setHover] = useState(0);
   const [tags, setTags] = useState<string[]>([]);
   const [comment, setComment] = useState("");
-  const first = driver.name.split(" ")[0];
+  const first = person.name.split(" ")[0];
+  const size = compact ? 26 : 34;
 
   if (saved) {
     return (
-      <section className={`${styles.card} ${styles.done}`} aria-label="Your rating">
+      <section className={`${styles.card} ${styles.done} ${compact ? styles.compact : ""}`} aria-label="Your rating">
         <p className={styles.thanks}>Thanks for rating {first}!</p>
         <Stars value={saved.stars} small />
         {saved.tags.length > 0 && <p className={styles.savedTags}>{saved.tags.join(" · ")}</p>}
@@ -31,11 +65,11 @@ export function RateDriver({ rideId, driver }: { rideId: string; driver: Person 
   }
 
   const shown = hover || stars;
-  const options = stars >= 4 ? GOOD : BAD;
+  const options = stars >= 4 ? TAGS[about].good : TAGS[about].bad;
 
   return (
-    <section className={styles.card} aria-labelledby={`rate-${rideId}`}>
-      <h2 id={`rate-${rideId}`}>How was your ride with {first}?</h2>
+    <section className={`${styles.card} ${compact ? styles.compact : ""}`} aria-labelledby={`rate-${id}`}>
+      <h2 id={`rate-${id}`}>{about === "driver" ? `How was your ride with ${first}?` : `How was ${first} as a rider?`}</h2>
       <div className={styles.starRow} role="radiogroup" aria-label="Rating" onMouseLeave={() => setHover(0)}>
         {[1, 2, 3, 4, 5].map((n) => (
           <button
@@ -52,7 +86,7 @@ export function RateDriver({ rideId, driver }: { rideId: string; driver: Person 
               setStars(n);
             }}
           >
-            <StarIcon size={34} />
+            <StarIcon size={size} />
           </button>
         ))}
       </div>
@@ -81,13 +115,13 @@ export function RateDriver({ rideId, driver }: { rideId: string; driver: Person 
             value={comment}
             maxLength={200}
             onChange={(e) => setComment(e.target.value)}
-            placeholder={`Anything else about the ride? (optional)`}
+            placeholder={about === "driver" ? "Anything else about the ride? (optional)" : `Anything else about ${first}? (optional)`}
             aria-label="Comment"
           />
           <button
             type="button"
             className="btn btn-primary btn-block"
-            onClick={() => actions.rate(rideId, { stars, tags, comment: comment.trim() })}
+            onClick={() => onSubmit({ stars, tags, comment: comment.trim() })}
           >
             Submit rating
           </button>

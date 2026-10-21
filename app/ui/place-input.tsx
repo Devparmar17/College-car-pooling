@@ -34,7 +34,10 @@ export function PlaceInput({ name, label, icon, value, onChange, error }: Props)
   const listId = `${id}-list`;
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState(0);
+  // "Use my current location" only makes sense for where you start from.
+  const locate = name === "from";
+  const first = locate ? 0 : 1;
+  const [active, setActive] = useState(first);
   const [online, setOnline] = useState<{ query: string; results: Match[] }>({ query: "", results: [] });
   const [locating, setLocating] = useState<"idle" | "busy" | "denied">("idle");
 
@@ -60,8 +63,8 @@ export function PlaceInput({ name, label, icon, value, onChange, error }: Props)
   const seen = new Set(local.map((m) => m.name.toLowerCase()));
   const extra = online.query === query ? online.results.filter((m) => !seen.has(m.name.toLowerCase())) : [];
   const results = (query ? [...local, ...extra] : pickupMatches).slice(0, MAX_RESULTS);
-  // Row 0 is "Use my current location".
-  const rows = results.length + 1;
+  // Row 0 is "Use my current location" (From only); rows 1… are the results.
+  const last = results.length;
 
   function pick(m: Match) {
     onChange({ text: m.name, picked: m });
@@ -90,10 +93,13 @@ export function PlaceInput({ name, label, icon, value, onChange, error }: Props)
     if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault();
       setOpen(true);
-      setActive((a) => (a + (e.key === "ArrowDown" ? 1 : rows - 1)) % rows);
+      setActive((a) => {
+        const next = a + (e.key === "ArrowDown" ? 1 : -1);
+        return next > last ? first : next < first ? last : next;
+      });
     } else if (e.key === "Enter" && open) {
       e.preventDefault();
-      choose(query && active === 0 && results.length ? 1 : active);
+      choose(active === 0 && (!locate || (query && results.length)) ? 1 : active);
     } else if (e.key === "Escape") {
       setOpen(false);
     }
@@ -103,7 +109,7 @@ export function PlaceInput({ name, label, icon, value, onChange, error }: Props)
   const showNearest = picked && !picked.isPickup;
 
   return (
-    <div className={`${styles.field} ${error ? styles.invalid : ""}`}>
+    <div className={`${styles.field} ${styles[name]} ${error ? styles.invalid : ""}`}>
       <img src={icon} alt="" width={13} height={13} className={styles.icon} />
       <label htmlFor={id} className={styles.label}>
         {label}
@@ -113,7 +119,7 @@ export function PlaceInput({ name, label, icon, value, onChange, error }: Props)
         id={id}
         className={styles.input}
         value={value.text}
-        placeholder="Anywhere · type an area or landmark"
+        placeholder={locate ? "Where from? e.g. Bodakdev" : "Where to? e.g. Indus University"}
         autoComplete="off"
         role="combobox"
         aria-expanded={open}
@@ -127,7 +133,7 @@ export function PlaceInput({ name, label, icon, value, onChange, error }: Props)
         onChange={(e) => {
           onChange({ text: e.target.value, picked: null });
           setOpen(true);
-          setActive(0);
+          setActive(first);
           setLocating("idle");
         }}
       />
@@ -164,23 +170,25 @@ export function PlaceInput({ name, label, icon, value, onChange, error }: Props)
 
       {open && (
         <ul id={listId} role="listbox" className={styles.list} aria-label={`${label} suggestions`} onMouseDown={(e) => e.preventDefault()}>
-          <li
-            id={`${id}-opt-0`}
-            role="option"
-            aria-selected={active === 0}
-            className={`${styles.option} ${styles.locate}`}
-            onClick={() => choose(0)}
-            onMouseEnter={() => setActive(0)}
-          >
-            <span className={styles.pin} aria-hidden>
-              ◎
-            </span>
-            <span className={styles.text}>
-              <strong>{locating === "busy" ? "Finding you…" : "Use my current location"}</strong>
-              <span>{locating === "denied" ? "Location is off. Type your area instead." : "We'll find the nearest pickup point"}</span>
-            </span>
-          </li>
-          {!query && <li className={styles.heading}>Pickup points</li>}
+          {locate && (
+            <li
+              id={`${id}-opt-0`}
+              role="option"
+              aria-selected={active === 0}
+              className={`${styles.option} ${styles.locate}`}
+              onClick={() => choose(0)}
+              onMouseEnter={() => setActive(0)}
+            >
+              <span className={styles.pin} aria-hidden>
+                ◎
+              </span>
+              <span className={styles.text}>
+                <strong>{locating === "busy" ? "Finding you…" : "Use my current location"}</strong>
+                <span>{locating === "denied" ? "Location is off. Type your area instead." : "We'll find the nearest pickup point"}</span>
+              </span>
+            </li>
+          )}
+          {!query && <li className={styles.heading}>{locate ? "Pickup points" : "Drop-off points"}</li>}
           {results.map((m, i) => (
             <li
               key={`${m.name}-${m.lat}`}

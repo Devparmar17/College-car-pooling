@@ -14,7 +14,7 @@ const filters: { id: RideFilter; label: string; Icon: ComponentType<{ size?: num
   { id: "car", label: "Car", Icon: CarIcon },
   { id: "bike", label: "Bike", Icon: ScooterIcon },
   { id: "women", label: "Women pool", Icon: WomanIcon },
-  { id: "dept", label: "My department", Icon: BuildingIcon },
+  { id: "dept", label: "My dept", Icon: BuildingIcon },
 ];
 
 export function matchesFilter(ride: Ride, filter: RideFilter): boolean {
@@ -56,11 +56,17 @@ export function RideFilters({ value, onChange, rides }: Props) {
             className={`${styles.tile} ${count === 0 ? styles.empty : ""}`}
             onClick={() => onChange(id)}
           >
-            {count !== undefined && <span className={`${styles.count} tnum`}>{count}</span>}
             <span className={styles.icon}>
-              <Icon size={20} />
+              <Icon size={18} />
             </span>
-            <span className={styles.label}>{label}</span>
+            <span className={styles.text}>
+              <span className={styles.label}>{label}</span>
+              {count !== undefined && (
+                <span className={`${styles.count} tnum`}>
+                  {count} ride{count === 1 ? "" : "s"}
+                </span>
+              )}
+            </span>
           </button>
         );
       })}

@@ -1,0 +1,180 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px 16px;
+  border: 1px solid var(--unigo-primary);
+  border-radius: 16px;
+  background: var(--unigo-primary-soft);
+  animation: rise-in 420ms var(--ease-out);
+}
+
+.top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--unigo-primary-ink);
+}
+
+.when {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--unigo-black);
+  white-space: nowrap;
+}
+
+.route {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--unigo-white);
+}
+
+.dots {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+
+.dots::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  left: 4px;
+  width: 2px;
+  background: var(--unigo-dark-gray);
+}
+
+.dots i {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--unigo-primary);
+}
+
+.dots i + i {
+  background: var(--unigo-black);
+}
+
+.stops {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.stops > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--unigo-text-secondary);
+}
+
+.stops strong {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--unigo-black);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.driver {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.driver > span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--unigo-text-secondary);
+}
+
+.driver > span > * {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.driver strong {
+  font-size: 14px;
+  color: var(--unigo-black);
+}
+
+/* A finished ride still to pay for. */
+.pay {
+  flex-direction: row;
+  align-items: center;
+  border-color: var(--unigo-success);
+  background: var(--unigo-white);
+  transition: scale 120ms var(--ease-out);
+}
+
+.pay:active {
+  scale: 0.98;
+}
+
+.badge {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--unigo-success);
+  font-weight: 700;
+  color: var(--unigo-white);
+}
+
+.payText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--unigo-text-secondary);
+}
+
+.payText strong {
+  font-size: 15px;
+  color: var(--unigo-black);
+}
+
+.payCta {
+  flex: none;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--unigo-black);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--unigo-white);
+}

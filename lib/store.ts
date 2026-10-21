@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { me, ME_ID, seedRides, type Person, type Ride } from "./data";
+import { me, ME_ID, seedRides, todaysDemoRides, type Person, type Ride } from "./data";
 import { placeById } from "./places";
 import type { TripState } from "./trip";
 import { compareRides, dayLabels, formatClock, fullSegment, personById, segmentFare, segmentKm, segmentTimes, type Segment } from "./rides";
@@ -79,6 +79,37 @@ export type RideRequest = {
  * A ride called off by its driver. Rider side: a driver cancelled the seat you booked.
  * Driver side: you withdrew a ride you were driving and your riders were told.
  */
+/** How a passenger pays the driver at the end of a trip. */
+export type RiderPayment = {
+  method: "upi" | "cash" | "settle-up";
+  status: "pending" | "paid";
+  /** Demo: when a UPI payment lands. */
+  dueAt?: number;
+  at?: number;
+};
+
+/** Driver side of a ride you're driving: pickups, drop-off, payments and ratings, per accepted request. */
+export type DriveState = {
+  startedAt?: number;
+  boarded: Record<string, "picked" | "noshow">;
+  completedAt?: number;
+  paid: Record<string, RiderPayment>;
+  /** Your rating of each rider, per accepted request. */
+  rated: Record<string, Rating>;
+};
+
+/** A rating someone gave you: as a rider (from your driver) or as a driver (from a rider). */
+export type ReceivedRating = {
+  id: string;
+  rideId: string;
+  fromId: string;
+  as: "rider" | "driver";
+  stars: number;
+  tags: string[];
+  comment: string;
+  at: number;
+};
+
 export type Cancellation = {
   id: string;
   side: "rider" | "driver";
@@ -130,6 +161,12 @@ export type State = {
   incoming: RideRequest[];
   /** Rides called off, newest last. */
   cancellations: Cancellation[];
+  /** Demo: today's rides to campus, made fresh each day from the time the app was opened. */
+  today: { date: string; rides: Ride[] } | null;
+  /** Rides you're driving: trip progress and payments, per ride. */
+  drives: Record<string, DriveState>;
+  /** Ratings you've received; ones whose `at` is still ahead haven't arrived yet (demo). */
+  received: ReceivedRating[];
   /** Notification ids already seen. */
   notifRead: string[];
   /** Show ride alerts as system notifications on this device. */
@@ -155,6 +192,9 @@ const empty: State = {
   requests: [],
   incoming: [],
   cancellations: [],
+  today: null,
+  drives: {},
+  received: [],
 };
 
 // Demo review time before submitted documents count as verified.
@@ -182,6 +222,13 @@ const demo: State = {
   messages: {
     r109: [{ from: "driver", text: "Hi Dharam! I'll be at the ISKCON bus stop, Satellite side, by 8:13. White Creta.", at: 0 }],
   },
+  // Ratings from past trips (see ride history).
+  received: [
+    { id: "rr1", rideId: "h12", fromId: "ketan", as: "rider", stars: 5, tags: ["On time", "Polite"], comment: "", at: 0 },
+    { id: "rr2", rideId: "h07", fromId: "mehul", as: "rider", stars: 5, tags: ["Easy pickup"], comment: "Ready at the stop every time.", at: 0 },
+    { id: "rr3", rideId: "h10", fromId: "aarav", as: "driver", stars: 5, tags: ["Safe driving", "On time"], comment: "", at: 0 },
+    { id: "rr4", rideId: "h06", fromId: "riya", as: "driver", stars: 4, tags: ["Friendly"], comment: "Nice ride, AC was a bit low.", at: 0 },
+  ],
 };
 
 let state: State = empty;
@@ -193,7 +240,17 @@ function load() {
   loaded = true;
   try {
     const raw = window.localStorage.getItem(KEY);
-    state = raw ? { ...empty, ...JSON.parse(raw) } : demo;
+    const saved = raw ? JSON.parse(raw) : null;
+    state = saved ? { ...empty, ...saved } : demo;
+    // Saved before ratings existed: start with the demo's past ratings.
+    if (saved && !saved.received) state = { ...state, received: demo.received };
+    // A new day: fresh demo rides for today, and bookings on yesterday's ones are gone with them.
+    const now = new Date();
+    const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    if (state.today?.date !== date) {
+      state = { ...state, today: { date, rides: todaysDemoRides(date, now.getHours() * 60 + now.getMinutes()) } };
+      state = { ...state, bookings: state.bookings.filter((b) => findRide(state, b.rideId)) };
+    }
     // A review that was still running when the tab closed has finished by now.
     if (state.driver.status === "checking") state = { ...state, driver: { ...state.driver, status: "verified" } };
     // Same for drivers who were about to confirm cash or accept a settle-up request.
@@ -290,6 +347,8 @@ function scheduleDemoRequests(rideId: string) {
 
 /** Move requests that are due into the inbox, and alert the driver. Runs every second. */
 function deliverRequests() {
+  deliverPayments();
+  deliverRatings();
   const now = Date.now();
   const due = state.incoming.filter((r) => r.at <= now);
   if (!due.length) return;
@@ -305,6 +364,83 @@ function deliverRequests() {
       "/requests",
     );
   }
+}
+
+/** Demo: riders' UPI payments land a few seconds after the driver completes the ride. */
+function deliverPayments() {
+  const now = Date.now();
+  const landed: { rideId: string; reqId: string }[] = [];
+  for (const [rideId, d] of Object.entries(state.drives)) {
+    for (const [reqId, pay] of Object.entries(d.paid)) {
+      if (pay.method === "upi" && pay.status === "pending" && (pay.dueAt ?? 0) <= now) landed.push({ rideId, reqId });
+    }
+  }
+  if (!landed.length) return;
+  set((s) => {
+    const drives = { ...s.drives };
+    for (const { rideId, reqId } of landed) {
+      const d = drives[rideId];
+      drives[rideId] = { ...d, paid: { ...d.paid, [reqId]: { ...d.paid[reqId], status: "paid", at: now } } };
+    }
+    return { ...s, drives };
+  });
+  for (const { reqId } of landed) {
+    const req = state.requests.find((q) => q.id === reqId);
+    if (req) void systemAlert(`${personById(req.riderId)!.name.split(" ")[0]} paid ₹${req.amount} by UPI`, "Fuel share received.", "/earnings");
+  }
+}
+
+/** Demo: what the other side might say about you after a trip. */
+const SAID = {
+  rider: { tags: [["On time", "Polite"], ["Easy pickup"], ["Paid quickly", "Good company"]], comments: ["", "Ready at the pickup, thanks!", ""] },
+  driver: { tags: [["Safe driving", "On time"], ["Friendly", "Clean car"], ["Smooth route"]], comments: ["Great ride, thanks!", "", "Would ride again."] },
+};
+
+/** Queue a rating for you from `fromId`, arriving `inMs` from now. */
+function queueRating(rideId: string, fromId: string, as: ReceivedRating["as"], inMs: number, i = 0) {
+  const said = SAID[as];
+  const rating: ReceivedRating = {
+    id: `rr${Date.now().toString(36)}${i}`,
+    rideId,
+    fromId,
+    as,
+    stars: i % 3 === 2 ? 4 : 5,
+    tags: said.tags[i % said.tags.length],
+    comment: said.comments[i % said.comments.length],
+    at: Date.now() + inMs,
+  };
+  set((s) => ({ ...s, received: [...s.received, rating] }));
+}
+
+/** Ratings that have arrived (their time has come); the rest are still on their way. */
+export function receivedRatings(s: State, now = Date.now()): ReceivedRating[] {
+  return s.received.filter((r) => r.at <= now);
+}
+
+// Ratings already announced with an alert, this session.
+const announced = new Set<string>();
+
+function deliverRatings() {
+  const now = Date.now();
+  for (const r of state.received) {
+    if (!r.at || r.at > now || announced.has(r.id)) continue;
+    announced.add(r.id);
+    if (now - r.at > 5000) continue; // arrived while the app was closed
+    void systemAlert(
+      `${personById(r.fromId)!.name.split(" ")[0]} rated you ${"★".repeat(r.stars)}`,
+      [r.tags.join(" · "), r.comment].filter(Boolean).join(" — ") || `As a ${r.as}`,
+      "/profile#ratings",
+    );
+    // Re-render so the new rating shows up (it was hidden while its time was ahead).
+    set((s) => ({ ...s, received: [...s.received] }));
+  }
+}
+
+/** The riders on a ride you're driving: accepted seat requests, in pickup order. */
+export function ridersOn(s: State, ride: Ride): RideRequest[] {
+  return s.requests
+    .filter((r) => r.rideId === ride.id && r.kind === "seat" && r.status === "accepted")
+    .sort((a, b) => ride.stops.indexOf(a.segment.from) - ride.stops.indexOf(b.segment.from));
 }
 
 /** Passenger requests still waiting for your answer. */
@@ -371,11 +507,11 @@ export function useNowMinutes(): number | null {
 }
 
 export function allRides(s: State): Ride[] {
-  return [...seedRides, ...s.offered].sort(compareRides);
+  return [...seedRides, ...(s.today?.rides ?? []), ...s.offered].sort(compareRides);
 }
 
 export function findRide(s: State, id: string): Ride | undefined {
-  return seedRides.find((r) => r.id === id) ?? s.offered.find((r) => r.id === id);
+  return seedRides.find((r) => r.id === id) ?? s.today?.rides.find((r) => r.id === id) ?? s.offered.find((r) => r.id === id);
 }
 
 export function bookingFor(s: State, rideId: string): Booking | undefined {
@@ -398,7 +534,13 @@ export function earnings(s: State) {
   // Each booked rider pays an equal fuel share among the people now in the car.
   const booked = rides.reduce((sum, r) => sum + (r.seatsTaken ? r.seatsTaken * segmentFare(r, fullSegment(r), 0) : 0), 0) + settleUp;
   const ifFull = rides.reduce((sum, r) => sum + r.seatsTotal * r.fare, 0) + settleUp;
-  return { rides, booked, ifFull, settleUp };
+  // Fuel shares riders have actually paid you after finished trips.
+  const earned = rides.reduce((sum, r) => {
+    const d = s.drives[r.id];
+    if (!d) return sum;
+    return sum + ridersOn(s, r).filter((q) => d.paid[q.id]?.status === "paid").reduce((x, q) => x + q.amount, 0);
+  }, 0);
+  return { rides, booked, ifFull, settleUp, earned };
 }
 
 const AUTO_FARE_PER_KM = 18;
@@ -466,6 +608,8 @@ export const actions = {
     const ride = findRide(state, rideId);
     const booking = bookingFor(state, rideId);
     if (ride && booking) {
+      // A little later, your driver rates you as a rider.
+      queueRating(rideId, ride.driverId, "rider", 8000);
       const driver = personById(ride.driverId);
       void systemAlert(
         `You've reached ${placeById[booking.segment.to].name}`,
@@ -605,6 +749,51 @@ export const actions = {
             : s.offered,
         requests: s.requests.map((r) => (r.id === requestId ? { ...r, status: "accepted", answeredAt: Date.now() } : r)),
       };
+    });
+  },
+  /** Driver: set off. Riders are told you're on the way. */
+  startDrive(rideId: string) {
+    set((s) => ({ ...s, drives: { ...s.drives, [rideId]: { startedAt: Date.now(), boarded: {}, paid: {}, rated: {} } } }));
+  },
+  /** Driver: a rider got in, or didn't turn up at the pickup. */
+  board(rideId: string, reqId: string, outcome: "picked" | "noshow") {
+    set((s) => {
+      const d = s.drives[rideId];
+      return d ? { ...s, drives: { ...s.drives, [rideId]: { ...d, boarded: { ...d.boarded, [reqId]: outcome } } } } : s;
+    });
+  },
+  /**
+   * Driver: everyone's dropped off. Each rider who came pays their share. In this demo one pays by
+   * UPI (lands in a few seconds), one hands over cash, one asks for monthly settle-up.
+   */
+  finishDrive(rideId: string) {
+    const d = state.drives[rideId];
+    const ride = state.offered.find((r) => r.id === rideId);
+    if (!d || !ride) return;
+    const methods: RiderPayment["method"][] = ["upi", "cash", "settle-up"];
+    const picked = ridersOn(state, ride).filter((q) => d.boarded[q.id] === "picked");
+    const paid = Object.fromEntries(
+      picked.map((q, i) => {
+        const method = methods[i % methods.length];
+        return [q.id, { method, status: "pending" as const, dueAt: method === "upi" ? Date.now() + 3000 + i * 1500 : undefined }];
+      }),
+    );
+    set((s) => ({ ...s, drives: { ...s.drives, [rideId]: { ...d, completedAt: Date.now(), paid } } }));
+    // A little later, your riders rate you as a driver.
+    picked.forEach((q, i) => queueRating(rideId, q.riderId, "driver", 6000 + i * 2500, i));
+  },
+  /** Driver: the rider handed over cash, or you accept their monthly settle-up. */
+  settleRider(rideId: string, reqId: string) {
+    set((s) => {
+      const d = s.drives[rideId];
+      if (!d?.paid[reqId]) return s;
+      return { ...s, drives: { ...s.drives, [rideId]: { ...d, paid: { ...d.paid, [reqId]: { ...d.paid[reqId], status: "paid", at: Date.now() } } } } };
+    });
+  },
+  rateRider(rideId: string, reqId: string, rating: Omit<Rating, "at">) {
+    set((s) => {
+      const d = s.drives[rideId];
+      return d ? { ...s, drives: { ...s.drives, [rideId]: { ...d, rated: { ...d.rated, [reqId]: { ...rating, at: Date.now() } } } } } : s;
     });
   },
   /** Driver: say no. The passenger is told and can look for another ride. */

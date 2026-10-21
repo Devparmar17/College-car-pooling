@@ -223,3 +223,10 @@
     margin-left: auto;
   }
 }
+
+/* Out of the way while typing on a phone (see KeyboardWatcher). */
+@media (max-width: 1023px) {
+  :global(html[data-keyboard]) .nav {
+    display: none;
+  }
+}

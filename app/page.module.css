@@ -23,12 +23,11 @@
   .page {
     display: grid;
     grid-template-columns: minmax(340px, 400px) 1fr;
-    grid-template-rows: auto auto auto auto 1fr;
+    grid-template-rows: auto auto auto 1fr;
     grid-template-areas:
       "toggle requests"
       "greet requests"
       "search requests"
-      "filters requests"
       ". requests";
     column-gap: 40px;
   }
@@ -54,11 +53,6 @@
   }
 
   .body > :nth-child(2) {
-    grid-area: filters;
-    margin-top: 20px;
-  }
-
-  .body > :nth-child(3) {
     grid-area: requests;
     align-self: start;
     padding-top: var(--top-gap);

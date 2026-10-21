@@ -153,3 +153,11 @@
 .row {
   transition: background 0.15s, scale 120ms var(--ease-out);
 }
+
+.heading {
+  padding: 6px 10px 2px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  color: var(--unigo-text-secondary);
+}

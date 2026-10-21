@@ -1,6 +1,6 @@
 import { placeById } from "./places";
 import { dayLabels, formatClock, hasLeft, personById, rupees, segmentTimes } from "./rides";
-import { findRide, type State } from "./store";
+import { findRide, receivedRatings, type State } from "./store";
 
 export type NoteKind = "booking" | "reminder" | "message" | "payment" | "rating" | "driver" | "match" | "welcome" | "request" | "cancel";
 
@@ -135,6 +135,36 @@ export function buildNotifications(s: State, nowMin: number | null): Note[] {
             at: c.at,
           },
     );
+  }
+
+  // Ratings others gave you, as a rider or as a driver.
+  for (const r of receivedRatings(s)) {
+    if (!r.at) continue;
+    notes.push({
+      id: `rated-${r.id}`,
+      kind: "rating",
+      title: `${first(r.fromId)} rated you ${"★".repeat(r.stars)}`,
+      body: [`As a ${r.as}`, r.tags.join(", "), r.comment].filter(Boolean).join(" · "),
+      href: "/profile#ratings",
+      at: r.at,
+    });
+  }
+
+  // Driver side: riders paying their fuel share after a trip you drove.
+  for (const [rideId, d] of Object.entries(s.drives)) {
+    for (const [reqId, pay] of Object.entries(d.paid)) {
+      const req = s.requests.find((q) => q.id === reqId);
+      if (!req || pay.status !== "paid") continue;
+      const how = pay.method === "upi" ? "by UPI" : pay.method === "cash" ? "in cash" : "on monthly settle-up";
+      notes.push({
+        id: `ridepaid-${reqId}`,
+        kind: "payment",
+        title: `${first(req.riderId)} paid ${rupees(req.amount)} ${how}`,
+        body: `Fuel share for ${placeById[req.segment.from].name} → ${placeById[req.segment.to].name}`,
+        href: `/rides/${rideId}`,
+        at: pay.at ?? d.completedAt ?? 0,
+      });
+    }
   }
 
   // Driver side: passengers asking you for a seat or a settle-up.

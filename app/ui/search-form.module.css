@@ -12,13 +12,6 @@
   background: var(--unigo-extra-light-gray);
 }
 
-.line {
-  position: absolute;
-  left: 13px;
-  top: 34px;
-  pointer-events: none;
-}
-
 /* The From and To boxes are PlaceInput fields; keep a divider between them. */
 .places > div + div {
   border-top: 1px solid var(--unigo-border);
@@ -31,12 +24,59 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border: 1px solid var(--unigo-border);
   border-radius: 50%;
   background: var(--unigo-white);
   color: var(--unigo-black);
   transform: translateY(-50%);
   z-index: 1;
+}
+
+.swap {
+  transition: rotate 300ms var(--ease-spring), scale 120ms var(--ease-out);
+}
+
+.swap:active {
+  scale: 0.92;
+  rotate: 180deg;
+}
+
+/* Quick routes: Home → Campus, Campus → Home */
+.quick {
+  display: flex;
+  gap: 8px;
+}
+
+.quick button {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 999px;
+  background: var(--unigo-white);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--unigo-black);
+  white-space: nowrap;
+  transition: background 150ms, border-color 150ms, scale 120ms var(--ease-out);
+}
+
+.quick button:hover {
+  border-color: var(--unigo-primary);
+}
+
+.quick button:active {
+  scale: 0.97;
+}
+
+.quick button[aria-pressed="true"] {
+  border-color: var(--unigo-primary);
+  background: var(--unigo-primary-soft);
+  color: var(--unigo-primary-ink);
 }

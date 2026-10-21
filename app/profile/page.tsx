@@ -6,6 +6,7 @@ import { Avatar } from "../ui/avatar";
 import { PageHeader } from "../ui/page-header";
 import { RideHistory } from "../ui/ride-history";
 import { MyActivity, MyProfileHero, UpcomingCount } from "./my-activity";
+import { MyRatings } from "./my-ratings";
 import styles from "./profile.module.css";
 
 export const metadata: Metadata = { title: "Profile" };
@@ -44,6 +45,8 @@ export default function ProfilePage() {
               <Stat label="Saved vs. auto" value={rupees(stats.savedVsAuto)} accent />
             </div>
           </section>
+
+          <MyRatings />
 
           {(stats.topRoute || stats.topDriver) && (
             <section>

@@ -1,0 +1,223 @@
+.trip {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.head :global(.section-title) {
+  margin: 0;
+}
+
+.count {
+  font-size: 13px;
+  color: var(--unigo-text-secondary);
+}
+
+/* Riders accepted → Picking up → Dropped off → Paid */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  list-style: none;
+}
+
+.steps li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  line-height: 14px;
+  text-align: center;
+  color: var(--unigo-text-secondary);
+}
+
+.steps span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--unigo-border);
+  border-radius: 50%;
+  background: var(--unigo-white);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.steps .done span {
+  border-color: var(--unigo-success);
+  background: var(--unigo-success);
+  color: var(--unigo-white);
+  animation: pop-in 360ms var(--ease-spring);
+}
+
+.steps .now {
+  font-weight: 600;
+  color: var(--unigo-black);
+}
+
+.steps .now span {
+  border-color: var(--unigo-primary);
+  background: var(--unigo-primary);
+  color: var(--unigo-black);
+}
+
+.empty,
+.collect {
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--unigo-extra-light-gray);
+  font-size: 13px;
+  color: var(--unigo-text-secondary);
+}
+
+.collect {
+  font-weight: 600;
+  text-align: center;
+  color: var(--unigo-black);
+}
+
+.next {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--unigo-primary-soft);
+  font-size: 13px;
+  color: var(--unigo-primary-ink);
+  animation: rise-in 260ms var(--ease-out);
+}
+
+.next strong {
+  color: var(--unigo-black);
+}
+
+.allPaid {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--unigo-success);
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--unigo-black);
+  animation: pop-in 420ms var(--ease-spring);
+}
+
+.allPaid > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--unigo-success);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--unigo-white);
+}
+
+.riders {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+}
+
+.rider {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 0;
+}
+
+.rider + .rider {
+  border-top: 1px solid var(--unigo-border);
+}
+
+.noshow .who {
+  opacity: 0.5;
+}
+
+.who {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.whoText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--unigo-text-secondary);
+}
+
+.whoText > * {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.whoText strong {
+  font-size: 14px;
+  color: var(--unigo-black);
+}
+
+.amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--unigo-black);
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.actions :global(.btn) {
+  height: 40px;
+  font-size: 13px;
+}
+
+.ok,
+.waiting,
+.muted {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ok {
+  color: var(--unigo-success);
+  animation: rise-in 240ms var(--ease-out);
+}
+
+.waiting {
+  color: var(--unigo-primary-ink);
+}
+
+.muted {
+  font-weight: 400;
+  color: var(--unigo-text-secondary);
+}
+
+.payRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.payRow :global(.btn) {
+  flex: none;
+  height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+}

@@ -382,3 +382,13 @@ a:active {
     font-size: 15px;
   }
 }
+
+/*
+ * Phones, while the keyboard is up (set by KeyboardWatcher): the floating nav steps aside and
+ * gives its space back, so fixed bars (chat box, booking bar, Publish) sit right on the keyboard.
+ */
+@media (max-width: 1023px) {
+  html[data-keyboard] {
+    --nav-h: 0px;
+  }
+}

@@ -1,7 +1,7 @@
 .requests {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .head {
@@ -12,6 +12,11 @@
   font-weight: 600;
   letter-spacing: -0.1px;
   white-space: nowrap;
+}
+
+.head h2 span {
+  font-weight: 400;
+  color: var(--unigo-text-secondary);
 }
 
 .head h2 {
@@ -29,7 +34,13 @@
 
 
 .empty {
-  padding-right: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--unigo-extra-light-gray);
   font-size: 13px;
   color: var(--unigo-text-secondary);
 }

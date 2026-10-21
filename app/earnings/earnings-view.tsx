@@ -10,7 +10,7 @@ import styles from "./earnings.module.css";
 export function EarningsView() {
   const s = useStore();
   const hydrated = useHydrated();
-  const { rides, booked, ifFull, settleUp } = earnings(s);
+  const { rides, booked, ifFull, settleUp, earned } = earnings(s);
 
   return (
     <div className={`${styles.page} stagger`}>
@@ -23,6 +23,7 @@ export function EarningsView() {
             : "Riders pay you by UPI after each ride"}
           {hydrated && settleUp > 0 && ` · incl. ${rupees(settleUp)} on monthly settle-up`}
         </span>
+        {hydrated && earned > 0 && <span className={styles.earned}>{rupees(earned)} received from finished trips</span>}
       </section>
 
       <RequestsBanner />

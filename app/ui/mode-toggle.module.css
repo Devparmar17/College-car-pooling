@@ -49,10 +49,6 @@
   color: var(--unigo-white);
 }
 
-.underline {
-  display: block;
-  margin-top: 18px;
-}
 
 /* Micro-interactions */
 .thumb {

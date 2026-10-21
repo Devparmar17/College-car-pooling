@@ -28,8 +28,6 @@ export function ModeToggle({ active }: { active: "find" | "offer" }) {
           Offer a ride
         </Link>
       </nav>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/figma/toggle-underline.svg" alt="" width={155} height={1} className={styles.underline} />
     </div>
   );
 }

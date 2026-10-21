@@ -1,13 +1,12 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element -- Figma icon assets render at their native size. */
-
-import { useState, type FormEvent } from "react";
-import type { Day } from "@/lib/data";
+import { useRouter } from "next/navigation";
+import { useState, type ChangeEvent, type FormEvent } from "react";
+import { me, type Day } from "@/lib/data";
 import { pickupMatches, type Match } from "@/lib/geo";
 import type { PlaceId } from "@/lib/places";
 import { dayLabels } from "@/lib/rides";
-import { SwapIcon } from "./icons";
+import { BuildingIcon, HomeIcon, SwapIcon } from "./icons";
 import { PlaceInput, placeValue, type PlaceValue } from "./place-input";
 import styles from "./search-form.module.css";
 
@@ -27,10 +26,28 @@ function initial(p?: PlaceParam): PlaceValue {
   return placeValue(picked);
 }
 
+const home = pickupMatches.find((m) => m.pickup === me.home)!;
+const campus = pickupMatches.find((m) => m.pickup === "indus")!;
+
 export function SearchForm({ from, to, day = 0 }: Props) {
   const [a, setA] = useState(() => initial(from));
   const [b, setB] = useState(() => initial(to));
   const [errors, setErrors] = useState<{ from?: string; to?: string }>({});
+  const router = useRouter();
+
+  function route(x: Match, y: Match) {
+    setA(placeValue(x));
+    setB(placeValue(y));
+    setErrors({});
+  }
+  // Picking a day updates the results straight away, for the places picked so far.
+  function showDay(e: ChangeEvent<HTMLInputElement>) {
+    const params = new URLSearchParams();
+    for (const [k, v] of new FormData(e.currentTarget.form!)) if (typeof v === "string" && v) params.set(k, v);
+    router.replace(`/find?${params}`, { scroll: false });
+  }
+
+  const isRoute = (x: Match, y: Match) => a.picked?.name === x.name && b.picked?.name === y.name;
 
   // Text typed but not picked from the list can't be searched yet.
   function submit(e: FormEvent) {
@@ -47,7 +64,6 @@ export function SearchForm({ from, to, day = 0 }: Props) {
   return (
     <form action="/find" className={styles.form} onSubmit={submit}>
       <div className={styles.places}>
-        <img src="/figma/route-line.svg" alt="" width={20.9677} height={32} className={styles.line} />
         <PlaceInput
           name="from"
           label="From"
@@ -83,10 +99,19 @@ export function SearchForm({ from, to, day = 0 }: Props) {
           <SwapIcon size={18} />
         </button>
       </div>
+      {/* The two trips nearly everyone makes, one tap each. */}
+      <div className={styles.quick} aria-label="Quick routes">
+        <button type="button" onClick={() => route(home, campus)} aria-pressed={isRoute(home, campus)}>
+          <HomeIcon size={16} /> Home → Campus
+        </button>
+        <button type="button" onClick={() => route(campus, home)} aria-pressed={isRoute(campus, home)}>
+          <BuildingIcon size={16} /> Campus → Home
+        </button>
+      </div>
       <div className="segmented" role="radiogroup" aria-label="Day">
         {([0, 1, 2] as Day[]).map((d) => (
           <label key={d}>
-            <input type="radio" name="day" value={d} defaultChecked={d === day} />
+            <input type="radio" name="day" value={d} defaultChecked={d === day} onChange={showDay} />
             <span>{dayLabels[d]}</span>
           </label>
         ))}

@@ -138,3 +138,13 @@
   font-size: 13px;
   color: var(--unigo-text-secondary);
 }
+
+/* Inside another card (the driver rating each rider). */
+.compact {
+  padding: 12px;
+  box-shadow: none;
+}
+
+.compact h2 {
+  font-size: 14px;
+}

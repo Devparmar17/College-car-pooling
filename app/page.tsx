@@ -1,8 +1,6 @@
-import { HomeFeed } from "./home-feed";
 import { Greeting } from "./greeting";
-import { RecentPlaces } from "./recent-places";
+import { HomeBody } from "./home-body";
 import { ModeToggle } from "./ui/mode-toggle";
-import { SearchBar } from "./ui/search-bar";
 import styles from "./page.module.css";
 
 /** Figma "Rider Home" (node 844:2747). */
@@ -12,11 +10,7 @@ export default function Home() {
       <ModeToggle active="find" />
       <Greeting />
       <div className={`${styles.body} stagger`}>
-        <div className={styles.search}>
-          <SearchBar />
-          <RecentPlaces />
-        </div>
-        <HomeFeed />
+        <HomeBody />
       </div>
     </div>
   );

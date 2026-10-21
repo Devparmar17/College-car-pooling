@@ -217,3 +217,26 @@
   font-size: 12px;
   color: var(--unigo-text-secondary);
 }
+
+/*
+ * A dotted line joins the From and To dots across the divider (continuity):
+ * From draws it from below its dot to its bottom edge, To from its top edge to above its dot.
+ */
+.from::after,
+.to::before {
+  content: "";
+  position: absolute;
+  left: 23px;
+  border-left: 2px dotted var(--unigo-dark-gray);
+  pointer-events: none;
+}
+
+.from::after {
+  top: 42px;
+  bottom: 0;
+}
+
+.to::before {
+  top: 0;
+  height: 20px;
+}

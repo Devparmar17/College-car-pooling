@@ -94,7 +94,7 @@ export const me: Person = {
 /** Places Dharam searched for recently, newest first. */
 export const recentPlaces: { place: PlaceId; title: string; subtitle: string }[] = [
   { place: "indus", title: "Indus University", subtitle: "Rancharda, via Shilaj, Gujarat" },
-  { place: "iskcon", title: "Iskcon Temple, Ahmedabad", subtitle: "Satellite Road, Sarkhej–Gandhinagar Hwy" },
+  { place: "iskcon", title: "ISKCON Cross Road", subtitle: "Satellite Road, Sarkhej–Gandhinagar Hwy" },
   { place: "thaltej", title: "Thaltej Cross Road", subtitle: "SG Highway, Ahmedabad" },
   { place: "vastrapur", title: "Vastrapur Lake", subtitle: "Vastrapur, Ahmedabad" },
 ];
@@ -182,9 +182,9 @@ const vehicles = {
   activa: { kind: "bike", model: "Honda Activa", color: "Blue", plate: "GJ 01 TS 7384" },
 } satisfies Record<string, Vehicle>;
 
-/** Nobody sets a price: each seat is an equal share of the route's fuel when the car is full. */
+/** Nobody sets a price: each seat is an equal share of the route's fuel once every seat is taken. */
 function seed(r: Omit<Ride, "fare">): Ride {
-  return { ...r, fare: fuelShare(fuelCost(routeKm(r.stops), r.vehicle.kind), 1 + r.seatsTotal) };
+  return { ...r, fare: fuelShare(fuelCost(routeKm(r.stops), r.vehicle.kind), r.seatsTotal) };
 }
 
 export const seedRides: Ride[] = [
@@ -329,7 +329,140 @@ export const seedRides: Ride[] = [
     vehicle: vehicles.activa,
     prefs: [],
   }),
+  // Evening rides home from campus, tomorrow and the day after.
+  seed({
+    id: "r112",
+    driverId: "ketan",
+    stops: ["indus", "iskcon"],
+    day: 1,
+    time: "17:30",
+    daily: true,
+    seatsTotal: 3,
+    seatsTaken: 1,
+    vehicle: vehicles.creta,
+    prefs: ["ac", "noSmoking"],
+  }),
+  seed({
+    id: "r113",
+    driverId: "riya",
+    stops: ["indus", "thaltej", "vastrapur"],
+    day: 1,
+    time: "17:00",
+    seatsTotal: 3,
+    seatsTaken: 0,
+    vehicle: vehicles.swift,
+    prefs: ["women", "ac"],
+  }),
+  seed({
+    id: "r125",
+    driverId: "ketanp",
+    stops: ["indus", "ambli"],
+    day: 2,
+    time: "17:15",
+    seatsTotal: 3,
+    seatsTaken: 1,
+    vehicle: vehicles.city,
+    prefs: ["ac", "music"],
+  }),
+  seed({
+    id: "r126",
+    driverId: "mehul",
+    stops: ["indus", "sola", "gota"],
+    day: 2,
+    time: "17:10",
+    seatsTotal: 4,
+    seatsTaken: 2,
+    vehicle: vehicles.innova,
+    prefs: ["quiet", "noSmoking"],
+  }),
+  // Day after: a full morning of rides to campus.
+  seed({
+    id: "r120",
+    driverId: "mehul",
+    stops: ["gota", "sola", "indus"],
+    day: 2,
+    time: "07:40",
+    daily: true,
+    seatsTotal: 4,
+    seatsTaken: 1,
+    vehicle: vehicles.innova,
+    prefs: ["quiet", "noSmoking"],
+  }),
+  seed({
+    id: "r121",
+    driverId: "ketan",
+    stops: ["iskcon", "indus"],
+    day: 2,
+    time: "08:15",
+    daily: true,
+    seatsTotal: 3,
+    seatsTaken: 0,
+    vehicle: vehicles.creta,
+    prefs: ["ac", "noSmoking"],
+    note: "I wait at the ISKCON bus stop, Satellite side.",
+  }),
+  seed({
+    id: "r122",
+    driverId: "ketanp",
+    stops: ["ambli", "indus"],
+    day: 2,
+    time: "08:20",
+    seatsTotal: 3,
+    seatsTaken: 2,
+    vehicle: vehicles.city,
+    prefs: ["ac", "music"],
+  }),
+  seed({
+    id: "r123",
+    driverId: "riya",
+    stops: ["vastrapur", "thaltej", "indus"],
+    day: 2,
+    time: "08:30",
+    seatsTotal: 3,
+    seatsTaken: 1,
+    vehicle: vehicles.swift,
+    prefs: ["women", "ac"],
+  }),
+  seed({
+    id: "r124",
+    driverId: "aarav",
+    stops: ["southBopal", "bopal", "indus"],
+    day: 2,
+    time: "08:35",
+    seatsTotal: 1,
+    seatsTaken: 0,
+    vehicle: vehicles.activa,
+    prefs: [],
+  }),
 ];
+
+/**
+ * Demo: today's rides to campus, timed from when the app is opened (about 20 min, 45 min,
+ * 1¼ h… from now), so there are always rides you can still book today.
+ */
+const TODAY_TEMPLATES: (Omit<Ride, "fare" | "id" | "day" | "time"> & { inMin: number })[] = [
+  { inMin: 20, driverId: "ketan", stops: ["iskcon", "indus"], seatsTotal: 3, seatsTaken: 1, vehicle: vehicles.creta, prefs: ["ac", "noSmoking"] },
+  { inMin: 45, driverId: "riya", stops: ["vastrapur", "thaltej", "indus"], seatsTotal: 3, seatsTaken: 1, vehicle: vehicles.swift, prefs: ["women", "ac"] },
+  { inMin: 75, driverId: "aarav", stops: ["bopal", "indus"], seatsTotal: 1, seatsTaken: 0, vehicle: vehicles.activa, prefs: [] },
+  { inMin: 105, driverId: "mehul", stops: ["sola", "thaltej", "indus"], seatsTotal: 4, seatsTaken: 2, vehicle: vehicles.innova, prefs: ["quiet", "noSmoking"] },
+  { inMin: 150, driverId: "ketanp", stops: ["ambli", "shilaj", "indus"], seatsTotal: 3, seatsTaken: 0, vehicle: vehicles.city, prefs: ["ac", "music"] },
+];
+
+const LAST_DEPARTURE = 23 * 60 + 30;
+
+/** Today's demo rides for a day key ("2026-10-21") and the minutes after midnight they start from. */
+export function todaysDemoRides(dateKey: string, fromMin: number): Ride[] {
+  return TODAY_TEMPLATES.map(({ inMin, ...r }, i) => ({ ...r, i, at: Math.ceil((fromMin + inMin) / 5) * 5 }))
+    .filter(({ at }) => at <= LAST_DEPARTURE)
+    .map(({ i, at, ...r }) =>
+      seed({
+        ...r,
+        id: `t${dateKey.replaceAll("-", "")}${i}`,
+        day: 0,
+        time: `${String(Math.floor(at / 60)).padStart(2, "0")}:${String(at % 60).padStart(2, "0")}`,
+      }),
+    );
+}
 
 export const reviews: Review[] = [
   { personId: "ketan", by: "Riya M.", rating: 5, text: "Always on time for the 9:30 lecture, and the AC actually works.", when: "Sep 2026" },

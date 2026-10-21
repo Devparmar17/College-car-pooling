@@ -5,18 +5,18 @@
   width: 100%;
 }
 
+/* Compact tiles: icon beside the label, so the rides below stay in view. */
 .tile {
   position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
-  height: 74px;
-  padding: 8px 4px;
+  height: 52px;
+  padding: 0 8px;
   border: 1px solid var(--unigo-border);
-  border-radius: 16px;
+  border-radius: 14px;
+  text-align: left;
   background: var(--unigo-white);
   transition: background 0.15s, border-color 0.15s, transform 0.1s;
 }
@@ -31,10 +31,11 @@
 
 .icon {
   display: flex;
+  flex: none;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: var(--unigo-extra-light-gray);
   color: var(--unigo-black);
@@ -44,25 +45,30 @@
 .label {
   max-width: 100%;
   overflow: hidden;
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 500;
   line-height: 16px;
   color: var(--unigo-black);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 .count {
-  position: absolute;
-  top: 7px;
-  right: 9px;
   font-size: 11px;
   line-height: 14px;
   color: var(--unigo-text-secondary);
+  white-space: nowrap;
 }
 
 /* No rides behind this filter right now: still tappable, but quieter. */
 .empty .icon,
-.empty .label {
+.empty .text {
   opacity: 0.45;
 }
 

@@ -38,7 +38,7 @@ export function segmentKm(ride: Ride, seg: Segment): number {
  * everyone in the vehicle (the driver, the riders already booked, and your seats).
  */
 export function segmentFare(ride: Ride, seg: Segment, seats = 1): number {
-  return fuelShare(fuelCost(segmentKm(ride, seg), ride.vehicle.kind), 1 + ride.seatsTaken + seats);
+  return fuelShare(fuelCost(segmentKm(ride, seg), ride.vehicle.kind), ride.seatsTaken + seats);
 }
 
 export function toMinutes(hhmm: string): number {

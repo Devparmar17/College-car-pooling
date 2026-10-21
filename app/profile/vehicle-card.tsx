@@ -1,7 +1,8 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element -- Figma icon assets render at their native size. */
-import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { myVehicle } from "@/lib/data";
 import { actions, useHydrated, useStore, type DriverDoc } from "@/lib/store";
 import { CarIcon, CheckIcon } from "../ui/icons";
@@ -20,6 +21,14 @@ export function VehicleCard() {
   const hydrated = useHydrated();
   const status = hydrated ? driver.status : "none";
   const ready = !!driver.licence && !!driver.rc;
+  const router = useRouter();
+
+  // The moment the review passes, take the new driver straight to offering a ride.
+  const was = useRef(status);
+  useEffect(() => {
+    if (was.current === "checking" && status === "verified") router.push("/offer?verified=1");
+    was.current = status;
+  }, [status, router]);
 
   return (
     <section id="driver" className={styles.anchor}>

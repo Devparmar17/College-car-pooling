@@ -65,7 +65,9 @@ export function TripComplete({ rideId }: { rideId: string }) {
       <section className={styles.card}>
         <p className={styles.eyebrow}>YOUR FUEL CONTRIBUTION</p>
         <p className={`${styles.big} tnum`}>{rupees(split.youPay)}</p>
-        <p className={styles.explain}>Fuel cost shared equally by the {split.people} people in the car</p>
+        <p className={styles.explain}>
+          Fuel cost shared equally by the {split.people} rider{split.people > 1 ? "s" : ""} · {first} drives
+        </p>
 
         <div className={styles.bar} aria-hidden>
           {split.members.map((m, i) => (
@@ -80,16 +82,13 @@ export function TripComplete({ rideId }: { rideId: string }) {
                 className={styles.avatar}
                 style={{
                   background:
-                    m.role === "you" ? "var(--unigo-primary)" : m.role === "driver" ? "color-mix(in srgb, var(--unigo-primary) 52%, transparent)" : SWATCH[i % 2],
+                    m.role === "you" ? "var(--unigo-primary)" : SWATCH[i % 2],
                 }}
               >
                 {m.initials}
               </span>
               <strong>{m.name}</strong>
-              <span className="tnum">
-                {m.role === "driver" ? "Driver · " : ""}
-                {rupees(m.amount)}
-              </span>
+              <span className="tnum">{rupees(m.amount)}</span>
             </li>
           ))}
         </ul>
@@ -105,7 +104,9 @@ export function TripComplete({ rideId }: { rideId: string }) {
           </div>
           <div>
             <dt>Split between</dt>
-            <dd>{split.people} people</dd>
+            <dd>
+              {split.people} rider{split.people > 1 ? "s" : ""}
+            </dd>
           </div>
         </dl>
 
@@ -116,7 +117,7 @@ export function TripComplete({ rideId }: { rideId: string }) {
       </section>
 
       <div className={styles.actions}>
-        {payment && <RateDriver rideId={ride.id} driver={split.driver} />}
+        <RateDriver rideId={ride.id} driver={split.driver} />
         {payment ? (
           <div className={styles.status} role="status">
             <span className={`${styles.statusTick} ${waiting ? styles.statusWait : ""}`}>{waiting ? "…" : "✓"}</span>
