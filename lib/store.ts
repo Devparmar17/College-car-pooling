@@ -91,6 +91,9 @@ export type RiderPayment = {
 /** Driver side of a ride you're driving: pickups, drop-off, payments and ratings, per accepted request. */
 export type DriveState = {
   startedAt?: number;
+  /** When you reached each rider's pickup and told them you're there. */
+  arrived?: Record<string, number>;
+  /** Picked: the rider confirmed they're in the car. No-show: you waited and they didn't come. */
   boarded: Record<string, "picked" | "noshow">;
   completedAt?: number;
   paid: Record<string, RiderPayment>;
@@ -348,6 +351,7 @@ function scheduleDemoRequests(rideId: string) {
 /** Move requests that are due into the inbox, and alert the driver. Runs every second. */
 function deliverRequests() {
   deliverPayments();
+  deliverBoarding();
   deliverRatings();
   const now = Date.now();
   const due = state.incoming.filter((r) => r.at <= now);
@@ -367,6 +371,34 @@ function deliverRequests() {
 }
 
 /** Demo: riders' UPI payments land a few seconds after the driver completes the ride. */
+// Demo: how long a rider takes to get in and confirm after you arrive.
+const BOARD_MS = 3500;
+
+/** Demo: riders confirm they're in the car a few seconds after you arrive at their pickup. */
+function deliverBoarding() {
+  const now = Date.now();
+  const due: { rideId: string; reqId: string }[] = [];
+  for (const [rideId, d] of Object.entries(state.drives)) {
+    if (d.completedAt) continue;
+    for (const [reqId, at] of Object.entries(d.arrived ?? {})) {
+      if (!d.boarded[reqId] && now - at >= BOARD_MS) due.push({ rideId, reqId });
+    }
+  }
+  if (!due.length) return;
+  set((s) => {
+    const drives = { ...s.drives };
+    for (const { rideId, reqId } of due) {
+      const d = drives[rideId];
+      drives[rideId] = { ...d, boarded: { ...d.boarded, [reqId]: "picked" } };
+    }
+    return { ...s, drives };
+  });
+  for (const { reqId } of due) {
+    const req = state.requests.find((q) => q.id === reqId);
+    if (req) void systemAlert(`${personById(req.riderId)!.name.split(" ")[0]} is in your car`, "They confirmed the pickup.", `/rides/${req.rideId}`);
+  }
+}
+
 function deliverPayments() {
   const now = Date.now();
   const landed: { rideId: string; reqId: string }[] = [];
@@ -601,6 +633,10 @@ export const actions = {
   playTrip(rideId: string) {
     set((s) => ({ ...s, trips: { ...s.trips, [rideId]: { simStart: Date.now() } } }));
   },
+  /** Rider: you're in the driver's car; this confirms the pickup for them. */
+  confirmBoarded(rideId: string) {
+    set((s) => ({ ...s, trips: { ...s.trips, [rideId]: { ...s.trips[rideId], boardedAt: Date.now() } } }));
+  },
   /** The ride has finished: record it once, and tell the rider. */
   completeTrip(rideId: string) {
     if (state.trips[rideId]?.completedAt) return;
@@ -753,9 +789,17 @@ export const actions = {
   },
   /** Driver: set off. Riders are told you're on the way. */
   startDrive(rideId: string) {
-    set((s) => ({ ...s, drives: { ...s.drives, [rideId]: { startedAt: Date.now(), boarded: {}, paid: {}, rated: {} } } }));
+    set((s) => ({ ...s, drives: { ...s.drives, [rideId]: { startedAt: Date.now(), arrived: {}, boarded: {}, paid: {}, rated: {} } } }));
   },
   /** Driver: a rider got in, or didn't turn up at the pickup. */
+  /** Driver: you're at a rider's pickup. They're told, and confirm once they're in. */
+  arriveAt(rideId: string, reqId: string) {
+    set((s) => {
+      const d = s.drives[rideId];
+      return d ? { ...s, drives: { ...s.drives, [rideId]: { ...d, arrived: { ...d.arrived, [reqId]: Date.now() } } } } : s;
+    });
+  },
+  /** A rider's pickup outcome: they confirmed they're in, or (driver) they didn't show. */
   board(rideId: string, reqId: string, outcome: "picked" | "noshow") {
     set((s) => {
       const d = s.drives[rideId];

@@ -37,6 +37,8 @@ export function DriverTrip({ ride }: { ride: Ride }) {
   const due = picked.reduce((sum, q) => sum + q.amount, 0);
   const next = riders.find((q) => !drive?.boarded[q.id]);
   const noShows = riders.filter((q) => drive?.boarded[q.id] === "noshow").length;
+  // The next pickup to drive to, in route order: only that rider gets an "Arrived" button.
+  const nextStop = riders.find((q) => !drive?.boarded[q.id] && !drive?.arrived?.[q.id]);
 
   return (
     <section className={`card ${styles.trip}`} aria-live="polite">
@@ -91,7 +93,7 @@ export function DriverTrip({ ride }: { ride: Ride }) {
 
           <ul className={styles.riders}>
             {riders.map((q) => (
-              <RiderRow key={q.id} ride={ride} req={q} />
+              <RiderRow key={q.id} ride={ride} req={q} nextStop={q.id === nextStop?.id} />
             ))}
           </ul>
 
@@ -116,7 +118,7 @@ export function DriverTrip({ ride }: { ride: Ride }) {
   );
 }
 
-function RiderRow({ ride, req }: { ride: Ride; req: RideRequest }) {
+function RiderRow({ ride, req, nextStop }: { ride: Ride; req: RideRequest; nextStop: boolean }) {
   const s = useStore();
   const drive = s.drives[ride.id];
   const rider = personById(req.riderId)!;
@@ -125,6 +127,7 @@ function RiderRow({ ride, req }: { ride: Ride; req: RideRequest }) {
   const pay = drive?.paid[req.id];
   const { depart } = segmentTimes(ride, req.segment);
   const [rating, setRating] = useState(false);
+  const arrivedAt = drive?.arrived?.[req.id];
   // Older saves kept only a star count.
   const saved = drive?.rated[req.id] as Rating | number | undefined;
   const rated = typeof saved === "number" ? { stars: saved } : saved;
@@ -142,20 +145,25 @@ function RiderRow({ ride, req }: { ride: Ride; req: RideRequest }) {
         <span className={`${styles.amount} tnum`}>{boarded === "noshow" ? "—" : rupees(req.amount)}</span>
       </div>
 
-      {/* On the way: did they get in? */}
-      {drive?.startedAt && !drive.completedAt && !boarded && (
-        <div className={styles.actions}>
-          <button type="button" className="btn" onClick={() => actions.board(ride.id, req.id, "noshow")}>
+      {/* On the way: you say you've arrived; the rider confirms they're in (or you mark a no-show). */}
+      {drive?.startedAt && !drive.completedAt && !boarded && !arrivedAt && nextStop && (
+        <button type="button" className="btn btn-dark btn-block" onClick={() => actions.arriveAt(ride.id, req.id)}>
+          Arrived at {placeById[req.segment.from].name}
+        </button>
+      )}
+      {drive?.startedAt && !drive.completedAt && !boarded && arrivedAt && (
+        <div className={styles.waitRow}>
+          <p className={styles.waiting}>
+            <span className={styles.dots} aria-hidden /> Waiting for {first} to confirm they&apos;re in…
+          </p>
+          <button type="button" className={styles.noShow} onClick={() => actions.board(ride.id, req.id, "noshow")}>
             Didn&apos;t show
-          </button>
-          <button type="button" className="btn btn-dark" onClick={() => actions.board(ride.id, req.id, "picked")}>
-            Picked up
           </button>
         </div>
       )}
       {boarded && !drive?.completedAt && (
         <p className={boarded === "picked" ? styles.ok : styles.muted}>
-          {boarded === "picked" ? `✓ ${first} is in the car` : `${first} didn't show · no charge`}
+          {boarded === "picked" ? `✓ ${first} confirmed they're in the car` : `${first} didn't show · no charge`}
         </p>
       )}
 

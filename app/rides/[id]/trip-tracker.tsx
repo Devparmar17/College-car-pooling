@@ -56,6 +56,24 @@ export function TripTracker({ ride, booking }: { ride: Ride; booking: Booking })
         ))}
       </ol>
 
+      {/* You confirm the pickup, not the driver: tap once you're in the car. */}
+      {(stage === "arriving" || stage === "onboard") &&
+        (trip?.boardedAt ? (
+          <p className={styles.boarded} role="status">
+            ✓ You confirmed you&apos;re in {first}&apos;s car
+          </p>
+        ) : (
+          <div className={styles.board}>
+            <span>
+              <strong>{stage === "arriving" ? `${first} is at ${from}` : `In ${first}'s car?`}</strong>
+              <span>Tap once you&apos;re in, so {first} knows you&apos;ve been picked up.</span>
+            </span>
+            <button type="button" className="btn btn-primary" onClick={() => actions.confirmBoarded(ride.id)}>
+              I&apos;m in the car
+            </button>
+          </div>
+        ))}
+
       {stage === "completed" ? (
         payment ? null : (
           <Link href={`/rides/${ride.id}/complete`} className="btn btn-primary btn-block">

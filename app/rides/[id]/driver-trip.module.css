@@ -176,17 +176,6 @@
   color: var(--unigo-black);
 }
 
-.actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.actions :global(.btn) {
-  height: 40px;
-  font-size: 13px;
-}
-
 .ok,
 .waiting,
 .muted {
@@ -306,4 +295,54 @@
 
 .rateBtn svg {
   color: var(--unigo-primary);
+}
+
+
+/* Arrived: waiting for the rider to confirm they're in. */
+.waitRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.waitRow .waiting {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.dots {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--unigo-primary);
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  50% {
+    opacity: 0.3;
+    transform: scale(0.7);
+  }
+}
+
+.noShow {
+  flex: none;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 999px;
+  background: var(--unigo-white);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--unigo-text-secondary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dots {
+    animation: none;
+  }
 }

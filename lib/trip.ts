@@ -11,6 +11,8 @@ export type TripState = {
   completedAt?: number;
   /** The rider has seen (or dismissed) the "Ride complete" screen. */
   seen?: boolean;
+  /** You confirmed you're in the car (the driver sees it). */
+  boardedAt?: number;
 };
 
 // Demo timings, in ms after "Play this trip".
