@@ -111,32 +111,10 @@
   transition: width 1s linear;
 }
 
-.play {
-  border: 1px dashed var(--unigo-dark-gray);
-  background: var(--unigo-white);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .now .dot {
     animation: none;
   }
-}
-
-.demo {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-/* Demo of the rider side of a driver cancelling. */
-.cancelDemo {
-  align-self: center;
-  padding: 6px 10px;
-  border: 0;
-  background: none;
-  font-size: 12px;
-  color: var(--unigo-text-secondary);
-  text-decoration: underline;
 }
 
 /* "I'm in the car": the rider confirms the pickup. */
@@ -179,7 +157,15 @@
   animation: rise-in 240ms var(--ease-out);
 }
 
-/* Tap targets */
-.cancelDemo {
-  min-height: 40px;
+/* Call or chat with the driver during the trip. */
+.contact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--unigo-border);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--unigo-black);
 }

@@ -239,7 +239,7 @@
   height: 51px;
   border: 0;
   border-radius: 999px;
-  background: var(--unigo-primary);
+  background: var(--unigo-primary-strong);
   font-size: 16px;
   font-weight: 700;
   line-height: 24px;
@@ -362,4 +362,40 @@
   min-height: 44px;
   align-items: center;
   justify-content: center;
+}
+
+/* UPI apps to choose from. */
+.apps {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 0 15px 15px 80px;
+  animation: rise-in 260ms var(--ease-out);
+}
+
+.app {
+  height: 40px;
+  border: 1px solid var(--unigo-light-gray);
+  border-radius: 999px;
+  background: var(--unigo-white);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--unigo-black);
+  transition: background 150ms, border-color 150ms, scale 100ms var(--ease-out);
+}
+
+.app:active {
+  scale: 0.96;
+}
+
+.app[aria-checked="true"] {
+  border-color: var(--unigo-black);
+  background: var(--unigo-black);
+  color: var(--unigo-white);
+}
+
+@media (max-width: 359px) {
+  .apps {
+    padding-left: 15px;
+  }
 }

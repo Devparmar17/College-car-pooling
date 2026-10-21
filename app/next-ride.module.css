@@ -183,3 +183,14 @@
 .driver {
   min-height: 44px;
 }
+
+.more {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  min-height: 40px;
+  margin: -6px 0 -10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--unigo-primary-ink);
+}

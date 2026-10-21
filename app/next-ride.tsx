@@ -41,7 +41,8 @@ export function NextRide() {
     );
   }
 
-  const next = booked.find(({ b, ride }) => !s.trips[b.rideId]?.completedAt && !s.payments[b.rideId] && !hasLeft(ride, b.segment, now));
+  const upcoming = booked.filter(({ b, ride }) => !s.trips[b.rideId]?.completedAt && !s.payments[b.rideId] && !hasLeft(ride, b.segment, now));
+  const next = upcoming[0];
   if (!next) return null;
 
   const { b, ride } = next;
@@ -88,6 +89,11 @@ export function NextRide() {
         </Link>
         <ContactButtons driver={driver} rideId={ride.id} />
       </div>
+      {upcoming.length > 1 && (
+        <Link href="/trips" className={styles.more}>
+          +{upcoming.length - 1} more upcoming ride{upcoming.length > 2 ? "s" : ""} →
+        </Link>
+      )}
     </section>
   );
 }

@@ -232,7 +232,7 @@
 }
 
 .actionBest {
-  background: var(--unigo-primary);
+  background: var(--unigo-primary-strong);
   font-size: 12px;
   color: var(--unigo-black);
 }
@@ -268,7 +268,7 @@
 
 /* A black button with white text becomes an orange one with dark text as the card comes to the front. */
 .spotlight .action {
-  background: color-mix(in srgb, var(--unigo-primary) calc(var(--focus, 1) * 100%), var(--unigo-black));
+  background: color-mix(in srgb, var(--unigo-primary-strong) calc(var(--focus, 1) * 100%), var(--unigo-black));
   color: color-mix(in srgb, var(--unigo-black) calc(var(--focus, 1) * 100%), var(--unigo-white));
 }
 
@@ -313,4 +313,11 @@
 .action {
   width: 84px;
   height: 40px;
+}
+
+/* Full: not a button. */
+.actionFull,
+.spotlight .actionFull {
+  background: var(--unigo-light-gray);
+  color: var(--unigo-text-secondary);
 }

@@ -11,7 +11,16 @@ export function RequestsBanner() {
   const s = useStore();
   const hydrated = useHydrated();
   const waiting = pendingRequests(s);
-  if (!hydrated || !waiting.length) return null;
+  if (!hydrated || !s.requests.length) return null;
+
+  // Nothing new: a small link to the ones you've answered.
+  if (!waiting.length) {
+    return (
+      <Link href="/requests" className={styles.answered}>
+        Ride requests · {s.requests.length} answered →
+      </Link>
+    );
+  }
 
   const riders = [...new Set(waiting.map((r) => r.riderId))].map((id) => personById(id)!);
   const first = riders[0].name.split(" ")[0];

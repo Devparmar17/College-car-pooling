@@ -1,24 +1,32 @@
+/* One row of chips that scrolls sideways: takes one line, so the rides stay in view. */
 .grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  display: flex;
+  gap: 8px;
   width: 100%;
+  margin: 0 -16px;
+  padding: 0 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  box-sizing: content-box;
 }
 
-/* Compact tiles: icon beside the label, so the rides below stay in view. */
+.grid::-webkit-scrollbar {
+  display: none;
+}
+
 .tile {
-  position: relative;
   display: flex;
+  flex: none;
   align-items: center;
-  gap: 8px;
-  min-width: 0;
-  height: 52px;
-  padding: 0 8px;
+  gap: 6px;
+  height: 40px;
+  padding: 0 12px;
   border: 1px solid var(--unigo-border);
-  border-radius: 14px;
-  text-align: left;
+  border-radius: 999px;
   background: var(--unigo-white);
-  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  color: var(--unigo-black);
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, scale 0.1s;
 }
 
 .tile:hover {
@@ -26,76 +34,48 @@
 }
 
 .tile:active {
-  transform: scale(0.97);
-}
-
-.icon {
-  display: flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--unigo-extra-light-gray);
-  color: var(--unigo-black);
-  transition: background 0.15s, color 0.15s;
+  scale: 0.96;
 }
 
 .label {
-  max-width: 100%;
-  overflow: hidden;
   font-size: 13px;
   font-weight: 500;
-  line-height: 16px;
-  color: var(--unigo-black);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.text {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
 }
 
 .count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--unigo-extra-light-gray);
   font-size: 11px;
-  line-height: 14px;
+  font-weight: 700;
   color: var(--unigo-text-secondary);
-  white-space: nowrap;
 }
 
 /* No rides behind this filter right now: still tappable, but quieter. */
-.empty .icon,
-.empty .text {
-  opacity: 0.45;
+.empty {
+  color: var(--unigo-placeholder);
 }
 
 .tile[aria-checked="true"] {
-  border-color: var(--unigo-primary);
-  background: var(--unigo-primary-soft);
+  border-color: var(--unigo-black);
+  background: var(--unigo-black);
+  color: var(--unigo-white);
 }
 
-.tile[aria-checked="true"] .icon {
-  background: var(--unigo-primary);
+.tile[aria-checked="true"] .count {
+  background: var(--unigo-primary-strong);
   color: var(--unigo-black);
-}
-
-.tile[aria-checked="true"] .label {
-  font-weight: 600;
-  color: var(--unigo-primary-ink);
-}
-
-.tile[aria-checked="true"] .count {
-  color: var(--unigo-primary-ink);
-}
-
-/* Micro-interactions: the picked tile's icon bounces and its count bumps. */
-.tile[aria-checked="true"] .icon {
-  animation: pop-in 420ms var(--ease-spring);
-}
-
-.tile[aria-checked="true"] .count {
   animation: bump 300ms var(--ease-out);
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    margin: 0;
+    padding: 0;
+  }
 }

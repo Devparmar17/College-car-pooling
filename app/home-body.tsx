@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { Day } from "@/lib/data";
 import { dayLabels } from "@/lib/rides";
 import { useNowMinutes, useStore } from "@/lib/store";
-import { HomeFeed, ridesToCampus } from "./home-feed";
+import { campusRides, HomeFeed } from "./home-feed";
 import { NextRide } from "./next-ride";
 import { RecentPlaces } from "./recent-places";
 import { SearchBar } from "./ui/search-bar";
@@ -14,9 +14,9 @@ import styles from "./page.module.css";
 export function HomeBody() {
   const s = useStore();
   const now = useNowMinutes();
-  // Until you pick a day: today, or tomorrow once today's rides to campus have all left.
+  // Until you pick a day: today, or tomorrow once today's rides have all left.
   const [picked, setDay] = useState<Day | null>(null);
-  const day: Day = picked ?? (now !== null && ridesToCampus(s, 0, now).length === 0 ? 1 : 0);
+  const day: Day = picked ?? (now !== null && campusRides(s, 0, now).length === 0 ? 1 : 0);
 
   return (
     <>

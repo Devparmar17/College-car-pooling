@@ -1,0 +1,117 @@
+.card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 16px;
+  background: var(--unigo-white);
+}
+
+.icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--unigo-primary-soft);
+  color: var(--unigo-primary-ink);
+}
+
+.text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-self: center;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--unigo-text-secondary);
+}
+
+.text strong {
+  font-size: 15px;
+  color: var(--unigo-black);
+}
+
+.change {
+  flex: none;
+  align-self: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 999px;
+  background: var(--unigo-white);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--unigo-primary-ink);
+}
+
+.form {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--unigo-black);
+}
+
+.input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid var(--unigo-light-gray);
+  border-radius: 999px;
+  font-size: 16px;
+}
+
+.input:focus-within {
+  border-color: var(--unigo-primary-ink);
+}
+
+.input span {
+  color: var(--unigo-text-secondary);
+}
+
+.input input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+}
+
+.input input:focus-visible {
+  outline: none;
+}
+
+.invalid {
+  border-color: var(--unigo-danger);
+}
+
+.error {
+  font-size: 12px;
+  color: var(--unigo-danger);
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* A newly saved number rises in. */
+.saved {
+  color: var(--unigo-success);
+  font-weight: 600;
+  animation: rise-in 320ms var(--ease-out);
+}

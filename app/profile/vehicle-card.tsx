@@ -2,18 +2,18 @@
 
 /* eslint-disable @next/next/no-img-element -- Figma icon assets render at their native size. */
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ComponentType } from "react";
 import { myVehicle } from "@/lib/data";
 import { fileSize } from "@/lib/rides";
 import { actions, useHydrated, useStore, type DriverDoc } from "@/lib/store";
-import { CarIcon, CheckIcon } from "../ui/icons";
+import { CarIcon, CheckIcon, IdCardIcon } from "../ui/icons";
 import styles from "./vehicle-card.module.css";
 
 const MAX_BYTES = 5 * 1024 * 1024;
 
 const docs = [
-  { kind: "licence", title: "Driving licence", hint: "Front side · photo or PDF, up to 5 MB", icon: "/figma/icon-id-card.svg" },
-  { kind: "rc", title: "Vehicle RC", hint: "Registration certificate · photo or PDF, up to 5 MB", icon: "/figma/icon-car.svg" },
+  { kind: "licence", title: "Driving licence", hint: "Front side · photo or PDF, up to 5 MB", Icon: IdCardIcon },
+  { kind: "rc", title: "Vehicle RC", hint: "Registration certificate · photo or PDF, up to 5 MB", Icon: CarIcon },
 ] as const;
 
 /** Your car plus driver verification: upload the licence and RC, submit, get verified. */
@@ -76,7 +76,7 @@ export function VehicleCard() {
               key={d.kind}
               title={d.title}
               hint={d.hint}
-              icon={d.icon}
+              Icon={d.Icon}
               doc={hydrated ? driver[d.kind] : null}
               verified={status === "verified"}
               locked={status === "checking"}
@@ -106,7 +106,7 @@ export function VehicleCard() {
 function DocRow({
   title,
   hint,
-  icon,
+  Icon,
   doc,
   verified,
   locked,
@@ -114,7 +114,8 @@ function DocRow({
 }: {
   title: string;
   hint: string;
-  icon: string;
+  // Drawn in the page (not an image file), so it always shows.
+  Icon: ComponentType<{ size?: number }>;
   doc: DriverDoc | null;
   verified: boolean;
   locked: boolean;
@@ -134,7 +135,7 @@ function DocRow({
   return (
     <li className={styles.doc}>
       <span className={styles.docIcon}>
-        <img src={icon} alt="" width={icon.includes("car") ? 30 : 20} height={icon.includes("car") ? 30 : 20} />
+        <Icon size={22} />
       </span>
       <span className={styles.docText}>
         <strong>{title}</strong>

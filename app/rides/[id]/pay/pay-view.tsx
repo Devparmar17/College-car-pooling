@@ -13,7 +13,11 @@ import styles from "./pay.module.css";
 
 const UPI_ID = /^[a-z0-9._-]{2,}@[a-z]{2,}$/i;
 
-type Method = Exclude<PayMethod, "settle-up">;
+// Demo: picking an app shows which one you'd pay with; no real UPI request is made.
+const UPI_APPS = ["Google Pay", "PhonePe", "Paytm", "BHIM"] as const;
+
+// Ways to pay on this screen (monthly settle-up is offered on the trip summary).
+type Method = Exclude<PayMethod, "settle-up" | "wallet">;
 
 export function PayView({ rideId }: { rideId: string }) {
   const s = useStore();
@@ -21,6 +25,7 @@ export function PayView({ rideId }: { rideId: string }) {
   const hydrated = useHydrated();
   const [method, setMethod] = useState<Method | null>(null);
   const [upiId, setUpiId] = useState("");
+  const [upiApp, setUpiApp] = useState<(typeof UPI_APPS)[number]>(UPI_APPS[0]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -41,13 +46,10 @@ export function PayView({ rideId }: { rideId: string }) {
   const split = tripSplit(ride, booking.segment, booking.seats, me.name);
   const amount = split.youPay;
   const first = split.driver.name.split(" ")[0];
-  const walletOk = s.wallet >= amount;
-  // Default to the wallet when it can cover the trip, as the design does.
-  const chosen: Method = method ?? (walletOk ? "wallet" : "upi-app");
+  const chosen: Method = method ?? "upi-app";
 
   const cta: Record<Method, string> = {
-    wallet: `Pay ${rupees(amount)} from Campus Wallet`,
-    "upi-app": `Pay ${rupees(amount)} with UPI app`,
+    "upi-app": `Pay ${rupees(amount)} with ${upiApp}`,
     "upi-id": `Request ${rupees(amount)} on UPI`,
     cash: `I’ll pay ${rupees(amount)} in cash`,
   };
@@ -61,9 +63,9 @@ export function PayView({ rideId }: { rideId: string }) {
     setBusy(true);
     // Demo: a short pause stands in for the payment gateway.
     window.setTimeout(() => {
-      actions.pay(rideId, chosen, amount, chosen === "upi-id" ? upiId.trim().toLowerCase() : undefined);
+      actions.pay(rideId, chosen, amount, chosen === "upi-id" ? upiId.trim().toLowerCase() : chosen === "upi-app" ? upiApp : undefined);
       setBusy(false);
-    }, chosen === "wallet" || chosen === "cash" ? 500 : 1400);
+    }, chosen === "cash" ? 500 : 1400);
   }
 
   if (payment) {
@@ -87,9 +89,7 @@ export function PayView({ rideId }: { rideId: string }) {
               ? `${first} confirms the cash in the app. You’re done once they do.`
               : payment.status === "settle-requested"
                 ? `${rupees(payment.amount)} goes on your monthly settle-up once ${first} accepts.`
-                : `${methodLabels[payment.method]}${payment.upiId ? ` · ${payment.upiId}` : ""}${
-                  payment.method === "wallet" ? ` · Wallet balance ${rupees(s.wallet)}` : ""
-                }`}
+                : `${methodLabels[payment.method]}${payment.upiId ? ` · ${payment.upiId}` : ""}`}
           </p>
           {payment.status !== "pending" && (
             <div className={styles.rateWrap}>
@@ -132,22 +132,23 @@ export function PayView({ rideId }: { rideId: string }) {
         <h2>Pay with</h2>
         <div role="radiogroup" aria-label="Payment method" className={styles.list}>
           <Option
-            id="wallet"
-            chosen={chosen}
-            onPick={setMethod}
-            disabled={!walletOk}
-            icon={<img src="/figma/icon-wallet.svg" alt="" width={24} height={24} />}
-            title="Campus Wallet"
-            sub={walletOk ? `Balance ${rupees(s.wallet)} · pays instantly` : `Balance ${rupees(s.wallet)} · not enough for this trip`}
-          />
-          <Option
             id="upi-app"
             chosen={chosen}
             onPick={setMethod}
             icon={<img src="/figma/icon-upi.svg" alt="" width={24} height={24} />}
             title="UPI app"
-            sub="Pay with any UPI app on this phone"
-          />
+            sub="Google Pay, PhonePe, Paytm or BHIM"
+          >
+            {chosen === "upi-app" && (
+              <div className={styles.apps} role="radiogroup" aria-label="UPI app">
+                {UPI_APPS.map((app) => (
+                  <button key={app} type="button" role="radio" aria-checked={upiApp === app} className={styles.app} onClick={() => setUpiApp(app)}>
+                    {app}
+                  </button>
+                ))}
+              </div>
+            )}
+          </Option>
           <Option id="upi-id" chosen={chosen} onPick={setMethod} icon={<span className={styles.glyph}>@</span>} title="UPI ID" sub="Enter your UPI ID, like name@bank">
             {chosen === "upi-id" && (
               <div className={styles.upiField}>

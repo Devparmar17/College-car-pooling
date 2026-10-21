@@ -1,5 +1,5 @@
 import { placeById } from "./places";
-import { dayLabels, formatClock, hasLeft, personById, rupees, segmentTimes } from "./rides";
+import { dayInText, dayLabels, formatClock, hasLeft, personById, rupees, segmentTimes } from "./rides";
 import { findRide, receivedRatings, type State } from "./store";
 
 export type NoteKind = "booking" | "reminder" | "message" | "payment" | "rating" | "driver" | "match" | "welcome" | "request" | "cancel";
@@ -42,7 +42,7 @@ export function buildNotifications(s: State, nowMin: number | null): Note[] {
         id: `reminder-${ride.id}`,
         kind: "reminder",
         title: "Ride reminder",
-        body: `${name} picks you up ${dayLabels[ride.day].toLowerCase()} at ${formatClock(depart)} from ${pickup}. Be there 2 minutes early.`,
+        body: `${name} picks you up ${dayInText[ride.day]} at ${formatClock(depart)} from ${pickup}. Be there 2 minutes early.`,
         href: `/rides/${ride.id}`,
         at: b.bookedAt ? b.bookedAt + 1 : 0,
       });

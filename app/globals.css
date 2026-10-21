@@ -22,6 +22,8 @@
   --unigo-primary: #f8b477;
   --unigo-primary-soft: #fdebdb;
   --unigo-primary-ink: #9a541c;
+  /* Main action buttons: a richer orange than the brand tint, so they read as tappable. */
+  --unigo-primary-strong: #f39a4c;
   --unigo-black: #1d1c1a;
   --unigo-white: #ffffff;
   --unigo-extra-light-gray: #f3f3f3;
@@ -135,14 +137,19 @@ button {
   transform: scale(0.98);
 }
 
+/* Disabled looks clearly different from active: flat grey, not a faded colour. */
 .btn:disabled {
   cursor: not-allowed;
-  opacity: 0.45;
+  border-color: var(--unigo-light-gray);
+  background: var(--unigo-light-gray);
+  color: var(--unigo-placeholder);
+  box-shadow: none;
 }
 
 .btn-primary {
-  background: var(--unigo-primary);
-  border-color: var(--unigo-primary);
+  background: var(--unigo-primary-strong);
+  border-color: var(--unigo-primary-strong);
+  font-weight: 700;
   color: var(--unigo-black);
 }
 
@@ -390,5 +397,43 @@ a:active {
 @media (max-width: 1023px) {
   html[data-keyboard] {
     --nav-h: 0px;
+  }
+}
+
+/* ---------- Micro-interactions ---------- */
+
+/* Segmented switches (day, direction…): 36px to tap, the picked option eases in. */
+.segmented span {
+  height: 36px;
+  font-size: 13px;
+  transition: background-color 220ms var(--ease-out), color 220ms var(--ease-out), scale 120ms var(--ease-out);
+}
+
+.segmented label:active span {
+  scale: 0.96;
+}
+
+.segmented input:checked + span {
+  animation: pick 260ms var(--ease-spring);
+}
+
+@keyframes pick {
+  from {
+    scale: 0.92;
+  }
+}
+
+/* Buttons respond to hover (mouse) and press. */
+.btn {
+  transition: opacity 0.15s, transform 0.1s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+@media (hover: hover) {
+  .btn-primary:not(:disabled):hover {
+    box-shadow: 0 6px 16px -8px var(--unigo-primary-strong);
+  }
+
+  .btn:not(.btn-primary):not(:disabled):hover {
+    border-color: var(--unigo-dark-gray);
   }
 }

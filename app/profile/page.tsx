@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { historyStats, rideHistory } from "@/lib/history";
-import { placeById } from "@/lib/places";
 import { rupees } from "@/lib/rides";
-import { Avatar } from "../ui/avatar";
 import { PageHeader } from "../ui/page-header";
 import { RideHistory } from "../ui/ride-history";
 import { MyActivity, MyProfileHero, UpcomingCount } from "./my-activity";
@@ -39,45 +37,12 @@ export default function ProfilePage() {
             <div className={styles.grid}>
               <Stat label="Upcoming" value={<UpcomingCount />} />
               <Stat label="Km shared" value={`${stats.km.toFixed(0)} km`} />
-              <Stat label="CO₂ saved" value={`${stats.co2Kg.toFixed(1)} kg`} />
               <Stat label="Spent on rides" value={rupees(stats.spent)} />
               <Stat label="Earned driving" value={rupees(stats.earned)} accent />
-              <Stat label="Saved vs. auto" value={rupees(stats.savedVsAuto)} accent />
             </div>
           </section>
 
           <MyRatings />
-
-          {(stats.topRoute || stats.topDriver) && (
-            <section>
-              <h2 className="section-title">Highlights</h2>
-              <ul className={styles.highlights}>
-                {stats.topRoute && (
-                  <li>
-                    <span className={styles.hlIcon} aria-hidden>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/figma/pickup-dot.svg" alt="" width={13} height={13} />
-                    </span>
-                    <span>
-                      <strong>
-                        {placeById[stats.topRoute.from].name} → {placeById[stats.topRoute.to].name}
-                      </strong>
-                      <span>Your most travelled route · {stats.topRoute.count} rides</span>
-                    </span>
-                  </li>
-                )}
-                {stats.topDriver && (
-                  <li>
-                    <Avatar person={stats.topDriver.person} size={36} />
-                    <span>
-                      <strong>{stats.topDriver.person.name}</strong>
-                      <span>You ride with them most · {stats.topDriver.count} rides</span>
-                    </span>
-                  </li>
-                )}
-              </ul>
-            </section>
-          )}
 
           <section id="history" className={styles.anchor}>
             <h2 className="section-title">Ride history</h2>

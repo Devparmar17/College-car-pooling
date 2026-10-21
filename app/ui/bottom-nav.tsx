@@ -35,7 +35,7 @@ function modeOf(pathname: string): Mode | null {
 function activeSlot(pathname: string | null, mode: Mode): Slot | null {
   if (!pathname) return null;
   if (pathname.startsWith("/profile")) return "right";
-  if (pathname.startsWith("/earnings") || pathname.startsWith("/requests")) return "middle";
+  if (pathname.startsWith("/earnings")) return "middle";
   if (pathname.startsWith("/trips")) return mode === "find" ? "middle" : "right";
   return "left";
 }
@@ -55,7 +55,13 @@ export function BottomNav() {
   // No bar on the login and sign-up screens, or during checkout (trip complete and payment).
   if (pathname.startsWith("/login") || pathname.startsWith("/signup") || /^\/rides\/[^/]+\/(complete|pay)$/.test(pathname)) return null;
 
-  return <NavLinks pathname={pathname} mode={mode} requests={requests} />;
+  return (
+    <>
+      {/* Fades out content scrolling under the floating bar, so the two never overlap. */}
+      <div className={styles.scrim} aria-hidden />
+      <NavLinks pathname={pathname} mode={mode} requests={requests} />
+    </>
+  );
 }
 
 /**
@@ -69,7 +75,7 @@ export function NavLinks({
 }: {
   pathname?: string | null;
   mode?: Mode;
-  /** Passenger requests waiting for the driver; badged on Earnings. */
+  /** Passenger requests waiting for the driver; badged on the driver's Home tab. */
   requests?: number;
 }) {
   const active = activeSlot(pathname, mode);
@@ -91,7 +97,7 @@ export function NavLinks({
             href={t.href}
             className={`${styles.tab} ${styles[`at_${t.slot}`]} ${on ? styles.on : ""}`}
             aria-current={on ? "page" : undefined}
-            aria-label={mode === "offer" && t.slot === "middle" && requests ? `${t.label}, ${requests} new requests` : t.label}
+            aria-label={mode === "offer" && t.slot === "left" && requests ? `${t.label}, ${requests} new requests` : t.label}
           >
             <span
               className={styles.icon}
@@ -100,7 +106,7 @@ export function NavLinks({
               aria-hidden
             />
             <span className={styles.label}>{t.label}</span>
-            {mode === "offer" && t.slot === "middle" && requests > 0 && (
+            {mode === "offer" && t.slot === "left" && requests > 0 && (
               <span key={requests} className={styles.badge} aria-hidden>
                 {requests}
               </span>

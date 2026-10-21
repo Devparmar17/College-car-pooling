@@ -54,3 +54,18 @@
   font-weight: 700;
   color: var(--unigo-black);
 }
+
+/* No new requests: a quiet link to the answered ones. */
+.answered {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--unigo-border);
+  border-radius: 999px;
+  background: var(--unigo-white);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--unigo-black);
+}

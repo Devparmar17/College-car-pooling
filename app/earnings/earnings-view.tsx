@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { rupees } from "@/lib/rides";
-import { earnings, pendingRequests, seatsLeft, useHydrated, useStore } from "@/lib/store";
+import { earnings, seatsLeft, useHydrated, useStore } from "@/lib/store";
 import { RequestCard } from "../ui/request-card";
-import { RequestsBanner } from "../ui/requests-banner";
 import styles from "./earnings.module.css";
 
 export function EarningsView() {
@@ -26,12 +25,6 @@ export function EarningsView() {
         {hydrated && earned > 0 && <span className={styles.earned}>{rupees(earned)} received from finished trips</span>}
       </section>
 
-      <RequestsBanner />
-      {hydrated && s.requests.length > 0 && !pendingRequests(s).length && (
-        <Link href="/requests" className={styles.allRequests}>
-          Ride requests · {s.requests.length} answered →
-        </Link>
-      )}
 
       {hydrated && rides.length > 0 ? (
         <section className={styles.list}>

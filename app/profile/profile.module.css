@@ -40,9 +40,10 @@
   color: var(--unigo-dark-gray);
 }
 
+/* Four stats, two by two. */
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   margin-top: 10px;
 }
@@ -80,74 +81,17 @@
   color: var(--unigo-primary-ink);
 }
 
-/* Highlights */
-.highlights {
-  display: flex;
-  flex-direction: column;
-  list-style: none;
-  border-radius: 16px;
-  background: var(--unigo-extra-light-gray);
-}
-
-.highlights li {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-}
-
-.highlights li + li {
-  border-top: 1px solid var(--unigo-border);
-}
-
-.highlights li > span:last-child {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  font-size: 12px;
-  line-height: 16px;
-  color: var(--unigo-text-secondary);
-}
-
-.highlights strong {
-  overflow: hidden;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 20px;
-  color: var(--unigo-black);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.hlIcon {
-  display: flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--unigo-white);
-}
-
 /* Vehicle and demo data */
 
 .reset {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
-  border: 1px solid var(--unigo-border);
-  border-radius: 16px;
+  align-self: center;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 0;
+  background: none;
   font-size: 13px;
-}
-
-.reset > div {
-  flex: 1;
-}
-
-.reset strong {
-  font-size: 15px;
+  color: var(--unigo-text-secondary);
+  text-decoration: underline;
 }
 
 /* Room for the sticky header when jumping to #history. */

@@ -1,0 +1,131 @@
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: calc(env(safe-area-inset-top) + 16px) 20px calc(env(safe-area-inset-bottom) + 24px);
+  background: var(--unigo-white);
+  animation: fade-in 300ms ease;
+}
+
+.skip {
+  align-self: flex-end;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  background: none;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--unigo-text-secondary);
+}
+
+/* Screens side by side; swipe or tap Next. */
+.track {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  max-width: 480px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.slide {
+  display: flex;
+  flex: 0 0 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 0 8px;
+  text-align: center;
+  scroll-snap-align: center;
+}
+
+.art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 140px;
+  height: 140px;
+  margin-bottom: 18px;
+  border-radius: 50%;
+  background: var(--unigo-primary-soft);
+  box-shadow: 0 0 0 16px color-mix(in srgb, var(--unigo-primary-soft) 45%, transparent);
+  color: var(--unigo-primary-ink);
+}
+
+.slide h2 {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 30px;
+  color: var(--unigo-black);
+}
+
+.slide p {
+  max-width: 340px;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--unigo-text-secondary);
+}
+
+.dots {
+  display: flex;
+  gap: 4px;
+  margin: 12px 0 20px;
+}
+
+/* 40px tap targets around small dots. */
+.dot,
+.dotOn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: none;
+}
+
+.dot::after,
+.dotOn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--unigo-light-gray);
+  transform: translate(-50%, -50%);
+  transition: width 200ms var(--ease-out), background 200ms;
+}
+
+.dotOn::after {
+  width: 24px;
+  background: var(--unigo-primary-strong);
+}
+
+.next {
+  max-width: 440px;
+  height: 52px;
+}
+
+/* Each screen's picture pops in and its words rise as you reach it. */
+.slide[aria-hidden="false"] .art {
+  animation: pop-in 520ms var(--ease-spring);
+}
+
+.slide[aria-hidden="false"] h2,
+.slide[aria-hidden="false"] p {
+  animation: rise-in 420ms var(--ease-out) backwards;
+}
+
+.slide[aria-hidden="false"] p {
+  animation-delay: 80ms;
+}

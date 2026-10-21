@@ -6,9 +6,9 @@ import { useRef, useState, type FormEvent } from "react";
 import { me, myVehicle, prefLabels, type Day, type Pref, type Vehicle } from "@/lib/data";
 import { FUEL_PER_KM, fuelCost, fuelShare } from "@/lib/fare";
 import { isPlaceId, placeById, places, placesAlong, routeKm, type PlaceId } from "@/lib/places";
-import { dayLabels, formatClock, rupees, toMinutes } from "@/lib/rides";
-import { actions, useHydrated, useNowMinutes, useStore } from "@/lib/store";
-import { BuildingIcon, CarIcon, CheckIcon, HomeIcon, ScooterIcon, SwapIcon } from "../ui/icons";
+import { dayLabels, formatClock, personById, rupees, toMinutes } from "@/lib/rides";
+import { actions, bookedAround, useHydrated, useNowMinutes, useStore } from "@/lib/store";
+import { BuildingIcon, CarIcon, CheckIcon, ScooterIcon } from "../ui/icons";
 import { RequestsBanner } from "../ui/requests-banner";
 import styles from "./offer.module.css";
 
@@ -28,6 +28,20 @@ const MORNING = ["07:30", "08:00", "08:30", "09:00", "09:30", "10:00"];
 const EVENING = ["16:30", "17:00", "17:30", "18:00", "18:30", "19:00"];
 
 
+/** The campus end of every ride: shown, not chosen. */
+function FixedCampus({ label }: { label: string }) {
+  return (
+    <div className="field">
+      <span>{label}</span>
+      <div className={styles.fixed}>
+        <BuildingIcon size={18} />
+        <strong>{placeById[CAMPUS].name}</strong>
+        <span>Campus</span>
+      </div>
+    </div>
+  );
+}
+
 export function OfferForm() {
   const params = useSearchParams();
   const router = useRouter();
@@ -37,8 +51,10 @@ export function OfferForm() {
   // Arrived here straight from verification on Profile.
   const justVerified = params.has("verified");
 
-  const [from, setFrom] = useState<PlaceId>(isPlaceId(fromParam) ? fromParam : me.home);
-  const [to, setTo] = useState<PlaceId>(isPlaceId(toParam) ? toParam : "indus");
+  // Rides run between campus and your side of town; a link from elsewhere falls back to home → campus.
+  const linked = isPlaceId(fromParam) && isPlaceId(toParam) && (fromParam === "indus") !== (toParam === "indus");
+  const [from, setFrom] = useState<PlaceId>(linked ? (fromParam as PlaceId) : me.home);
+  const [to, setTo] = useState<PlaceId>(linked ? (toParam as PlaceId) : "indus");
   const [skipped, setSkipped] = useState<PlaceId[]>([]);
   const [day, setDay] = useState<Day>([0, 1, 2].includes(dayParam) ? (dayParam as Day) : 1);
   const [time, setTime] = useState("08:00");
@@ -54,7 +70,8 @@ export function OfferForm() {
   const stops: PlaceId[] = [from, ...along.filter((p) => !skipped.includes(p)), to];
   const km = from !== to ? routeKm(stops) : 0;
   // Only verified drivers (licence + RC checked on Profile) can publish.
-  const verified = useStore().driver.status === "verified";
+  const store = useStore();
+  const verified = store.driver.status === "verified";
   const hydrated = useHydrated();
   // The vehicle is whatever the verified RC says; nothing until then.
   const vehicle: Vehicle | null = verified ? myVehicle : null;
@@ -70,7 +87,12 @@ export function OfferForm() {
   // Usual departure times: mornings into campus, evenings back home.
   const slots = to === CAMPUS ? MORNING : EVENING;
   const past = day === 0 && now !== null && /^\d\d:\d\d$/.test(time) && toMinutes(time) <= now;
-  const valid = !!vehicle && from !== to && /^\d\d:\d\d$/.test(time) && !past;
+  // You can't drive while you're booked as a passenger at the same time.
+  const clash = /^\d\d:\d\d$/.test(time) ? bookedAround(store, day, toMinutes(time)) : undefined;
+  const valid = !!vehicle && from !== to && /^\d\d:\d\d$/.test(time) && !past && !clash;
+  // One end is always campus; the other is your side of town.
+  const toCampus = to === CAMPUS;
+  const home = toCampus ? from : to;
 
   // A new route clears skipped pickups, and a change of direction moves the time to fit
   // (morning into campus, evening home), unless you set your own.
@@ -102,7 +124,7 @@ export function OfferForm() {
       prefs: isBike ? [] : prefs,
       note: isBike ? undefined : note.trim() || undefined,
     });
-    router.push(`/rides/${id}`);
+    router.push(`/rides/${id}?published=1`);
   }
 
   return (
@@ -134,41 +156,38 @@ export function OfferForm() {
       <fieldset className={styles.lockable} disabled={locked}>
       <section className={`card ${styles.section}`}>
         <h2 className="section-title">Route</h2>
-        {/* The two trips nearly every driver makes, one tap each. */}
-        <div className={styles.quickRoutes}>
-          <button type="button" aria-pressed={from === me.home && to === CAMPUS} onClick={() => setRoute(me.home, CAMPUS)}>
-            <HomeIcon size={16} /> Home → Campus
-          </button>
-          <button type="button" aria-pressed={from === CAMPUS && to === me.home} onClick={() => setRoute(CAMPUS, me.home)}>
-            <BuildingIcon size={16} /> Campus → Home
-          </button>
+        {/* Every ride starts or ends at campus: pick the direction, then only your side of town. */}
+        <div className="segmented" role="radiogroup" aria-label="Direction">
+          <label>
+            <input type="radio" name="direction" checked={toCampus} onChange={() => setRoute(home, CAMPUS)} />
+            <span>To campus</span>
+          </label>
+          <label>
+            <input type="radio" name="direction" checked={!toCampus} onChange={() => setRoute(CAMPUS, home)} />
+            <span>From campus</span>
+          </label>
         </div>
+        {!toCampus && <FixedCampus label="Pickup" />}
         <label className="field">
-          <span>Starting from</span>
-          <select className="input" value={from} onChange={(e) => setRoute(e.target.value as PlaceId, to)}>
-            {places.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
+          <span>{toCampus ? "Starting from" : "Going to"}</span>
+          <select
+            className="input"
+            value={home}
+            onChange={(e) => {
+              const p = e.target.value as PlaceId;
+              setRoute(toCampus ? p : CAMPUS, toCampus ? CAMPUS : p);
+            }}
+          >
+            {places
+              .filter((p) => p.id !== CAMPUS)
+              .map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
           </select>
         </label>
-        <div className={styles.toRow}>
-          <label htmlFor="offer-to">Going to</label>
-          <button type="button" className={styles.swapText} onClick={() => setRoute(to, from)}>
-            <SwapIcon size={14} /> Swap
-          </button>
-        </div>
-        <label className="field">
-          <select id="offer-to" className="input" value={to} onChange={(e) => setRoute(from, e.target.value as PlaceId)}>
-            {places.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        {from === to && <p className={styles.error}>Pick a destination different from the start.</p>}
+        {toCampus && <FixedCampus label="Drop-off" />}
 
         {from !== to && (
           <>
@@ -262,6 +281,12 @@ export function OfferForm() {
           {past && (
             <p className={styles.error} role="alert">
               {formatClock(toMinutes(time))} has already passed today. Pick a later time or Tomorrow.
+            </p>
+          )}
+          {clash && !past && (
+            <p className={styles.error} role="alert">
+              You&apos;re riding with {personById(clash.driverId)?.name.split(" ")[0]} around then ({dayLabels[clash.day].toLowerCase()},{" "}
+              {formatClock(toMinutes(clash.time))}). Pick another time to drive.
             </p>
           )}
         </fieldset>

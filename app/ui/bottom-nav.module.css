@@ -239,3 +239,26 @@
     inset: -14px -22px -10px;
   }
 }
+
+/* Phones: a white fade behind the floating bar; content scrolling under it fades out. */
+.scrim {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .scrim {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 19;
+    display: block;
+    height: calc(var(--nav-h) + env(safe-area-inset-bottom) + 12px);
+    background: linear-gradient(to top, var(--unigo-white) 62%, color-mix(in srgb, var(--unigo-white) 0%, transparent));
+    pointer-events: none;
+  }
+
+  :global(html[data-keyboard]) .scrim {
+    display: none;
+  }
+}

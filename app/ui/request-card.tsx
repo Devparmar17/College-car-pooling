@@ -128,9 +128,14 @@ export function RequestCard({ ride, segment, seatsLeft, best, status, compact, s
             <>
               {/* The whole card opens the ride; the button stays the visible, focusable way in. */}
               <Link href={rideHref(ride, segment)} className={styles.cover} aria-hidden tabIndex={-1} />
-              <Link href={rideHref(ride, segment)} className={`${styles.action} ${best && !spotlight ? styles.actionBest : ""}`}>
-                {action}
-              </Link>
+              {/* A full ride takes no more requests: say so instead of offering a button. */}
+              {full && !status ? (
+                <span className={`${styles.action} ${styles.actionFull}`}>Full</span>
+              ) : (
+                <Link href={rideHref(ride, segment)} className={`${styles.action} ${best && !spotlight ? styles.actionBest : ""}`}>
+                  {action}
+                </Link>
+              )}
             </>
           )}
         </div>

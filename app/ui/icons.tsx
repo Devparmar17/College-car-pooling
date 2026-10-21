@@ -21,6 +21,14 @@ function Icon({ size = 20, children, ...rest }: Props) {
   );
 }
 
+export const IdCardIcon = (p: Props) => (
+  <Icon {...p}>
+    <rect x="3" y="5" width="18" height="14" rx="2.5" />
+    <circle cx="9" cy="11" r="2.2" />
+    <path d="M5.8 16c.6-1.6 1.8-2.4 3.2-2.4s2.6.8 3.2 2.4M14.5 10h3.5M14.5 13.5h2.5" />
+  </Icon>
+);
+
 export const HomeIcon = (p: Props) => (
   <Icon {...p}>
     <path d="M3 10.5 12 3l9 7.5" />

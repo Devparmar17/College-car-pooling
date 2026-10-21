@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { me, ME_ID, seedRides, todaysDemoRides, type Person, type Ride } from "./data";
+import { me, ME_ID, seedRides, todaysDemoRides, type Day, type Person, type Ride } from "./data";
 import { placeById } from "./places";
 import type { TripState } from "./trip";
 import { compareRides, dayLabels, formatClock, fullSegment, personById, segmentFare, segmentKm, segmentTimes, type Segment } from "./rides";
@@ -166,6 +166,8 @@ export type State = {
   cancellations: Cancellation[];
   /** Demo: today's rides to campus, made fresh each day from the time the app was opened. */
   today: { date: string; rides: Ride[] } | null;
+  /** Your mobile number (10 digits, India), for drivers and riders to call you. */
+  phone: string | null;
   /** Rides you're driving: trip progress and payments, per ride. */
   drives: Record<string, DriveState>;
   /** Ratings you've received; ones whose `at` is still ahead haven't arrived yet (demo). */
@@ -196,6 +198,7 @@ const empty: State = {
   incoming: [],
   cancellations: [],
   today: null,
+  phone: null,
   drives: {},
   received: [],
 };
@@ -213,18 +216,6 @@ export function hasSession() {
 /** What a first visit starts with: one booked seat (tomorrow's r109), so My commutes isn't empty. */
 const demo: State = {
   ...empty,
-  bookings: [
-    {
-      rideId: "r109",
-      seats: 1,
-      segment: { from: "iskcon", to: "indus" },
-      fare: segmentFare(seedRides.find((r) => r.id === "r109")!, { from: "iskcon", to: "indus" }),
-      bookedAt: 0,
-    },
-  ],
-  messages: {
-    r109: [{ from: "driver", text: "Hi Dharam! I'll be at the ISKCON bus stop, Satellite side, by 8:13. White Creta.", at: 0 }],
-  },
   // Ratings from past trips (see ride history).
   received: [
     { id: "rr1", rideId: "h12", fromId: "ketan", as: "rider", stars: 5, tags: ["On time", "Polite"], comment: "", at: 0 },
@@ -270,10 +261,6 @@ function load() {
         return ride ? { ...b, fare: segmentFare(ride, b.segment, b.seats) } : b;
       }),
     };
-    // Data saved before chat existed: give the demo booking its opening message.
-    if (state.bookings.some((b) => b.rideId === "r109") && !state.messages.r109) {
-      state = { ...state, messages: { ...state.messages, r109: demo.messages.r109 } };
-    }
   } catch {
     // Private mode or corrupt data: start fresh.
   }
@@ -475,6 +462,26 @@ export function ridersOn(s: State, ride: Ride): RideRequest[] {
     .sort((a, b) => ride.stops.indexOf(a.segment.from) - ride.stops.indexOf(b.segment.from));
 }
 
+/** At most this many upcoming rides booked at once, so seats aren't held "just in case". */
+export const MAX_UPCOMING = 2;
+
+/** Booked rides that haven't finished (or been paid for) yet. */
+export function upcomingBookings(s: State): Booking[] {
+  return s.bookings.filter((b) => !s.trips[b.rideId]?.completedAt && !s.payments[b.rideId]);
+}
+
+/**
+ * A ride you're already booked on as a passenger around this time (same day, within an hour
+ * of each other): you can't also be driving then.
+ */
+export function bookedAround(s: State, day: Day, departMin: number): Ride | undefined {
+  for (const b of upcomingBookings(s)) {
+    const ride = findRide(s, b.rideId);
+    if (ride && ride.day === day && Math.abs(segmentTimes(ride, b.segment).depart - departMin) < 60) return ride;
+  }
+  return undefined;
+}
+
 /** Passenger requests still waiting for your answer. */
 export function pendingRequests(s: State) {
   return s.requests.filter((r) => r.status === "pending");
@@ -598,7 +605,33 @@ export function impact(s: State) {
   };
 }
 
+/** "priya.shah@indusuni.ac.in" → "Priya Shah" */
+function nameFromEmail(email: string): string {
+  return email
+    .split("@")[0]
+    .split(/[._-]+/)
+    .filter(Boolean)
+    .map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+}
+
+/**
+ * Who you are after logging in: the account already on this device if it's the same email,
+ * otherwise a new one named from your email. Logging in as the demo user (Dharam) or by
+ * ID number keeps the demo profile.
+ */
+function accountForLogin(current: Account | null, email: string): Account | null {
+  if (email.startsWith("ID ")) return current;
+  if (current?.email === email) return current;
+  const name = nameFromEmail(email);
+  if (name.split(" ")[0] === me.name.split(" ")[0]) return null;
+  return { name, email, role: "Student", dept: me.dept, idNumber: "" };
+}
+
 export const actions = {
+  setPhone(phone: string) {
+    set((s) => ({ ...s, phone }));
+  },
   book(booking: Omit<Booking, "bookedAt">) {
     set((s) => ({
       ...s,
@@ -627,6 +660,20 @@ export const actions = {
         ...s,
         bookings: s.bookings.map((b) =>
           b.rideId === rideId ? { ...b, seats: b.seats + 1, fare: ride ? segmentFare(ride, b.segment, b.seats + 1) : b.fare } : b,
+        ),
+      };
+    });
+  },
+  /** Give back one of your extra seats (you keep at least one). Everyone's fuel share goes up a little. */
+  removeSeat(rideId: string) {
+    set((s) => {
+      const ride = findRide(s, rideId);
+      return {
+        ...s,
+        bookings: s.bookings.map((b) =>
+          b.rideId === rideId && b.seats > 1
+            ? { ...b, seats: b.seats - 1, fare: ride ? segmentFare(ride, b.segment, b.seats - 1) : b.fare }
+            : b,
         ),
       };
     });
@@ -860,7 +907,10 @@ export const actions = {
     set((s) => {
       const p = s.pending;
       if (!p) return s;
-      const account = p.flow === "signup" ? { name: p.name, email: p.email, role: p.role, dept: p.dept, idNumber: p.idNumber } : s.account;
+      const account =
+        p.flow === "signup"
+          ? { name: p.name, email: p.email, role: p.role, dept: p.dept, idNumber: p.idNumber }
+          : accountForLogin(s.account, p.email);
       return { ...s, account, pending: null };
     });
     document.cookie = `${SESSION_COOKIE}=1; path=/; max-age=31536000; samesite=lax`;

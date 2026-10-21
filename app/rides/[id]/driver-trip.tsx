@@ -10,7 +10,7 @@ import { StarIcon } from "../../ui/icons";
 import { RatePerson } from "../../ui/rate-driver";
 import styles from "./driver-trip.module.css";
 
-const STEPS = ["Riders accepted", "Picking up", "Dropped off", "Paid"];
+const STEPS = ["Accepted", "Pickup", "Drop-off", "Paid"];
 
 const payText: Record<RiderPayment["method"], string> = {
   upi: "Paying by UPI",
@@ -26,7 +26,6 @@ export function DriverTrip({ ride }: { ride: Ride }) {
   const s = useStore();
   const riders = ridersOn(s, ride);
   const drive = s.drives[ride.id];
-  const to = placeById[ride.stops[ride.stops.length - 1]].name;
 
   const picked = riders.filter((q) => drive?.boarded[q.id] === "picked");
   const allBoarded = riders.length > 0 && riders.every((q) => drive?.boarded[q.id]);
@@ -104,7 +103,7 @@ export function DriverTrip({ ride }: { ride: Ride }) {
           )}
           {step === 1 && (
             <button type="button" className="btn btn-primary btn-block" disabled={!allBoarded} onClick={() => actions.finishDrive(ride.id)}>
-              {allBoarded ? `Dropped everyone at ${to} · Complete ride` : "Mark every rider to finish"}
+              {allBoarded ? "Complete ride" : "Pick up all riders first"}
             </button>
           )}
           {step === 2 && (
@@ -154,7 +153,7 @@ function RiderRow({ ride, req, nextStop }: { ride: Ride; req: RideRequest; nextS
       {drive?.startedAt && !drive.completedAt && !boarded && arrivedAt && (
         <div className={styles.waitRow}>
           <p className={styles.waiting}>
-            <span className={styles.dots} aria-hidden /> Waiting for {first} to confirm they&apos;re in…
+            <span className={styles.dots} aria-hidden /> Waiting for {first} to get in…
           </p>
           <button type="button" className={styles.noShow} onClick={() => actions.board(ride.id, req.id, "noshow")}>
             Didn&apos;t show

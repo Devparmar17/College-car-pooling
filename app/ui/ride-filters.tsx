@@ -40,12 +40,14 @@ type Props = {
   rides?: Ride[];
 };
 
-/** Ride filters as icon tiles, three to a row. */
+/** Ride filters as one row of chips, each with how many rides it keeps. */
 export function RideFilters({ value, onChange, rides }: Props) {
   return (
     <div className={styles.grid} role="radiogroup" aria-label="Filter rides">
       {filters.map(({ id, label, Icon }) => {
         const count = rides?.filter((r) => matchesFilter(r, id)).length;
+        // Nothing behind this filter right now: don't offer it (All rides always stays).
+        if (count === 0 && id !== "all" && value !== id) return null;
         return (
           <button
             key={id}
@@ -56,17 +58,9 @@ export function RideFilters({ value, onChange, rides }: Props) {
             className={`${styles.tile} ${count === 0 ? styles.empty : ""}`}
             onClick={() => onChange(id)}
           >
-            <span className={styles.icon}>
-              <Icon size={18} />
-            </span>
-            <span className={styles.text}>
-              <span className={styles.label}>{label}</span>
-              {count !== undefined && (
-                <span className={`${styles.count} tnum`}>
-                  {count} ride{count === 1 ? "" : "s"}
-                </span>
-              )}
-            </span>
+            <Icon size={16} />
+            <span className={styles.label}>{label}</span>
+            {count !== undefined && <span className={`${styles.count} tnum`}>{count}</span>}
           </button>
         );
       })}

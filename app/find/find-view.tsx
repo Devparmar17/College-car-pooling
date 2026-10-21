@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { me, type Day } from "@/lib/data";
 import { isPlaceId, nearestKm, placeById } from "@/lib/places";
-import { dayLabels, hasLeft, matchSegment, segmentFare } from "@/lib/rides";
+import { dayInText, dayLabels, hasLeft, matchSegment, segmentFare } from "@/lib/rides";
 import { allRides, bookingFor, isMine, seatsLeft, useNowMinutes, useStore } from "@/lib/store";
 import { RequestCard } from "../ui/request-card";
 import { SearchForm } from "../ui/search-form";
@@ -92,7 +92,7 @@ export function FindView() {
 
         {shown.length === 0 && (
           <div className={styles.empty}>
-            <h3>No rides {day !== undefined ? dayLabels[day].toLowerCase() : "yet"} on this route</h3>
+            <h3>No rides {day !== undefined ? dayInText[day] : "yet"} on this route</h3>
             <p>Driving this way yourself? Offer the commute and riders on the way can request a seat.</p>
             <Link
               href={`/offer?${new URLSearchParams({ ...(from && { from }), ...(to && { to }), ...(day !== undefined && { day: String(day) }) })}`}

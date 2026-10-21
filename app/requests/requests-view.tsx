@@ -15,7 +15,7 @@ export function RequestsView() {
 
   return (
     <div className={styles.page}>
-      <PageHeader title="Ride requests" back="/earnings" />
+      <PageHeader title="Ride requests" back="/offer" />
       {hydrated && (
         <div className={`${styles.body} stagger`}>
           <p className="muted">Passengers on your route ask here. Accept to give them the seat, or decline if it doesn&apos;t suit you.</p>

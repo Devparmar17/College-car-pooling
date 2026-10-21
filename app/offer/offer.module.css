@@ -412,62 +412,6 @@
   }
 }
 
-/* Route: one-tap Home → Campus / Campus → Home */
-.quickRoutes {
-  display: flex;
-  gap: 8px;
-}
-
-.quickRoutes button {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  height: 40px;
-  padding: 0 10px;
-  border: 1px solid var(--unigo-border);
-  border-radius: 999px;
-  background: var(--unigo-white);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--unigo-black);
-  white-space: nowrap;
-  transition: background 150ms, border-color 150ms, scale 120ms var(--ease-out);
-}
-
-.quickRoutes button:active {
-  scale: 0.97;
-}
-
-.quickRoutes button[aria-pressed="true"] {
-  border-color: var(--unigo-primary);
-  background: var(--unigo-primary-soft);
-  color: var(--unigo-primary-ink);
-}
-
-/* "Going to" with a Swap link on the same line. */
-.toRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: -6px;
-  font-size: 13px;
-  color: var(--unigo-text-secondary);
-}
-
-.swapText {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--unigo-extra-light-gray);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--unigo-primary-ink);
-}
 
 /* When: tap a usual time instead of typing one. */
 .times {
@@ -541,11 +485,6 @@
   cursor: pointer;
 }
 
-/* Tap targets */
-.swapText {
-  min-height: 36px;
-  padding: 0 12px;
-}
 
 .pref {
   min-height: 40px;
@@ -557,6 +496,26 @@
   min-height: 40px;
 }
 
-.swapText {
-  min-height: 40px;
+
+/* The campus end of the route: fixed, shown as a locked row. */
+.fixed {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: var(--unigo-extra-light-gray);
+  font-size: 16px;
+  color: var(--unigo-text-secondary);
+}
+
+.fixed strong {
+  flex: 1;
+  font-weight: 500;
+  color: var(--unigo-black);
+}
+
+.fixed > span {
+  font-size: 12px;
 }

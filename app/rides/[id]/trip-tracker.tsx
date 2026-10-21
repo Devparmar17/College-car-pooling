@@ -7,6 +7,7 @@ import { dayLabels, formatClock, personById, rupees, segmentTimes } from "@/lib/
 import { actions, useStore, type Booking } from "@/lib/store";
 import { isPlaying, tripStage, type Stage } from "@/lib/trip";
 import { useNow } from "@/lib/use-now";
+import { ContactButtons } from "../../ui/contact-buttons";
 import styles from "./trip-tracker.module.css";
 
 const order: Stage[] = ["booked", "arriving", "onboard", "completed"];
@@ -21,7 +22,8 @@ export function TripTracker({ ride, booking }: { ride: Ride; booking: Booking })
 
   const { stage, progress } = tripStage(ride, booking.segment, trip, now);
   const at = order.indexOf(stage);
-  const first = personById(ride.driverId)?.name.split(" ")[0] ?? "Your driver";
+  const driver = personById(ride.driverId);
+  const first = driver?.name.split(" ")[0] ?? "Your driver";
   const from = placeById[booking.segment.from].name;
   const to = placeById[booking.segment.to].name;
   const { depart, arrive } = segmentTimes(ride, booking.segment);
@@ -74,24 +76,18 @@ export function TripTracker({ ride, booking }: { ride: Ride; booking: Booking })
           </div>
         ))}
 
-      {stage === "completed" ? (
-        payment ? null : (
-          <Link href={`/rides/${ride.id}/complete`} className="btn btn-primary btn-block">
-            Pay {rupees(booking.fare * booking.seats)} and rate the ride
-          </Link>
-        )
-      ) : (
-        stage === "booked" &&
-        !payment && (
-          <div className={styles.demo}>
-            <button type="button" className={`btn btn-block ${styles.play}`} onClick={() => actions.playTrip(ride.id)}>
-              ▶ Play this trip (demo)
-            </button>
-            <button type="button" className={styles.cancelDemo} onClick={() => actions.driverCancels(ride.id, "Vehicle problem")}>
-              Demo: {first} cancels this ride
-            </button>
-          </div>
-        )
+      {/* During the trip the driver is one tap away, whether you're waiting or already in the car. */}
+      {(stage === "arriving" || stage === "onboard") && driver && (
+        <div className={styles.contact}>
+          <span>Need {first}?</span>
+          <ContactButtons driver={driver} rideId={ride.id} labelled />
+        </div>
+      )}
+
+      {stage === "completed" && !payment && (
+        <Link href={`/rides/${ride.id}/complete`} className="btn btn-primary btn-block">
+          Pay {rupees(booking.fare * booking.seats)} and rate the ride
+        </Link>
       )}
     </section>
   );

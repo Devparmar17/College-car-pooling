@@ -218,3 +218,8 @@
 .upload {
   min-height: 40px;
 }
+
+/* Built-in icons take the brand ink colour. */
+.docIcon {
+  color: var(--unigo-primary-ink);
+}

@@ -95,16 +95,6 @@
   }
 }
 
-/* Link to past requests once nothing is waiting. */
-.allRequests {
-  align-self: flex-start;
-  padding: 8px 14px;
-  border: 1px solid var(--unigo-border);
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--unigo-black);
-}
 
 .earned {
   margin-top: 8px;
@@ -113,9 +103,3 @@
   color: var(--unigo-primary);
 }
 
-/* Tap targets */
-.allRequests {
-  min-height: 40px;
-  display: inline-flex;
-  align-items: center;
-}

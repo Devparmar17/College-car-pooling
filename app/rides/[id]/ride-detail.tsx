@@ -22,7 +22,19 @@ import {
   timetable,
   hasLeft,
 } from "@/lib/rides";
-import { actions, bookingFor, findRide, isMine, ridersOn, seatsLeft, useHydrated, useNowMinutes, useStore } from "@/lib/store";
+import {
+  actions,
+  bookingFor,
+  findRide,
+  isMine,
+  MAX_UPCOMING,
+  ridersOn,
+  seatsLeft,
+  upcomingBookings,
+  useHydrated,
+  useNowMinutes,
+  useStore,
+} from "@/lib/store";
 import { Avatar } from "../../ui/avatar";
 import { CarIcon, CheckIcon, ScooterIcon, SeatIcon, StarIcon } from "../../ui/icons";
 import { ContactButtons } from "../../ui/contact-buttons";
@@ -30,6 +42,9 @@ import { RideMap } from "../../ui/ride-map";
 import { RateDriver } from "../../ui/rate-driver";
 import { ConfirmSheet } from "./confirm-sheet";
 import { TripTracker } from "./trip-tracker";
+import { DemoPanel } from "./demo-panel";
+import { SosSheet } from "./sos-sheet";
+import sos from "./sos-sheet.module.css";
 import { DriverTrip } from "./driver-trip";
 import { WithdrawSheet } from "./withdraw-sheet";
 import { PassengerRequest } from "../../ui/passenger-request";
@@ -41,11 +56,15 @@ export function RideDetail({ id }: { id: string }) {
   const hydrated = useHydrated();
   const now = useNowMinutes();
   const params = useSearchParams();
+  // Arrived here right after publishing this ride from Offer.
+  const justPublished = params.has("published");
   const router = useRouter();
   const [wantedSeats, setSeats] = useState(1);
   const [cancelling, setCancelling] = useState(false);
   const [justBooked, setJustBooked] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [sosOpen, setSosOpen] = useState(false);
+  const closeSos = useCallback(() => setSosOpen(false), []);
   const closeConfirm = useCallback(() => setConfirming(false), []);
   const closeCancel = useCallback(() => setCancelling(false), []);
 
@@ -71,6 +90,9 @@ export function RideDetail({ id }: { id: string }) {
   const drive = s.drives[ride.id];
   // Your ride is over: keep the summary and riders; the rest (map, car, seats) no longer helps.
   const done = mine && !!drive?.completedAt;
+  // Riders hold at most two upcoming rides at once.
+  const atLimit = !mine && !booking && upcomingBookings(s).length >= MAX_UPCOMING;
+  const showSos = (!!booking && !s.trips[ride.id]?.completedAt && !payment) || (mine && !!drive?.startedAt && !drive.completedAt);
   const earnedHere = done
     ? ridersOn(s, ride).filter((q) => drive!.paid[q.id]?.status === "paid").reduce((sum, q) => sum + q.amount, 0)
     : 0;
@@ -95,7 +117,7 @@ export function RideDetail({ id }: { id: string }) {
   // Each seat is an equal share of the fuel among everyone in the car, so more seats cost less each.
   const fare = booking ? booking.fare : segmentFare(ride, seg, seats);
   // Seats can be picked on the map while you can still book this ride.
-  const canPick = !mine && !booking && !gone && left > 0;
+
   const times = timetable(ride);
   const fromIdx = ride.stops.indexOf(seg.from);
   const toIdx = ride.stops.lastIndexOf(seg.to);
@@ -118,7 +140,27 @@ export function RideDetail({ id }: { id: string }) {
 
   return (
     <div className={styles.page}>
-      <PageHeader title={routeName(stops)} back={back} />
+      {/* A short title; the full route sits in the time card below, where it can wrap. */}
+      <PageHeader
+        title={mine ? "Your ride" : booking ? "Your booked ride" : "Ride details"}
+        back={back}
+        action={
+          showSos && (
+            <button type="button" className={sos.sos} onClick={() => setSosOpen(true)} aria-label="SOS, emergency help">
+              SOS
+            </button>
+          )
+        }
+      />
+
+      {justPublished && mine && !drive?.startedAt && (
+        <div className={styles.banner} role="status">
+          <CheckIcon size={20} />
+          <span>
+            <strong>Ride published.</strong> Riders on your route can request a seat now.
+          </span>
+        </div>
+      )}
 
       {justBooked && booking && (
         <div className={styles.banner} role="status">
@@ -140,6 +182,7 @@ export function RideDetail({ id }: { id: string }) {
 
           <section className={`card ${styles.summary}`}>
             <div className={styles.day}>{dayLabels[ride.day]}</div>
+            <p className={styles.routeLine}>{routeName(stops)}</p>
             <div className={`${styles.clock} tnum`}>
               {formatClock(depart)} <span className="muted">→</span> {formatClock(arrive)}
             </div>
@@ -149,34 +192,31 @@ export function RideDetail({ id }: { id: string }) {
               <span className="tnum">
                 {mine ? `${ride.seatsTaken}/${ride.seatsTotal} seats booked` : `${rupees(fare)} per seat`}
               </span>
+              {!mine && !booking && left > 0 && (
+                <span className="tnum">
+                  {left} seat{left === 1 ? "" : "s"} left
+                </span>
+              )}
             </div>
           </section>
 
           {booking && <TripTracker ride={ride} booking={booking} />}
+          {booking && <DemoPanel ride={ride} />}
           {mine && <DriverTrip ride={ride} />}
 
-          {done ? (
-            <details className={`card ${styles.timeline} ${styles.fold}`}>
-              <summary>Route &amp; stops</summary>
-              <ol>
-                {times.map(({ place, at }, i) => {
-                  const inSeg = i >= fromIdx && i <= toIdx;
-                  const tag = i === fromIdx ? "Pickup" : i === toIdx ? "Drop-off" : null;
-                  return (
-                    <li key={place} className={inSeg ? styles.active : styles.dim}>
-                      <span className={`${styles.at} tnum`}>{formatClock(at)}</span>
-                      <span className={`${styles.node} ${tag ? styles.nodeEnd : ""}`} aria-hidden />
-                      <span className={styles.stop}>
-                        <strong>{placeById[place].name}</strong>
-                        <span className="muted">{placeById[place].area}</span>
-                      </span>
-                      {tag && !mine && <span className="chip chip-brand">{tag}</span>}
-                    </li>
-                  );
-                })}
-              </ol>
-            </details>
-          ) : (
+          {/* Your ride: passenger requests near the top, so you don't scroll to find them. */}
+          {mine && !drive?.startedAt && (rideRequests.length > 0 || justPublished) && (
+            <section className={styles.requests}>
+              <h2 className="section-title">Passenger requests</h2>
+              {rideRequests.length ? (
+                rideRequests.map((r) => <PassengerRequest key={r.id} request={r} />)
+              ) : (
+                <p className={styles.waitingRequests}>Riders on your route can now ask to join. Their requests show up here.</p>
+              )}
+            </section>
+          )}
+
+          {!done && (
             <section className={`card ${styles.timeline}`}>
               <h2 className="section-title">Stops</h2>
               <ol>
@@ -254,36 +294,14 @@ export function RideDetail({ id }: { id: string }) {
             </section>
           )}
 
-          {!done && (
+          {!done && (booking || mine) && (
             <section className={`card ${styles.seats}`}>
               <h2 className="section-title">Seats</h2>
-              {canPick && (
-                <p className={styles.seatHint}>Tap seats to book more than one, for friends travelling with you (up to {maxSeats}).</p>
-              )}
-              <div className={styles.seatRow} role={canPick ? "group" : undefined} aria-label={canPick ? "Choose seats" : undefined}>
+              <div className={styles.seatRow}>
                 {Array.from({ length: ride.seatsTotal }, (_, i) => {
                   const yours = booking?.seats ?? 0;
-                  // Seats after the taken and booked ones are open; the first `seats` of those are the current pick.
-                  const open = i - ride.seatsTaken - yours;
-                  const state =
-                    i < ride.seatsTaken ? "taken" : open < 0 ? "yours" : canPick && open < seats ? "selected" : "free";
-                  const label = { taken: "Taken", yours: "You", selected: "Selected", free: "Available" }[state];
-                  if (canPick && state !== "taken" && open < maxSeats) {
-                    return (
-                      <button
-                        key={i}
-                        type="button"
-                        className={`${styles.seat} ${styles[state]}`}
-                        aria-pressed={state === "selected"}
-                        aria-label={`Seat ${i + 1}, ${label}`}
-                        // Tapping a seat books up to it; tapping the last picked seat gives it back.
-                        onClick={() => setSeats(open + 1 === seats ? Math.max(1, open) : open + 1)}
-                      >
-                        <SeatIcon size={22} />
-                        <span>{label}</span>
-                      </button>
-                    );
-                  }
+                  const state = i < ride.seatsTaken ? "taken" : i < ride.seatsTaken + yours ? "yours" : "free";
+                  const label = { taken: "Taken", yours: "You", free: "Available" }[state];
                   return (
                     <span key={i} className={`${styles.seat} ${styles[state]}`}>
                       <SeatIcon size={22} />
@@ -292,24 +310,25 @@ export function RideDetail({ id }: { id: string }) {
                   );
                 })}
               </div>
-              {booking && !gone && left > 0 && booking.seats < 4 && (
-                <button type="button" className={styles.addSeat} onClick={() => actions.addSeat(ride.id)}>
-                  + Add another seat · {rupees(segmentFare(ride, seg, booking.seats + 1) * (booking.seats + 1))} total
-                </button>
+              {booking && !gone && (
+                <div className={styles.seatActions}>
+                  {left > 0 && booking.seats < 4 && (
+                    <button type="button" className={styles.addSeat} onClick={() => actions.addSeat(ride.id)}>
+                      + Add a seat · {rupees(segmentFare(ride, seg, booking.seats + 1) * (booking.seats + 1))} total
+                    </button>
+                  )}
+                  {/* Extra seats can be given back; the booking itself stays (riders can't cancel). */}
+                  {booking.seats > 1 && (
+                    <button type="button" className={styles.removeSeat} onClick={() => actions.removeSeat(ride.id)}>
+                      − Remove a seat · {rupees(segmentFare(ride, seg, booking.seats - 1) * (booking.seats - 1))} total
+                    </button>
+                  )}
+                </div>
               )}
             </section>
           )}
 
           {booking && (payment || s.trips[ride.id]?.completedAt) && <RateDriver rideId={ride.id} driver={driver} />}
-
-          {mine && !drive?.startedAt && rideRequests.length > 0 && (
-            <section className={styles.requests}>
-              <h2 className="section-title">Passenger requests</h2>
-              {rideRequests.map((r) => (
-                <PassengerRequest key={r.id} request={r} />
-              ))}
-            </section>
-          )}
 
           <div className={styles.bar}>
             {mine ? (
@@ -364,6 +383,11 @@ export function RideDetail({ id }: { id: string }) {
               <button className="btn btn-block" disabled>
                 This ride left at {formatClock(depart)}
               </button>
+            ) : atLimit ? (
+              <div className={styles.limit}>
+                <strong>You have {MAX_UPCOMING} upcoming rides</strong>
+                <span>Finish one before booking another.</span>
+              </div>
             ) : left > 0 ? (
               <>
                 <div className={styles.stepper} role="group" aria-label="Seats to book">
@@ -404,6 +428,15 @@ export function RideDetail({ id }: { id: string }) {
           fare={fare}
           onConfirm={book}
           onClose={closeConfirm}
+        />
+      )}
+      {sosOpen && (
+        <SosSheet
+          ride={ride}
+          driver={driver}
+          route={routeName(stops)}
+          when={`${dayLabels[ride.day]}, ${formatClock(depart)}`}
+          onClose={closeSos}
         />
       )}
       {cancelling && (

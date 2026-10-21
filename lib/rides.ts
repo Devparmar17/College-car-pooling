@@ -6,6 +6,9 @@ const STOP_MINUTES = 2;
 
 export const dayLabels: Record<Day, string> = { 0: "Today", 1: "Tomorrow", 2: "Day after" };
 
+/** The day inside a sentence: "today", "tomorrow", "the day after tomorrow". */
+export const dayInText: Record<Day, string> = { 0: "today", 1: "tomorrow", 2: "the day after tomorrow" };
+
 export function personById(id: string): Person | undefined {
   return id === me.id ? me : people.find((p) => p.id === id);
 }
